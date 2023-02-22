@@ -1,17 +1,22 @@
 apiVersion: 1
+version: 1
 name: sleep
 interface:
   inputs:
-    sleepTime:
-      required: true
-      type: Number
-    file:
-      required: false
-      type: File
+    properties:
+      sleepTime:
+        type: Number
+        description: Time to sleep in seconds
+      file:
+        type: File
+        description: File to sleep on
+    required: [sleepTime, file]
   outputs:
-    sleepTime:
-      required: true
-      type: Number
-    file:
-      required: false
-      type: File
+    properties:
+      file:
+        type: File
+        description: File to sleep on
+      sleepTime:
+        type: Number
+        description: Time to sleep in seconds
+    required: [sleepTime, file]

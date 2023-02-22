@@ -1,13 +1,11 @@
-import {File} from "@edurata/sdk"
-
 export type Inputs = {
     sleepTimeMs: number,
-    file?: File
+    file?: string
 }
 
 export type Outputs = {
     sleepTimeMs: number,
-    file?: File
+    file?: string
 }
 
 export type Handler = (inputs: Inputs) => Promise<Outputs>

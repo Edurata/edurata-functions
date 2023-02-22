@@ -16,7 +16,7 @@
         // "moduleResolution": "node",
         "sourceMap": false,
         // "baseUrl": "./",
-        "outDir": "dist"
+        "outDir": "dist/tsc"
     },
     "include": ["src/index.ts"]
 }
