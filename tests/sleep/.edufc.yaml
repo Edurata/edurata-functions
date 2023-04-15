@@ -1,7 +1,7 @@
 apiVersion: edurata.io/v1
 name: sleep
 runtime: nodejs16
-entrypoint: build/index.js
+entrypoint: dist/tsc/index.js
 interface:
   inputs:
     properties:

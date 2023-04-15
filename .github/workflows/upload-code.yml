@@ -1,0 +1,24 @@
+name: 'Uploads code of functions'
+on:
+  push:
+    branches: "main"
+
+jobs:
+  main:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: install aws cli
+      id: install-aws-cli
+      uses: unfor19/install-aws-cli-action@master
+    - name: Build, zip and upload code
+      run: |
+        version=1
+        cd tests/sleep
+        tsc
+        zip -r dist/code.zip dist/tsc/*
+        aws s3 cp code.zip s3://edurata-customer-functions-dev/test/sleep/$version.zip
