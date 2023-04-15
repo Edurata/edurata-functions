@@ -1,5 +1,0 @@
-{"executionId":"executionId","level":"info","message":"Test info","timestamp":"2022-07-07T21:15:37.654Z","workflow":"workflowId"}
-{"executionId":"executionId","level":"warning","message":"Test warning","timestamp":"2022-07-07T21:15:37.658Z","workflow":"workflowId"}
-{"executionId":"executionId","level":"error","message":"Test error","timestamp":"2022-07-07T21:15:37.660Z","workflow":"workflowId"}
-{"executionId":"executionId","level":"alert","message":"Test alert","timestamp":"2022-07-07T21:15:37.661Z","workflow":"workflowId"}
-{"executionId":"executionId","level":"info","message":"Slept 1000 seconds","timestamp":"2022-07-07T21:15:38.665Z","workflow":"workflowId"}
