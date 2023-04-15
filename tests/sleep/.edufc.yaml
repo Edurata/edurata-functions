@@ -1,6 +1,7 @@
-apiVersion: 1
-version: 1
+apiVersion: edurata.io/v1
 name: sleep
+runtime: nodejs16
+entrypoint: build/index.js
 interface:
   inputs:
     properties:
