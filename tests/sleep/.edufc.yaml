@@ -7,7 +7,7 @@ interface:
   inputs:
     properties:
       sleepTime:
-        type: Number
+        type: number
         description: Time to sleep in seconds
       file:
         type: File
@@ -19,6 +19,6 @@ interface:
         type: File
         description: File to sleep on
       sleepTime:
-        type: Number
+        type: number
         description: Time to sleep in seconds
     required: [sleepTime, file]
