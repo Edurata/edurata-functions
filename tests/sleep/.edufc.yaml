@@ -1,5 +1,4 @@
-apiVersion: edurata.io/v1
-name: sleep
+apiRevision: edurata.io/v1
 runtime: nodejs16
 entrypoint: dist/tsc/index.js
 include: [dist/tsc/*]
@@ -10,13 +9,13 @@ interface:
         type: number
         description: Time to sleep in seconds
       file:
-        type: File
+        type: file
         description: File to sleep on
     required: [sleepTime, file]
   outputs:
     properties:
       file:
-        type: File
+        type: file
         description: File to sleep on
       sleepTime:
         type: number
