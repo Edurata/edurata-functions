@@ -17,11 +17,10 @@ jobs:
         uses: unfor19/install-aws-cli-action@master
       - name: Build, zip and upload code
         run: |
-          function_name=sleep-test
-          version=1
-          cd tests/sleep
-          npm install
-          tsc
-          zip -r dist/code.zip dist/tsc/*
-          uploadUrl=$(https://api.dev.edurata.com/v1/function/$function_name/uploadUrl)
+          function_name=sleep-test && \
+          cd tests/sleep && \
+          npm install && \
+          tsc && \
+          zip -r dist/code.zip dist/tsc/* && \
+          uploadUrl=$(https://api.dev.edurata.com/v1/function/$function_name/uploadUrl) && \
           curl -X PUT -T dist/code.zip $uploadUrl
