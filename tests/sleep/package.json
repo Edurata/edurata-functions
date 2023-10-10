@@ -5,6 +5,7 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "types": "types.d.ts",
-  "dependencies": {
+  "devDependencies": {
+    "@types/node": "^20.8.4"
   }
 }
