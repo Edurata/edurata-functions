@@ -1,4 +1,4 @@
-name: 'Uploads code of functions'
+name: "Uploads code of functions"
 on:
   push:
     branches: "main"
@@ -6,19 +6,21 @@ on:
 jobs:
   main:
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: install aws cli
-      id: install-aws-cli
-      uses: unfor19/install-aws-cli-action@master
-    - name: Build, zip and upload code
-      run: |
-        version=1
-        cd tests/sleep
-        tsc
-        zip -r dist/code.zip dist/tsc/*
-        aws s3 cp code.zip s3://edurata-customer-functions-dev/test/sleep/$version.zip
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: install aws cli
+        id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@master
+      - name: Build, zip and upload code
+        run: |
+          function_name=sleep-test
+          version=1
+          cd tests/sleep
+          tsc
+          zip -r dist/code.zip dist/tsc/*
+          uploadUrl=$(https://api.dev.edurata.com/v1/function/$function_name/uploadUrl)
+          curl -X PUT -T dist/code.zip $uploadUrl

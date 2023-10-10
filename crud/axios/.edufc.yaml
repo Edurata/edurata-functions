@@ -1,0 +1,186 @@
+apiRevision: edurata.io/v1
+runtime: nodejs16
+entrypoint: dist/tsc/index.js
+include: [dist/tsc/*]
+interface:
+  inputs:
+    properties:
+      options:
+        type: object
+        properties:
+          url:
+            type: string
+            description: "`url` is the server URL that will be used for the request"
+          method:
+            type: string
+            default: get
+            description: "`method` is the request method to be used when making the request"
+          baseURL:
+            type: string
+            description: >
+              '`baseURL` will be prepended to `url` unless `url` is absolute. It can be convenient to set `baseURL` for an instance of axios to pass relative URLs to methods of that instance.'
+          transformRequest:
+            type: array
+            items:
+              type: function
+              description: >
+                '`transformRequest` allows changes to the request data before it is sent to the server. This is only applicable for request methods 'PUT', 'POST', 'PATCH', and 'DELETE'. The last function in the array must return a string or an instance of Buffer, ArrayBuffer, FormData, or Stream. You may modify the headers object.'
+          transformResponse:
+            type: array
+            items:
+              type: function
+              description: >
+                '`transformResponse` allows changes to the response data to be made before it is passed to then/catch.'
+          headers:
+            type: object
+            description: "`headers` are custom headers to be sent"
+            properties:
+              X-Requested-With:
+                type: string
+          params:
+            type: object
+            description: >
+              '`params` are the URL parameters to be sent with the request. Must be a plain object or a URLSearchParams object. NOTE: params that are null or undefined are not rendered in the URL.'
+            properties:
+              ID:
+                type: integer
+          paramsSerializer:
+            type: function
+            description: >
+              '`paramsSerializer` is an optional function in charge of serializing `params`'
+          data:
+            anyOf:
+              - type: object
+                description: "`data` is the data to be sent as the request body. Only applicable for request methods 'PUT', 'POST', 'DELETE', and 'PATCH'."
+              - type: string
+                description: "syntax alternative to send data into the body. method post only the value is sent, not the key"
+          timeout:
+            type: integer
+            default: 1000
+            description: "`timeout` specifies the number of milliseconds before the request times out. If the request takes longer than `timeout`, the request will be aborted."
+          withCredentials:
+            type: boolean
+            default: false
+            description: "`withCredentials` indicates whether or not cross-site Access-Control requests should be made using credentials"
+          auth:
+            type: object
+            description: >
+              '`auth` indicates that HTTP Basic auth should be used, and supplies credentials. This will set an `Authorization` header, overwriting any existing `Authorization` custom headers you have set using `headers`.'
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+          responseType:
+            type: string
+            default: json
+            description: "`responseType` indicates the type of data that the server will respond with"
+          responseEncoding:
+            type: string
+            default: utf8
+            description: "`responseEncoding` indicates encoding to use for decoding responses (Node.js only)"
+          xsrfCookieName:
+            type: string
+            default: XSRF-TOKEN
+            description: "`xsrfCookieName` is the name of the cookie to use as a value for xsrf token"
+          xsrfHeaderName:
+            type: string
+            default: X-XSRF-TOKEN
+            description: "`xsrfHeaderName` is the name of the http header that carries the xsrf token value"
+          onUploadProgress:
+            type: function
+            description: "`onUploadProgress` allows handling of progress events for uploads"
+          onDownloadProgress:
+            type: function
+            description: "`onDownloadProgress` allows handling of progress events for downloads"
+          maxContentLength:
+            type: integer
+            description: "`maxContentLength` defines the max size of the http response content in bytes allowed in node.js"
+          maxBodyLength:
+            type: integer
+            description: "`maxBodyLength` (Node only option) defines the max size of the http request content in bytes allowed"
+          validateStatus:
+            type: function
+            description: >
+              '`validateStatus` defines whether to resolve or reject the promise for a given HTTP response status code. If `validateStatus` returns `true` (or is set to `null` or `undefined`), the promise will be resolved; otherwise, the promise will be rejected.'
+          maxRedirects:
+            type: integer
+            default: 5
+            description: "`maxRedirects` defines the maximum number of redirects to follow in node.js. If set to 0, no redirects will be followed."
+          socketPath:
+            type: null
+            description: >
+              '`socketPath` defines a UNIX Socket to be used in node.js. Only either `socketPath` or `proxy` can be specified. If both are specified, `socketPath` is used.'
+          httpAgent:
+            type: object
+            properties:
+              keepAlive:
+                type: boolean
+                default: true
+            description: >
+              '`httpAgent` defines a custom agent to be used when performing http requests in node.js. This allows options to be added like `keepAlive` that are not enabled by default.'
+          httpsAgent:
+            type: object
+            properties:
+              keepAlive:
+                type: boolean
+                default: true
+            description: >
+              '`httpsAgent` defines a custom agent to be used when performing https requests in node.js. This allows options to be added like `keepAlive` that are not enabled by default.'
+          proxy:
+            type: object
+            properties:
+              protocol:
+                type: string
+              host:
+                type: string
+              port:
+                type: integer
+              auth:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  password:
+                    type: string
+            description: >
+              '`proxy` defines the hostname, port, and protocol of the proxy server. You can also define your proxy using the conventional `http_proxy` and `https_proxy` environment variables. If you are using environment variables for your proxy configuration, you can also define a `no_proxy` environment variable as a comma-separated list of domains that should not be proxied.'
+          cancelToken:
+            type: object
+            description: "`cancelToken` specifies a cancel token that can be used to cancel the request"
+          decompress:
+            type: boolean
+            default: true
+            description: >
+              '`decompress` indicates whether or not the response body should be decompressed automatically. If set to `true` will also remove the 'content-encoding' header from the responses objects of all decompressed responses'
+    required: [options]
+  outputs:
+    properties:
+      response:
+        type: object
+        description: Axios response
+        properties:
+          data:
+            description: "`data` is the response that was provided by the server"
+            type: object
+          status:
+            description: "`status` is the HTTP status code from the server response"
+            type: integer
+            default: 200
+          statusText:
+            description: >
+              '`statusText` is the HTTP status message from the server response. As of HTTP/2 status text is blank or unsupported. (HTTP/2 RFC: https://www.rfc-editor.org/rfc/rfc7540#section-8.1.2.4)'
+            type: string
+            default: "OK"
+          headers:
+            description: >
+              '`headers` the HTTP headers that the server responded with. All header names are lower cased and can be accessed using the bracket notation. Example: `response.headers[''content-type'']`
+            type: object
+          config:
+            description: "`config` is the config that was provided to `axios` for the request"
+            type: object
+          request:
+            description: >
+              '`request` is the request that generated this response. It is the last ClientRequest instance in node.js (in redirects) and an XMLHttpRequest instance in the browser'
+            type: object
+    required: [response]

@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "@graphql-codegen/introspection": "^2.1.1"
-  }
-}
