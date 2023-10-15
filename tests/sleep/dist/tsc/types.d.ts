@@ -1,9 +1,9 @@
-export declare type Inputs = {
+export type Inputs = {
     sleepTimeMs: number;
     file?: string;
 };
-export declare type Outputs = {
+export type Outputs = {
     sleepTimeMs: number;
     file?: string;
 };
-export declare type Handler = (inputs: Inputs) => Promise<Outputs>;
+export type Handler = (inputs: Inputs) => Promise<Outputs>;

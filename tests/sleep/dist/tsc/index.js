@@ -11,6 +11,7 @@ const sleep = (ms) => {
     });
 };
 const handler = async (inputs) => {
+    console.log("Test inner logs");
     await sleep(inputs.sleepTimeMs);
     if (inputs.file) {
         const fileData = fs_1.default.readFileSync(inputs.file);
@@ -19,9 +20,10 @@ const handler = async (inputs) => {
     else {
         fs_1.default.writeFileSync(inputs.file, "Hey there!");
     }
+    console.error("Test error inner logs");
     return {
         sleepTimeMs: inputs.sleepTimeMs + 1000,
-        file: inputs.file
+        file: inputs.file,
     };
 };
 exports.handler = handler;
