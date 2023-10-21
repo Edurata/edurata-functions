@@ -1,9 +1,9 @@
 export type Inputs = {
-    sleepTimeMs: number;
+    sleepTime: number;
     file?: string;
 };
 export type Outputs = {
-    sleepTimeMs: number;
+    sleepTime: number;
     file?: string;
 };
 export type Handler = (inputs: Inputs) => Promise<Outputs>;
