@@ -9,17 +9,18 @@ const sleep = (ms) => {
 
 export const handler: Handler = async (inputs) => {
   console.log("Test inner logs");
-  await sleep(inputs.sleepTimeMs);
-  const newFilePath = "testFile.txt";
+  const _sleepTime = inputs.sleepTime || 1000;
+  const _filePath = inputs.file || "testFile.txt";
+  await sleep(_sleepTime);
   if (inputs.file) {
     const fileData = fs.readFileSync(inputs.file);
     fs.writeFileSync(inputs.file, fileData + " Hey there again!");
   } else {
-    fs.writeFileSync(newFilePath, "Hey there!");
+    fs.writeFileSync(_filePath, "Hey there!");
   }
   console.error("Test error inner logs");
   return {
-    sleepTimeMs: inputs.sleepTimeMs + 1000,
-    file: newFilePath,
+    sleepTime: _sleepTime + 1000,
+    file: _filePath,
   };
 };
