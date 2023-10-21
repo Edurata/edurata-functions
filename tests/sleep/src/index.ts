@@ -9,7 +9,11 @@ const sleep = (ms) => {
 
 export const handler: Handler = async (inputs) => {
   console.log("Test inner logs");
-  const _sleepTime = inputs.sleepTime || 1000;
+  const _sleepTime = inputs.sleepTime
+    ? typeof inputs.sleepTime === "string"
+      ? parseInt(inputs.sleepTime)
+      : inputs.sleepTime
+    : 1000;
   const _filePath = inputs.file || "testFile.txt";
   await sleep(_sleepTime);
   if (inputs.file) {

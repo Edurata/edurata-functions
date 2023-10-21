@@ -1,5 +1,5 @@
 export type Inputs = {
-  sleepTime: number;
+  sleepTime: number | string;
   file?: string;
 };
 
