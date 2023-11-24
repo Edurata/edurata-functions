@@ -1,0 +1,22 @@
+apiRevision: edurata.io/v1
+name: sleep-bash
+runtime: bash
+interface:
+  inputs:
+    properties:
+      sleepTime:
+        type: number
+        description: Time to sleep in seconds
+      file:
+        type: file
+        description: File to sleep on
+    required: [sleepTime]
+  outputs:
+    properties:
+      file:
+        type: file
+        description: File to sleep on
+      sleepTime:
+        type: number
+        description: Time to sleep in seconds
+    required: [sleepTime, file]
