@@ -7,15 +7,19 @@ sleep_ms() {
 
 # Main handler function
 handler() {
+    local json_input=$1
+
     echo "Test inner logs"
-    sleep_time=${1:-1000}
-    file_path=${2:-"testFile.txt"}
+
+    # Extract values using jq
+    sleep_time=$(echo "$json_input" | jq -r '.sleepTime // 1000')
+    file_path=$(echo "$json_input" | jq -r '.file // "testFile.txt"')
 
     # Sleep for the specified time
     sleep_ms $sleep_time
 
     # Check if file path is provided and write to the file
-    if [ -n "$2" ]; then
+    if [ -n "$(echo "$json_input" | jq -r '.file')" ]; then
         if [ -f "$file_path" ]; then
             echo " Hey there again!" >> "$file_path"
         else
@@ -27,5 +31,5 @@ handler() {
 
     echo "Test error inner logs"
     sleep_time=$(( sleep_time + 1000 ))
-    echo "Sleep time: $sleep_time, File: $file_path"
+    echo "{\"sleepTime\":$sleep_time,\"file\":\"$file_path\"}" > $CMD_DIR/output.json
 }
