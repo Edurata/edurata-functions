@@ -1,0 +1,33 @@
+apiRevision: edurata.io/v1
+name: send-ses
+description: |
+  Send an email using AWS SES
+runtime: python3_8
+interface:
+  inputs:
+    properties:
+      sender:
+        type: string
+        description: the sender email
+      to:
+        type: string
+        description: email to send to
+      subject:
+        type: string
+        description: The message subject
+      body:
+        type: string
+        description: The message body
+      AWS_ACCESS_KEY_ID:
+        type: string
+        description: The aws access key id
+      AWS_SECRET_ACCESS_KEY:
+        type: string
+        description: The aws secret access key
+    required: [AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY]
+  outputs:
+    properties:
+      status:
+        type: boolean
+        description: Success or failure
+    required: [status]

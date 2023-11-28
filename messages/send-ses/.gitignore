@@ -1,0 +1,4 @@
+python_modules
+__pycache__
+service-account.json
+.pytest_cache
