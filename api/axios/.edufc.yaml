@@ -3,6 +3,8 @@ name: axios
 description: |
   Generic function to call apis using axios
 runtime: nodejs18
+entrypoint: dist/tsc/index.js
+include: dist/tsc/**
 interface:
   inputs:
     properties:

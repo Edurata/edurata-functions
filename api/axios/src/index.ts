@@ -26,8 +26,8 @@ function axiosWrapper(method, url, data = {}, headers = {}) {
 }
 
 const handler: Handler = async (inputs) => {
-  const { method, url, data, headers } = inputs;
-  const response = await axiosWrapper(method, url, data, headers);
+  const { method, url, body, headers } = inputs;
+  const response = await axiosWrapper(method, url, body, headers);
   return {
     response: response.data,
   };
