@@ -8,7 +8,7 @@ export type Inputs = {
 };
 
 export type Outputs = {
-  response: AxiosResponse<any>;
+  response: AxiosResponse<any, any>;
 };
 
 export type Handler = (inputs: Inputs) => Promise<Outputs>;

@@ -16,20 +16,31 @@ function axiosWrapper(method, url, data = {}, headers = {}) {
   };
 
   // Make the Axios request
-  return axios(options)
-    .then((response) => response.data)
-    .catch((error) => {
-      // Handle or log error
-      console.error("Axios request failed:", error);
-      throw error;
+  const response = axios(options)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      let message =
+        typeof err.response !== "undefined"
+          ? err.response.data.message
+          : err.message;
+      console.warn("message:", message);
+      console.warn("headers:", err.response.headers);
     });
+  return response;
 }
 
 const handler: Handler = async (inputs) => {
   const { method, url, body, headers } = inputs;
   const response = await axiosWrapper(method, url, body, headers);
+  if (response) {
+    return {
+      response,
+    };
+  }
   return {
-    response: response.data,
+    response: response ? response.data : null,
   };
 };
 

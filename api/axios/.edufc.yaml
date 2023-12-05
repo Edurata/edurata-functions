@@ -23,42 +23,45 @@ interface:
     required: [url]
   outputs:
     properties:
-      status:
-        type: number
-        description: The http status code
-      data:
-        type: object
-        description: The http response body
-      headers:
-        type: object
-        description: The http response headers
-      config:
-        type: object
-        description: The http request config
-      request:
-        type: object
-        description: The http request
-      statusText:
-        type: string
-        description: The http status text
       response:
         type: object
-        description: The http response
-      message:
-        type: string
-        description: The http response message
-      isAxiosError:
-        type: boolean
-        description: Is this an axios error
-      toJSON:
-        type: function
-        description: Convert to json
-      name:
-        type: string
-        description: The http response name
-      stack:
-        type: string
-        description: The http response stack
-      code:
-        type: string
-        description: The http response code
+        properties:
+          status:
+            type: number
+            description: The http status code
+          data:
+            type: object
+            description: The http response body
+          headers:
+            type: object
+            description: The http response headers
+          config:
+            type: object
+            description: The http request config
+          request:
+            type: object
+            description: The http request
+          statusText:
+            type: string
+            description: The http status text
+          response:
+            type: object
+            description: The http response
+          message:
+            type: string
+            description: The http response message
+          isAxiosError:
+            type: boolean
+            description: Is this an axios error
+          toJSON:
+            type: function
+            description: Convert to json
+          name:
+            type: string
+            description: The http response name
+          stack:
+            type: string
+            description: The http response stack
+          code:
+            type: string
+            description: The http response code
