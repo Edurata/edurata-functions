@@ -18,7 +18,14 @@ function axiosWrapper(method, url, data = {}, headers = {}) {
   // Make the Axios request
   const response = axios(options)
     .then((res) => {
-      return { response: res };
+      return {
+        response: {
+          status: res.status,
+          statusText: res.statusText,
+          headers: res.headers,
+          data: res.data,
+        },
+      };
     })
     .catch((err: AxiosError) => {
       if (err.response) {

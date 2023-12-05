@@ -39,12 +39,6 @@ interface:
           headers:
             type: object
             description: The http response headers
-          config:
-            type: object
-            description: The http request config
-          request:
-            type: object
-            description: The http request
       error:
         type: object
         properties:
