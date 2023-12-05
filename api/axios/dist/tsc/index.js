@@ -19,19 +19,23 @@ function axiosWrapper(method, url, data = {}, headers = {}) {
         data,
     };
     // Make the Axios request
-    return (0, axios_1.default)(options)
-        .then((response) => response.data)
-        .catch((error) => {
-        // Handle or log error
-        console.error("Axios request failed:", error);
-        throw error;
+    const response = (0, axios_1.default)(options)
+        .then((res) => {
+        return { response: res };
+    })
+        .catch((err) => {
+        if (err.response) {
+            console.warn("err.response.data:", err.response.data);
+            console.warn("err.response.status:", err.response.status);
+            console.warn("err.response.headers:", err.response.headers);
+        }
+        console.log(err.message);
+        return { error: err };
     });
+    return response;
 }
 const handler = async (inputs) => {
     const { method, url, body, headers } = inputs;
-    const response = await axiosWrapper(method, url, body, headers);
-    return {
-        response: response.data,
-    };
+    return await axiosWrapper(method, url, body, headers);
 };
 exports.handler = handler;
