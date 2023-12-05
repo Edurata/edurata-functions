@@ -1,6 +1,6 @@
 {
   "name": "axios-wrapper",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generic axios wrapper",
   "main": "index.js",
   "license": "Apache-2.0",
