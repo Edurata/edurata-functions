@@ -4,7 +4,8 @@ description: |
   Generic function to call apis using axios
 runtime: nodejs18
 entrypoint: dist/tsc/index.js
-include: dist/tsc/**
+include:
+  - dist/tsc/**
 interface:
   inputs:
     properties:
@@ -26,12 +27,15 @@ interface:
       response:
         type: object
         properties:
-          status:
-            type: number
-            description: The http status code
           data:
             type: object
             description: The http response body
+          status:
+            type: number
+            description: The http status code
+          statusText:
+            type: string
+            description: The http status text
           headers:
             type: object
             description: The http response headers
@@ -41,27 +45,3 @@ interface:
           request:
             type: object
             description: The http request
-          statusText:
-            type: string
-            description: The http status text
-          response:
-            type: object
-            description: The http response
-          message:
-            type: string
-            description: The http response message
-          isAxiosError:
-            type: boolean
-            description: Is this an axios error
-          toJSON:
-            type: function
-            description: Convert to json
-          name:
-            type: string
-            description: The http response name
-          stack:
-            type: string
-            description: The http response stack
-          code:
-            type: string
-            description: The http response code
