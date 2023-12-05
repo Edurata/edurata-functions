@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Handler } from "./types";
 function axiosWrapper(method, url, data = {}, headers = {}) {
   // Set default headers or use provided ones
@@ -18,30 +18,23 @@ function axiosWrapper(method, url, data = {}, headers = {}) {
   // Make the Axios request
   const response = axios(options)
     .then((res) => {
-      return res;
+      return { response: res };
     })
-    .catch((err) => {
-      let message =
-        typeof err.response !== "undefined"
-          ? err.response.data.message
-          : err.message;
-      console.warn("message:", message);
-      console.warn("headers:", err.response.headers);
+    .catch((err: AxiosError) => {
+      if (err.response) {
+        console.warn("err.response.data:", err.response.data);
+        console.warn("err.response.status:", err.response.status);
+        console.warn("err.response.headers:", err.response.headers);
+      }
+      console.log(err.message);
+      return { error: err };
     });
   return response;
 }
 
 const handler: Handler = async (inputs) => {
   const { method, url, body, headers } = inputs;
-  const response = await axiosWrapper(method, url, body, headers);
-  if (response) {
-    return {
-      response,
-    };
-  }
-  return {
-    response: response ? response.data : null,
-  };
+  return await axiosWrapper(method, url, body, headers);
 };
 
 export { handler };

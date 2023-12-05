@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 
 export type Inputs = {
   url: string;
@@ -8,7 +8,8 @@ export type Inputs = {
 };
 
 export type Outputs = {
-  response: AxiosResponse<any, any>;
+  response?: AxiosResponse<any, any>;
+  error?: AxiosError<any>;
 };
 
 export type Handler = (inputs: Inputs) => Promise<Outputs>;

@@ -45,3 +45,25 @@ interface:
           request:
             type: object
             description: The http request
+      error:
+        type: object
+        properties:
+          message:
+            type: string
+            description: The error message
+          code:
+            type: string
+            description: The error code
+          config:
+            type: object
+            description: The http request config
+          request:
+            type: object
+            description: The http request
+          response:
+            type: object
+            description: The http response
+          isAxiosError:
+            type: boolean
+            description: Whether the error is an axios error
+    required: [response]
