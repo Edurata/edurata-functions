@@ -3,8 +3,8 @@ import { handler } from "../src";
 describe("Axios handler", () => {
   it("should make a generic request", async () => {
     const response = await handler({
-      url: "https://jsonplaceholder.typicode.com/todos/1",
-      // url: "https://api.tomorrow.io/v4/weather/forecast",
+      // url: "https://jsonplaceholder.typicode.com/todos/1",
+      url: "https://api.tomorrow.io/v4/weather/forecast?location=52.520008,13.404954&apikey=v4UvhJTJgufBdhDs4YHDPEeIHJwFa4xM",
       method: "GET",
     });
     console.log(response);
