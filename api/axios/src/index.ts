@@ -1,20 +1,20 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { Handler } from "./types";
-function axiosWrapper(method, url, data = {}, headers = {}) {
+function axiosWrapper(method = "GET", url, data, headers = {}, params = {}) {
   // Set default headers or use provided ones
   const defaultHeaders = {
-    "Content-Type": "application/json",
     ...headers,
   };
 
   // Configure request options
-  const options = {
+  const options: AxiosRequestConfig = {
     method,
     url,
     headers: defaultHeaders,
     data,
+    params,
   };
-
+  console.log("options:", options);
   // Make the Axios request
   const response = axios(options)
     .then((res) => {
@@ -24,6 +24,7 @@ function axiosWrapper(method, url, data = {}, headers = {}) {
           statusText: res.statusText,
           headers: res.headers,
           data: res.data,
+          config: res.config,
         },
       };
     })
@@ -40,8 +41,8 @@ function axiosWrapper(method, url, data = {}, headers = {}) {
 }
 
 const handler: Handler = async (inputs) => {
-  const { method, url, body, headers } = inputs;
-  return await axiosWrapper(method, url, body, headers);
+  const { method, url, data, headers, params } = inputs;
+  return await axiosWrapper(method, url, data, headers, params);
 };
 
 export { handler };

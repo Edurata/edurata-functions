@@ -1,11 +1,6 @@
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
-export type Inputs = {
-  url: string;
-  method: string;
-  headers: object;
-  body: object;
-};
+export type Inputs = AxiosRequestConfig;
 
 export type Outputs = {
   response?: AxiosResponse<any, any>;
