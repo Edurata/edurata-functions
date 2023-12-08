@@ -20,4 +20,13 @@ interface:
       sleepTime:
         type: number
         description: Time to sleep in seconds
+      sleepTimeObject:
+        type: object
+        properties:
+          sleepTime:
+            type: array
+            description: Time to sleep in seconds
+            items:
+              type: number
+        required: [sleepTime]
     required: [sleepTime, file]

@@ -26,5 +26,8 @@ export const handler: Handler = async (inputs) => {
   return {
     sleepTime: _sleepTime + 1000,
     file: _filePath,
+    sleepTimeObject: {
+      sleepTimeArray: [_sleepTime],
+    },
   };
 };
