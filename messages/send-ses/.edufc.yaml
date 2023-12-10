@@ -1,7 +1,7 @@
 apiRevision: edurata.io/v1
 name: send-ses
 description: |
-  Send an email using AWS SES
+  Send an email using AWS SES and boto3.
 runtime: python3_8
 interface:
   inputs:
