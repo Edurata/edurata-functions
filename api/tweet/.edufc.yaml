@@ -3,7 +3,6 @@ name: tweet
 description: |
   wrapper for twitter api to make a tweet
 runtime: python3_8
-entrypoint: index.py
 interface:
   inputs:
     properties:
