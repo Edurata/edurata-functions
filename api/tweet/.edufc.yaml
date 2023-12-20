@@ -1,0 +1,26 @@
+apiRevision: edurata.io/v1
+name: tweet
+description: |
+  wrapper for twitter api to make a tweet
+runtime: python3_8
+entrypoint: index.py
+interface:
+  inputs:
+    properties:
+      CONSUMER_KEY:
+        type: env
+        description: The twitter consumer key
+      CONSUMER_SECRET:
+        type: env
+        description: The twitter consumer secret
+      ACCESS_TOKEN:
+        type: env
+        description: The twitter access token
+      ACCESS_TOKEN_SECRET:
+        type: env
+        description: The twitter access token secret
+  outputs:
+    properties:
+      success:
+        type: boolean
+        description: The success of the operation
