@@ -7,18 +7,28 @@ entrypoint: index.py
 interface:
   inputs:
     properties:
-      CONSUMER_KEY:
+      API_KEY:
         type: env
-        description: The twitter consumer key
-      CONSUMER_SECRET:
+        description: The twitter api key
+      API_SECRET:
         type: env
-        description: The twitter consumer secret
+        description: The twitter api secret
       ACCESS_TOKEN:
         type: env
         description: The twitter access token
       ACCESS_TOKEN_SECRET:
         type: env
         description: The twitter access token secret
+      messages:
+        type: array
+        description: The messages to tweet
+        items:
+          type: string
+      mediaPaths:
+        type: array
+        description: The paths to the media to tweet
+        items:
+          type: string
   outputs:
     properties:
       success:
