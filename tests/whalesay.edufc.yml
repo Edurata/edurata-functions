@@ -1,0 +1,17 @@
+apiRevision: edurata.io/v1
+description: |
+  Whalesay image
+runtime: docker
+registry:
+  url: docker/whalesay
+  tag: latest
+interface:
+  inputs:
+    properties:
+      first:
+        type: cmdValue
+        description: first word
+        default: "cowsay"
+      second:
+        type: cmdValue
+        description: message to say

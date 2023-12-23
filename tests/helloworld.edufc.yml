@@ -1,0 +1,7 @@
+apiRevision: edurata.io/v1
+description: |
+  Hello world image
+runtime: docker
+registry:
+  url: hello-world
+  tag: latest
