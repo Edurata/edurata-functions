@@ -1,0 +1,33 @@
+apiRevision: edurata.io/v1
+name: translate-tesseract
+description: |
+  Translate pictures using tesseract
+runtime: docker
+registry:
+  url: edurata/ai-translator
+  tag: "1.0.1"
+interface:
+  inputs:
+    properties:
+      SOURCE_LANG:
+        type: env
+        description: The source language to expect in the pictures
+      SOURCE_PICTURES_FOLDER:
+        type: env
+        description: The folder where the pictures are located on top level hierarchy with unique names.
+    required: [SOURCE_LANG, SOURCE_PROFILE]
+  outputs:
+    properties:
+      texts:
+        type: array
+        description: The path to the translated texts
+        items:
+          type: object
+          description: The post object
+          properties:
+            id:
+              type: string
+              description: The name of the picture in the folder
+            text:
+              type: string
+              description: The translated text of the post
