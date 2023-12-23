@@ -1,0 +1,30 @@
+apiRevision: edurata.io/v1
+name: fetch-google-sheets
+description: |
+  Get data from google sheets with the google api.
+runtime: nodejs18
+entrypoint: dist/tsc/index.js
+include:
+  - dist/tsc/**
+interface:
+  inputs:
+    properties:
+      spreadSheetId:
+        type: string
+        description: The spreadsheet id
+      sheetIndex:
+        type: number
+        description: The spreadsheet id index
+      GOOGLE_SERVICE_ACCOUNT_EMAIL:
+        type: env
+        description: The google service account email
+      GOOGLE_PRIVATE_KEY:
+        type: env
+        description: The google private key
+  outputs:
+    properties:
+      rows:
+        type: array
+        description: The last rows of the spreadsheet
+        items:
+          type: object
