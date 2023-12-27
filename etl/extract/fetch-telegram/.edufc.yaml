@@ -1,0 +1,46 @@
+apiRevision: edurata.io/v1
+name: fetch-telegram
+description: |
+  wrapper for telegram to pull posts
+runtime: python3_8
+interface:
+  inputs:
+    properties:
+      TELEGRAM_API_HASH:
+        type: env
+        description: The twitter api secret
+      TELEGRAM_API_ID:
+        type: env
+        description: The twitter api key
+      imageDir:
+        type: string
+        description: The path where the media of the posts will be saved
+        default: /tmp/images/telegram
+      sinceDays:
+        type: integer
+        description: The number of days to pull
+        default: 3
+      channelId:
+        type: string
+        description: The telegram channel id
+    required:
+      - TELEGRAM_API_ID
+      - TELEGRAM_API_HASH
+      - channelId
+  outputs:
+    properties:
+      posts:
+        type: array
+        description: The messages to tweet
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The id of the tweet
+            text:
+              type: string
+              description: The text of the tweet
+            mediaPath:
+              type: string
+              description: The path to the media of the tweet
