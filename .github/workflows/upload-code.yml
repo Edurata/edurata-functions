@@ -1,27 +1,27 @@
-name: "Uploads code of functions"
-on:
-  push:
-    branches: "main"
+# name: "Uploads code of functions"
+# on:
+#   push:
+#     branches: "main"
 
-jobs:
-  main:
-    permissions:
-      contents: "read"
-      id-token: "write"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: install aws cli
-        id: install-aws-cli
-        uses: unfor19/install-aws-cli-action@master
-      - name: Build, zip and upload code
-        run: |
-          functionName=sleep-test && \
-          cd tests/sleep && \
-          npm install && \
-          tsc && \
-          zip -r dist/code.zip dist/tsc/* && \
-          response=$(curl -X GET -H "Authorization: Bearer $EDURATA_API_TOKEN" https://api.dev.edurata.com/v1/function/$functionName/uploadUrl) && \
-          uploadUrl=$(echo $response | jq -r '.uploadUrl') && \
-          curl -X PUT -T dist/code.zip $uploadUrl
+# jobs:
+#   main:
+#     permissions:
+#       contents: "read"
+#       id-token: "write"
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#       - name: install aws cli
+#         id: install-aws-cli
+#         uses: unfor19/install-aws-cli-action@master
+#       - name: Build, zip and upload code
+#         run: |
+#           functionName=sleep-test && \
+#           cd tests/sleep && \
+#           npm install && \
+#           tsc && \
+#           zip -r dist/code.zip dist/tsc/* && \
+#           response=$(curl -X GET -H "Authorization: Bearer $EDURATA_API_TOKEN" https://api.dev.edurata.com/v1/function/$functionName/uploadUrl) && \
+#           uploadUrl=$(echo $response | jq -r '.uploadUrl') && \
+#           curl -X PUT -T dist/code.zip $uploadUrl
