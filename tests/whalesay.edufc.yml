@@ -8,10 +8,6 @@ registry:
 interface:
   inputs:
     properties:
-      first:
+      cmd:
         type: cmdValue
-        description: first word
-        default: "cowsay"
-      second:
-        type: cmdValue
-        description: message to say
+        description: The command to run
