@@ -3,3 +3,4 @@ credentials.json
 __pycache__
 downloaded_images
 main.session
+.pytest_cache

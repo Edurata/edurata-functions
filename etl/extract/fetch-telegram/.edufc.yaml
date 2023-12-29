@@ -12,6 +12,9 @@ interface:
       TELEGRAM_API_ID:
         type: env
         description: The twitter api key
+      TELEGRAM_API_SESSION:
+        type: env
+        description: The session as string https://docs.telethon.dev/en/stable/concepts/sessions.html#string-sessions
       imageDir:
         type: string
         description: The path where the media of the posts will be saved
