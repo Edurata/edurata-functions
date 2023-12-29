@@ -16,7 +16,7 @@ async def get_posts(client, channel_id, since_days, image_dir, limit=100):
     channel = await client.get_entity(channel_id)
 
     # Define the time limit (3 days ago)
-    time_limit = datetime.now(timezone.utc) - timedelta(days=since_days)
+    time_limit = datetime.now(timezone.utc) - timedelta(days=int(since_days))
 
     messages = await client.get_messages(channel, limit=limit)
 
