@@ -2,3 +2,4 @@ credentials.json
 .env
 __pycache__
 downloaded_images
+main.session
