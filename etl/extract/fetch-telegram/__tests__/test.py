@@ -18,8 +18,8 @@ class TestIndex(unittest.TestCase):
         # Check that each item in the list is a Message
         for post in return_object["posts"]:
             # Check if the post has an id and text attribute
-            self.assertTrue(hasattr(post, 'id'))
-            self.assertTrue(hasattr(post, 'text'))
+            self.assertTrue(post["id"] != None)
+            self.assertTrue(post["text"] != None)
 
 if __name__ == '__main__':
     unittest.main()
