@@ -61,9 +61,9 @@ def handler(inputs):
         print("Finished fetching posts")
         print("Posts: ", posts)
         # map to only the attributes we need
-        return {
-            "posts": posts
-        }
+    return {
+        "posts": posts
+    }
 
 if __name__ == '__main__':
     # For local testing
