@@ -58,10 +58,11 @@ def handler(inputs):
         loop = asyncio.get_event_loop()
         print(f"Fetching posts from {channel_id} since {since_days} days ago")
         posts = loop.run_until_complete(get_posts(client, channel_id, since_days, image_dir))
+        print("Finished fetching posts")
+        print("Posts: ", posts)
         # map to only the attributes we need
         return {
-            "posts": posts,
-            "mediaPaths": "downloaded_images/*"
+            "posts": posts
         }
 
 if __name__ == '__main__':
@@ -71,5 +72,6 @@ if __name__ == '__main__':
         "sinceDays": 3,
         "imageDir": "downloaded_images"
     }
+
     returned = handler(inputs)
     print(json.loads(json.dumps(returned)))
