@@ -29,6 +29,7 @@ async def get_posts(client, channel_id, since_days, image_dir, limit=100):
             new_message = {}
             new_message["id"] = message.id
             new_message["text"] = message.text
+            new_message["mediaPath"] = None
         
             print("processed message:", message.id, message.text)
             if message.media and isinstance(message.media, MessageMediaPhoto):
