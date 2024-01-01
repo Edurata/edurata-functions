@@ -5,7 +5,7 @@ description: |
 runtime: docker
 registry:
   url: edurata/ai-translator
-  tag: "1.0.2"
+  tag: latest
 cache: true
 interface:
   inputs:
