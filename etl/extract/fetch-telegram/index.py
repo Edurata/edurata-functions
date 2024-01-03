@@ -60,7 +60,7 @@ def handler(inputs):
         print(f"Fetching posts from {channel_id} since {since_days} days ago")
         posts = loop.run_until_complete(get_posts(client, channel_id, since_days, image_dir))
         print("Finished fetching posts")
-        print("Posts: ", posts)
+        print("Post: " + json.dumps(posts))
         # map to only the attributes we need
     return {
         "posts": posts
