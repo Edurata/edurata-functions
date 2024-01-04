@@ -1,6 +1,7 @@
 import tweepy
+import os
 
-def api():
+def get_api():
     consumer_key = os.environ.get("API_KEY")
     consumer_secret = os.environ.get("API_SECRET")
     access_token = os.environ.get("ACCESS_TOKEN")
@@ -17,15 +18,21 @@ def api():
 
 def tweet(text: str, media: str = None):
     print("Tweeting: ", text, media)
-    api = api()
+    api = get_api()
     if media:
         media_ids = [api.media_upload(media).media_id_string]
         return api.update_status(text, media_ids=media_ids)
     return api.update_status(text)
 
 def handler(inputs):
-    for key in inputs.messages:
-        tweet(inputs.messages[key], inputs.mediaPaths[key])
+    for index, element in enumerate(inputs["messages"]):
+        tweet(inputs["messages"][index], inputs["mediaPaths"][index])
     return {
         success: True
     }
+
+if __name__ == "__main__":
+    handler({
+        "messages": ["Hello World"],
+        "mediaPaths": ["./test.png"]
+    })
