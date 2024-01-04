@@ -18,6 +18,9 @@ interface:
       ACCESS_TOKEN_SECRET:
         type: env
         description: The twitter access token secret
+      BEARER_TOKEN:
+        type: env
+        description: The twitter bearer token
       messages:
         type: array
         description: The messages to tweet
@@ -28,6 +31,13 @@ interface:
         description: The paths to the media to tweet
         items:
           type: string
+    required:
+      - API_KEY
+      - API_SECRET
+      - ACCESS_TOKEN
+      - ACCESS_TOKEN_SECRET
+      - BEARER_TOKEN
+      - messages
   outputs:
     properties:
       success:
