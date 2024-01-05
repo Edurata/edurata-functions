@@ -16,16 +16,19 @@ async def get_posts(client, channel_id, since_days, image_dir, limit=100):
     await client.start()
     channel = await client.get_entity(channel_id)
     return_messages = []
-    # Define the time limit (3 days ago)
-    time_limit = datetime.now(timezone.utc) - timedelta(days=int(since_days))
-
+    # Get the current date and time in UTC
+    current_time_utc = datetime.now(timezone.utc)
+    # Calculate the start of the day (midnight) for the current date in UTC
+    start_of_day_utc = current_time_utc.replace(hour=0, minute=0, second=0, microsecond=0)
+    # Calculate the start date for filtering
+    start_date = start_of_day_utc - timedelta(days=since_days)
     messages = await client.get_messages(channel, limit=limit)
 
     for message in messages:
         if not message.media:
             continue
         # Check if the message date is within the last 3 days
-        if message.date > time_limit:
+        if message.date > start_date:
             new_message = {}
             new_message["id"] = message.id
             new_message["text"] = message.text
