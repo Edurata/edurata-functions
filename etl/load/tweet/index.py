@@ -27,14 +27,22 @@ def get_api_v2():
     return client
 
 def tweet(text: str, media: str = None):
-    print("Tweeting: ", text, media)
+    print("Tweeting:", text, media)
+    
+    # Check the length of the text
+    if len(text) > 280:
+        print("Warning: Text exceeds the maximum allowed length (280 characters). Skipping tweet.")
+        return
+
     apiV1 = get_api_v1()
     apiV2 = get_api_v2()
     media_ids = []
+    
     if media:
         media_ids = [apiV1.media_upload(media).media_id_string]
+
     # return apiV1.update_status(text, media_ids=media_ids)
-    return apiV2.create_tweet(text=text,media_ids=media_ids)
+    return apiV2.create_tweet(text=text, media_ids=media_ids)
 
 def handler(inputs):
     for index, element in enumerate(inputs["messages"]):
