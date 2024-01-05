@@ -30,7 +30,7 @@ def tweet(text: str, media: str = None):
     print("Tweeting:", text, media)
     
     # Check the length of the text
-    if len(text) > 280:
+    if text and len(text) > 280:
         print("Warning: Text exceeds the maximum allowed length (280 characters). Skipping tweet.")
         return
 
