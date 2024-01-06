@@ -57,7 +57,7 @@ def handler(inputs):
             print(client.session.save())
 
         channel_id = inputs["channelId"]
-        since_days = inputs["sinceDays"]
+        since_days = int(inputs["sinceDays"])
         image_dir = inputs["imageDir"]
         loop = asyncio.get_event_loop()
         print(f"Fetching posts from {channel_id} since {since_days} days ago")
