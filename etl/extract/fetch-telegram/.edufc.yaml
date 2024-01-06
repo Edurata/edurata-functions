@@ -20,7 +20,7 @@ interface:
         description: The path where the media of the posts will be saved
         default: /tmp/images/telegram
       sinceDays:
-        type: integer
+        type: number
         description: The number of days to pull
         default: 3
       channelId:
