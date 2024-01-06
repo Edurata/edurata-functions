@@ -36,7 +36,7 @@ def tweet(text: str, media: str = None):
 
     apiV1 = get_api_v1()
     apiV2 = get_api_v2()
-    media_ids = []
+    media_ids = None
     
     if media:
         media_ids = [apiV1.media_upload(media).media_id_string]
