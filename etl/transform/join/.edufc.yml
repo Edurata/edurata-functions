@@ -1,0 +1,23 @@
+apiRevision: edurata.io/v1
+name: join-array
+description: |
+  Helper function to join an array into a string
+runtime: nodejs20
+interface:
+  inputs:
+    properties:
+      array:
+        type: array
+        description: The input array that should be joined
+        items:
+          type: string
+      joinString:
+        type: string
+        description: The string that should be used to join the array
+        default: ","
+    required: [array]
+  outputs:
+    properties:
+      string:
+        type: string
+        description: The joined string

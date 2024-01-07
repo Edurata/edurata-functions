@@ -1,0 +1,25 @@
+apiRevision: edurata.io/v1
+name: split-string
+description: |
+  Helper function to split a string into an array
+runtime: nodejs20
+interface:
+  inputs:
+    properties:
+      string:
+        type: string
+        description: The input string that should be split
+        items:
+          type: string
+      delimiter:
+        type: string
+        description: The string that should be used to split the string
+        default: ","
+    required: [string]
+  outputs:
+    properties:
+      array:
+        type: array
+        description: The split string
+        items:
+          type: string
