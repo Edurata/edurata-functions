@@ -1,7 +1,7 @@
 apiRevision: edurata.io/v1
-name: translate-tesseract
+name: extract-tesseract
 description: |
-  Translate pictures using tesseract
+  Extract text from pictures using tesseract
 runtime: docker
 registry:
   url: edurata/ai-translator
