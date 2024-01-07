@@ -1,0 +1,29 @@
+apiRevision: edurata.io/v1
+runtime: nodejs16
+entrypoint: dist/tsc/index.js
+include: [dist/tsc/*]
+interface:
+  inputs:
+    properties:
+      message:
+        type: string
+        description: Message to print
+        default: "Hello World"
+      sleepTime:
+        type: number
+        description: Time to sleep in seconds
+        default: 1000
+      infile:
+        type: file
+        description: File to sleep on
+  outputs:
+    properties:
+      outfile:
+        type: file
+        description: File to sleep on
+      dummyfile:
+        type: string
+        description: Time before sleep
+      sleepTime:
+        type: number
+        description: Time to sleep in seconds
