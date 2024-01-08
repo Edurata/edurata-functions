@@ -22,7 +22,7 @@ interface:
         type: file
         description: File to sleep on
       dummyfile:
-        type: string
+        type: file
         description: Time before sleep
       sleepTime:
         type: number
