@@ -1,0 +1,44 @@
+apiRevision: edurata.io/v1
+name: get-google-images
+description: |
+  wrapper to get images for a search term
+runtime: python3_8
+interface:
+  inputs:
+    properties:
+      searches:
+        type: array
+        description: The search terms
+        items:
+          type: object
+          properties:
+            search:
+              type: string
+              description: The search term
+            id:
+              type: string
+              description: will be used as file name
+          required:
+            - search
+      limit:
+        type: integer
+        description: The number of images to get
+        default: 1
+      GOOGLE_API_KEY:
+        type: env
+        description: The google api key
+      GOOGLE_PROJECT_CX:
+        type: env
+        description: The google project cx
+    required:
+      - search
+      - GOOGLE_API_KEY
+      - GOOGLE_PROJECT_CX
+  outputs:
+    properties:
+      images:
+        type: array
+        description: The images downloaded from google
+        items:
+          type: file
+          description: The image downloaded from google

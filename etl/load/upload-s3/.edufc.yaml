@@ -1,0 +1,36 @@
+apiRevision: edurata.io/v1
+name: tweet
+description: |
+  wrapper to upload multiple files to s3
+runtime: nodejs20
+interface:
+  inputs:
+    properties:
+      AWS_ACCESS_KEY_ID:
+        type: env
+        description: The aws access key id
+      AWS_SECRET_ACCESS_KEY:
+        type: env
+        description: The aws secret access key
+      AWS_REGION:
+        type: env
+        description: The aws region
+        default: eu-central-1
+      bucket_name:
+        type: string
+        description: The bucket name
+      files:
+        type: array
+        description: The files to upload
+        items:
+          type: file
+          description: The file to upload
+    required:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - bucket_name
+  outputs:
+    properties:
+      success:
+        type: boolean
+        description: The success of the operation
