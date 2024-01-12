@@ -21,3 +21,7 @@ def handler(inputs):
     local_file_path = inputs.local_file_path
 
     download_file_from_s3(bucket_name, s3_file_key, local_file_path)
+
+    return {
+        file: local_file_path
+    }
