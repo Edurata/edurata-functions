@@ -6,6 +6,16 @@ runtime: python3_8
 interface:
   inputs:
     properties:
+      AWS_ACCESS_KEY_ID:
+        type: env
+        description: The aws access key id
+      AWS_SECRET_ACCESS_KEY:
+        type: env
+        description: The aws secret access key
+      AWS_REGION:
+        type: env
+        description: The aws region
+        default: eu-central-1
       bucket_name:
         type: string
         description: The twitter api secret
