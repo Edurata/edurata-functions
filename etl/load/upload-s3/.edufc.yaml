@@ -1,7 +1,7 @@
 apiRevision: edurata.io/v1
-name: tweet
+name: data-to-s3
 description: |
-  wrapper to upload multiple files to s3
+  wrapper to upload data to s3
 runtime: nodejs20
 interface:
   inputs:
@@ -22,9 +22,16 @@ interface:
       files:
         type: array
         description: The files to upload
-        items:
-          type: file
-          description: The file to upload
+        properties:
+          content:
+            type: string
+            description: Pass this in if you want to upload data directly
+          path:
+            type: file
+            description: Pass this if you want to upload a file
+          key:
+            type: string
+            description: The s3 file key
     required:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
