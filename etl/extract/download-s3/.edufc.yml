@@ -1,0 +1,59 @@
+apiRevision: edurata.io/v1
+name: download-s3
+description: |
+  Takes a file from s3 and converts it to json so it can be used as config
+runtime: python3_8
+interface:
+  inputs:
+    properties:
+      AWS_ACCESS_KEY_ID:
+        type: env
+        description: The aws access key id
+      AWS_SECRET_ACCESS_KEY:
+        type: env
+        description: The aws secret access key
+      AWS_REGION:
+        type: env
+        description: The aws region
+        default: eu-central-1
+      bucket_name:
+        type: string
+        description: The twitter api secret
+      files:
+        type: array
+        description: The files to download
+        properties:
+          path:
+            type: string
+            description: The local filepath. Will be set randomly if not set
+          key:
+            type: string
+            description: The s3 file key
+          as_raw:
+            type: boolean
+            description: If enabled, the data will be returned as raw data instead of being written to a file
+          as_json:
+            type: boolean
+            description: If enabled, the data will try to parse as json instead of being written to a file
+          required:
+            - key
+    required:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - bucket_name
+  outputs:
+    properties:
+      files:
+        type: array
+        description: The files downloaded from s3
+        items:
+          type: object
+          description: The file downloaded from s3
+          properties:
+            path:
+              type: string
+              description: The local filepath.
+            data:
+              type: string
+              description: The data downloaded from s3
+              default: ""
