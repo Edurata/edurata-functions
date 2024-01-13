@@ -1,0 +1,21 @@
+apiRevision: edurata.io/v1
+name: eval-nodejs
+description: |
+  eval a small snippet of nodejs code
+runtime: nodejs20
+interface:
+  inputs:
+    properties:
+      code:
+        type: string
+        description: The code to eval in nodejs. can directly use the variable inputs.
+      inputs:
+        type: object
+        description: The inputs to the handler function
+    required: [code]
+  outputs:
+    properties:
+      outputs:
+        type: object
+        description: The outputs of the handler function
+        default: {}

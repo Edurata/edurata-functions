@@ -1,0 +1,20 @@
+apiRevision: edurata.io/v1
+name: concat-arrays
+description: |
+  Helper function to join arrays
+runtime: nodejs20
+interface:
+  inputs:
+    properties:
+      arrays:
+        type: array
+        description: The input array that should be joined
+        items:
+          type: array
+          description: The array that should be joined
+    required: [array]
+  outputs:
+    properties:
+      array:
+        type: array
+        description: The joined arrays
