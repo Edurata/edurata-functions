@@ -47,5 +47,5 @@ def handler(inputs):
     return {'files': output_files}
 
 # For demonstration purposes, this call is a placeholder
-# actual_inputs = {"bucket_name": "example_bucket", "files": [{"key": "file1.txt"}]}
+# actual_inputs = {"bucket_name": "example_bucket", "files": [{"key": "cursor"}]}
 # print(handler(actual_inputs))

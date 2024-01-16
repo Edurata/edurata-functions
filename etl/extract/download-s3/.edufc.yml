@@ -51,7 +51,7 @@ interface:
           description: The file downloaded from s3
           properties:
             path:
-              type: string
+              type: file
               description: The local filepath.
             data:
               type: string
