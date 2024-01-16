@@ -22,21 +22,24 @@ interface:
       files:
         type: array
         description: The files to download
-        properties:
-          path:
-            type: string
-            description: The local filepath. Will be set randomly if not set
-          key:
-            type: string
-            description: The s3 file key
-          as_raw:
-            type: boolean
-            description: If enabled, the data will be returned as raw data instead of being written to a file
-          as_json:
-            type: boolean
-            description: If enabled, the data will try to parse as json instead of being written to a file
-          required:
-            - key
+        items:
+          type: object
+          description: The file to download
+          properties:
+            path:
+              type: string
+              description: The local filepath. Will be set randomly if not set
+            key:
+              type: string
+              description: The s3 file key
+            as_raw:
+              type: boolean
+              description: If enabled, the data will be returned as raw data instead of being written to a file
+            as_json:
+              type: boolean
+              description: If enabled, the data will try to parse as json instead of being written to a file
+            required:
+              - key
     required:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
