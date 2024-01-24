@@ -2,7 +2,7 @@ apiRevision: edurata.io/v1
 name: download-s3
 description: |
   Takes a file from s3 and converts it to json so it can be used as config
-runtime: python3_8
+runtime: python3_10
 interface:
   inputs:
     properties:
@@ -38,8 +38,8 @@ interface:
             as_json:
               type: boolean
               description: If enabled, the data will try to parse as json instead of being written to a file
-            required:
-              - key
+          required:
+            - key
     required:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
