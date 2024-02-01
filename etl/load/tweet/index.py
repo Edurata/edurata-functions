@@ -46,7 +46,7 @@ def tweet(text: str, media: str = None):
 
 def handler(inputs):
     for index, element in enumerate(inputs["messages"]):
-        tweet(inputs["messages"][index], inputs["mediaPaths"][index])
+        tweet(inputs["messages"][index], inputs["mediaPaths"][index] if inputs["mediaPaths"] else None)
     return {
         "success": True
     }
