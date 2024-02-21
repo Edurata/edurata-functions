@@ -1,0 +1,23 @@
+apiRevision: edurata.io/v1
+name: chatgpt-command
+description: |
+  Make one command to chat with gpt-3
+runtime: nodejs18
+interface:
+  inputs:
+    properties:
+      messages:
+        type: array
+        description: The messages to chat with gpt-3
+        items:
+          type: string
+          description: The message to chat with gpt-3
+      API_KEY:
+        type: env
+        description: The deepl api key
+    required: [messages, API_KEY]
+  outputs:
+    properties:
+      response:
+        type: string
+        description: The response by gpt-3

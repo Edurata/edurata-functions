@@ -1,0 +1,13 @@
+{
+  "name": "chatgpt-command",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Make one command to chat with gpt-3",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "openai": "^4.28.0"
+  }
+}

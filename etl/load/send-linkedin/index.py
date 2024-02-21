@@ -37,7 +37,8 @@ def upload_media(media_paths, access_token):
 
 def create_post_data(text, media_ids):
     post_data = {
-        "author": "urn:li:person:yourLinkedInPersonId",
+        # "author": "urn:li:person:yourLinkedInPersonId",
+        "author": "urn:li:organization:30718435",
         "lifecycleState": "PUBLISHED",
         "specificContent": {
             "com.linkedin.ugc.ShareContent": {
@@ -59,4 +60,4 @@ def create_post_data(text, media_ids):
     return post_data
 
 # Sample function call (commented out)
-# print(handler({"text": "Hello LinkedIn!", "mediaPaths": ["path/to/media1.jpg", "path/to/media2.mp4"]}))
+print(handler({"text": "Hello LinkedIn via api!", "mediaPaths": []}))
