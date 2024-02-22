@@ -14,9 +14,27 @@ interface:
       text:
         type: string
         description: The text to post
+      mediaType:
+        type: string
+        description: The type of media to post
+        enum:
+          - image
+          - video
+      sponsored:
+        type: boolean
+        description: Whether the post is sponsored
+        default: false
       mediaPaths:
         type: array
         description: The paths to the media to post
         items:
           type: file
           description: The path to the media to post
+    required: [LINKEDIN_API_SECRET, text]
+  outputs:
+    status:
+      type: string
+      description: The status of the post
+    response:
+      type: string
+      description: The response

@@ -42,9 +42,8 @@ access_token_url="${access_token_url}"
 # Sending a POST request to get the access token
 access_token_response=$(curl -s -d "grant_type=authorization_code&code=${authorization_code}&redirect_uri=${redirect_uri}&client_id=${client_id}&client_secret=${client_secret}" -H "Content-Type: application/x-www-form-urlencoded" -X POST "$access_token_url")
 
-echo "Access Token Response: $access_token_response"
-
 # Extracting access token from the response
 access_token="$(echo "$access_token_response" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)"
-
+export LINKEDIN_API_SECRET=$access_token
+echo $access_token > .token
 echo "Access Token: $access_token"
