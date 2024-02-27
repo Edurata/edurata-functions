@@ -8,7 +8,7 @@ runtime: python3_10
 interface:
   inputs:
     properties:
-      LINKEDIN_API_SECRET:
+      LINKEDIN_API_TOKEN:
         type: env
         description: The linkedin api key
       text:

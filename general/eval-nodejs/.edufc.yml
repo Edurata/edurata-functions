@@ -9,13 +9,13 @@ interface:
       code:
         type: string
         description: The code to eval in nodejs. can directly use the variable inputs.
-      inputs:
-        type: object
+      input:
+        type: any
         description: The inputs to the handler function
     required: [code]
   outputs:
     properties:
-      outputs:
-        type: object
+      output:
+        type: any
         description: The outputs of the handler function
         default: {}

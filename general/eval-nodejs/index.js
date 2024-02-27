@@ -1,18 +1,18 @@
 const handler = (inputs) => {
-  const { code } = inputs;
-  const func = new Function("inputs", code);
-  const outputs = func(inputs.inputs);
-  return { outputs };
+  const { code, input } = inputs;
+  const func = new Function("input", code);
+  const output = func(input);
+  return { output };
 };
 
 console.log(
   handler({
     code: `
-  const { arrays } = inputs;
-  const array = arrays.reduce((acc, curr) => acc.concat(curr));
-  return { array };
-  `,
-    inputs: {
+    const { arrays } = input;
+    const array = arrays.reduce((acc, curr) => acc.concat(curr));
+    return { array };
+    `,
+    input: {
       arrays: [
         [1, 2],
         [3, 4],

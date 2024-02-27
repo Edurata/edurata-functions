@@ -21,6 +21,10 @@ interface:
       body:
         type: object
         description: The http body
+      streamToFile:
+        type: boolean
+        description: if the response should be streamed to a file
+        default: false
     required: [url]
   outputs:
     properties:
@@ -39,6 +43,9 @@ interface:
           headers:
             type: object
             description: The http response headers
+          file:
+            type: file
+            description: if streamToFile is true, this will contain the filepath.
       error:
         type: object
         properties:

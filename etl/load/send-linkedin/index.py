@@ -4,7 +4,7 @@ import json
 
 def handler(inputs):
     text = inputs.get("text")
-    media_type = inputs.get("mediaType")  # New input for media type ("image", "video", "document", "multiImage", "carousel")
+    media_type = inputs.get("mediaType", "image")  # New input for media type ("image", "video", "document", "multiImage", "carousel")
     media_paths = inputs.get("mediaPaths", [])
     sponsored = inputs.get("sponsored", False)  # New input to indicate if the post is sponsored
     author = inputs.get("author", None)  # Replace 'YOUR_ORG_ID' with your actual LinkedIn organization ID
@@ -20,11 +20,11 @@ def handler(inputs):
     return {"status": response.status_code, "response": response.text}
 
 def get_access_token():
-    # get from .token file
+    token = os.environ.get("LINKEDIN_API_TOKEN")
+    if token:
+        return token
     with open('.token', 'r') as file:
         return file.read()
-    # linkedin_api_secret = os.environ.get("LINKEDIN_API_SECRET")
-    return linkedin_api_secret
 
 def upload_media(media_paths, media_type, access_token, author):
     media_ids = []
