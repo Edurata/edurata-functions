@@ -5,18 +5,18 @@ const handler = (inputs) => {
   return { output };
 };
 
-console.log(
-  handler({
-    code: `
-    const { arrays } = input;
-    const array = arrays.reduce((acc, curr) => acc.concat(curr));
-    return { array };
-    `,
-    input: {
-      arrays: [
-        [1, 2],
-        [3, 4],
-      ],
-    },
-  })
-);
+// console.log(
+//   handler({
+//     code: `
+//     const { arrays } = input;
+//     const array = arrays.reduce((acc, curr) => acc.concat(curr));
+//     return { array };
+//     `,
+//     input: {
+//       arrays: [
+//         [1, 2],
+//         [3, 4],
+//       ],
+//     },
+//   })
+// );
