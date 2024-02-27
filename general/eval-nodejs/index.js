@@ -1,7 +1,12 @@
 const handler = (inputs) => {
   const { code, input } = inputs;
   const func = new Function("input", code);
-  const output = func(input);
+  let output;
+  try {
+    output = func(input);
+  } catch (error) {
+    output = error.message;
+  }
   return { output };
 };
 
