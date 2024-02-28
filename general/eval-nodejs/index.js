@@ -1,4 +1,4 @@
-export const handler = async (inputs) => {
+const handler = async (inputs) => {
   const { code, input } = inputs;
   console.log("code", code);
   console.log("input", input);
@@ -10,6 +10,8 @@ export const handler = async (inputs) => {
     return { error: error.toString(), stackTrace: error.stack };
   }
 };
+
+module.exports = { handler };
 
 // console.log(
 //   handler({
