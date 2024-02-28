@@ -1,13 +1,14 @@
 const handler = (inputs) => {
   const { code, input } = inputs;
-  const func = new Function("input", code);
-  let output;
+  console.log("code", code);
+  console.log("input", input);
   try {
-    output = func(input);
+    const func = new Function("input", code);
+    const output = func(input);
+    return { output };
   } catch (error) {
-    output = error.message;
+    return { error: error.toString(), stackTrace: error.stack };
   }
-  return { output };
 };
 
 // console.log(
@@ -25,3 +26,16 @@ const handler = (inputs) => {
 //     },
 //   })
 // );
+
+console.log(
+  handler({
+    code: "const today = new Date(); return input.filter(record => { const releaseDate = new Date(record.fields.releaseDate); return today > releaseDate; });",
+    input: [
+      {
+        fields: {
+          releaseDate: "2021-01-01",
+        },
+      },
+    ],
+  })
+);
