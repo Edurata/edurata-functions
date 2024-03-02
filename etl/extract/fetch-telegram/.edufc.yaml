@@ -2,7 +2,7 @@ apiRevision: edurata.io/v1
 name: fetch-telegram
 description: |
   wrapper for telegram to pull posts
-runtime: python3_8
+runtime: python3_10
 interface:
   inputs:
     properties:

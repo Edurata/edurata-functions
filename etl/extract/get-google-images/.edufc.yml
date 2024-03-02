@@ -2,7 +2,7 @@ apiRevision: edurata.io/v1
 name: get-google-images
 description: |
   wrapper to get images for a search term
-runtime: python3_8
+runtime: python3_10
 interface:
   inputs:
     properties:

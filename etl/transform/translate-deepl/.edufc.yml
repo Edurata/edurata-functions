@@ -2,7 +2,7 @@ apiRevision: edurata.io/v1
 name: translate-deepl
 description: |
   Generic function to call apis using axios.
-runtime: nodejs18
+runtime: nodejs20
 entrypoint: dist/tsc/index.js
 include:
   - dist/tsc/**

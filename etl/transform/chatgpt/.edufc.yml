@@ -2,7 +2,7 @@ apiRevision: edurata.io/v1
 name: chatgpt-command
 description: |
   Make one command to chat with gpt-3
-runtime: nodejs18
+runtime: nodejs20
 interface:
   inputs:
     properties:
