@@ -1,0 +1,22 @@
+apiRevision: edurata.io/v1
+name: get-drive-file
+description: |
+  Get a file from google drive
+runtime: nodejs20
+interface:
+  description: Download a file from Google Drive using OAuth 2.0 credentials.
+  inputs:
+    fileId:
+      type: string
+      description: The file id of the file to download from Google Drive.
+    SA_PRIVATE_KEY:
+      type:
+      description: Service account private key from the service account json file.
+    SA_CLIENT_EMAIL:
+      type: string
+      description: Service account client email from the service account json file.
+  outputs:
+    file:
+      type: file
+      description: The file downloaded from Google Drive.
+      default: null

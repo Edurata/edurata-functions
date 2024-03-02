@@ -1,0 +1,5 @@
+{
+  "authorization_url": "https://www.linkedin.com/oauth/v2/authorization",
+  "access_token_url": "https://www.linkedin.com/oauth/v2/accessToken",
+  "response_type": "code"
+}

@@ -1,0 +1,7 @@
+{
+  "client_id": "CLIENT_ID",
+  "scope": "rw_organization_admin,w_organization_social",
+  "state": "asdf",
+  "redirect_uri": "https://google.com",
+  "client_secret": "SECRET"
+}

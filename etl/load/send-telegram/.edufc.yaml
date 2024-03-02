@@ -1,0 +1,33 @@
+apiRevision: edurata.io/v1
+name: send-telegram
+description: |
+  Send telegram message using telegram bot.
+runtime: python3_10
+interface:
+  inputs:
+    properties:
+      sender:
+        type: string
+        description: the sender email
+      to:
+        type: string
+        description: email to send to
+      subject:
+        type: string
+        description: The message subject
+      body:
+        type: string
+        description: The message body
+      AWS_ACCESS_KEY_ID:
+        type: env
+        description: The aws access key id
+      AWS_SECRET_ACCESS_KEY:
+        type: env
+        description: The aws secret access key
+    required: [AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY]
+  outputs:
+    properties:
+      status:
+        type: boolean
+        description: Success or failure
+    required: [status]
