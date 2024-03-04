@@ -38,4 +38,4 @@ async function handler(inputs) {
   );
 })();
 
-export { handler };
+module.exports = { handler };
