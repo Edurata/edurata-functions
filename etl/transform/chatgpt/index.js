@@ -27,15 +27,15 @@ async function handler(inputs) {
   }
 }
 
-(async () => {
-  console.log(
-    await handler({
-      systemMessage: "You are a helpful assistant.",
-      messages: [
-        "Generate a linkedin post with smileys that sums up the following listings: \n - Berlin central flat (m) 200$ \n - Paris central flat (m) 300$ \n - London central flat (m) 400$",
-      ],
-    })
-  );
-})();
+// (async () => {
+//   console.log(
+//     await handler({
+//       systemMessage: "You are a helpful assistant.",
+//       messages: [
+//         "Generate a linkedin post with smileys that sums up the following listings: \n - Berlin central flat (m) 200$ \n - Paris central flat (m) 300$ \n - London central flat (m) 400$",
+//       ],
+//     })
+//   );
+// })();
 
 module.exports = { handler };
