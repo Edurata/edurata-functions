@@ -1,5 +1,7 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-export type Inputs = AxiosRequestConfig;
+export type Inputs = AxiosRequestConfig & {
+    streamToFile: boolean;
+};
 export type Outputs = {
     response?: AxiosResponse<any, any>;
     error?: AxiosError<any>;
