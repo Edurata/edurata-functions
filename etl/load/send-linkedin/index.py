@@ -1,6 +1,5 @@
 import os
 import requests
-import json
 
 def handler(inputs):
     text = inputs.get("text")
