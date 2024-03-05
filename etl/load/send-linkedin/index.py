@@ -111,4 +111,4 @@ def create_post_data(text, media_ids, media_type, author, sponsored):
 
 # Note: Replace 'YOUR_ORG_ID' with your actual LinkedIn organization ID.
 # Sample function call (commented out)
-print(handler({"text": "Hello LinkedIn!", "mediaPaths": ["test/test.png"], "mediaType": "image", "sponsored": False, "author": "urn:li:organization:30718435"}))
+# print(handler({"text": "Hello LinkedIn!", "mediaPaths": ["test/test.png"], "mediaType": "image", "sponsored": False, "author": "urn:li:organization:30718435"}))
