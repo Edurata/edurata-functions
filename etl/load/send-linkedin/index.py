@@ -1,5 +1,6 @@
 import os
 import requests
+import re
 
 def handler(inputs):
     text = inputs.get("text")
@@ -76,9 +77,10 @@ def upload_image(media_path, access_token, author):
     return None
 
 def create_post_data(text, media_ids, media_type, author, sponsored):
+
     post_data = {
         "author": author,
-        "commentary": text,
+        "commentary": re.sub(r'[\(\)\[\]\{\}<>@|~_]', lambda x: "\\" + x.group(), text),
         "visibility": "PUBLIC",
         "distribution": {
             "feedDistribution": "MAIN_FEED",
@@ -88,7 +90,7 @@ def create_post_data(text, media_ids, media_type, author, sponsored):
         "lifecycleState": "PUBLISHED",
         "isReshareDisabledByAuthor": False
     }
-    
+
     if media_type in ["image", "video", "document", "multiImage", "carousel"]:
         media_content = []
 
@@ -104,11 +106,11 @@ def create_post_data(text, media_ids, media_type, author, sponsored):
         elif media_type == "carousel" and sponsored:
             # Placeholder for Carousel API specific structure
             pass  # Adjust accordingly
-        else:
-            post_data["content"] = {"media": media_content} if media_content else {}
+        elif media_content:
+            post_data["content"] = {"media": media_content}
     
     return post_data
 
 # Note: Replace 'YOUR_ORG_ID' with your actual LinkedIn organization ID.
 # Sample function call (commented out)
-# print(handler({"text": "Hello LinkedIn!", "mediaPaths": ["test/test.png"], "mediaType": "image", "sponsored": False, "author": "urn:li:organization:30718435"}))
+# print(handler({"text": "🏡 Looking for a new place to call home? Check out these amazing listings! - Lichtenberg, Heizung (m,w) 500€ 😊 - Charlottenburg, (m) 400€ 💙 #ApartmentHunting #Lichtenberg #Charlottenburg #AffordableLiving #NewHome 🏠✨", "mediaPaths": [], "mediaType": "image", "sponsored": False, "author": "urn:li:organization:30718435"}))

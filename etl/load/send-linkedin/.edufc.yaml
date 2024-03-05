@@ -20,6 +20,7 @@ interface:
         enum:
           - image
           - video
+        default: image
       sponsored:
         type: boolean
         description: Whether the post is sponsored
@@ -30,7 +31,11 @@ interface:
         items:
           type: file
           description: The path to the media to post
-    required: [LINKEDIN_API_SECRET, text]
+        default: []
+      author:
+        type: string
+        description: The author of the post
+    required: [LINKEDIN_API_SECRET, text, author]
   outputs:
     status:
       type: string
