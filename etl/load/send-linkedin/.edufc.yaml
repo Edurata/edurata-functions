@@ -1,7 +1,7 @@
 apiRevision: edurata.io/v1
 name: create-linkedin-post
 description: |
-  Creates a post with image on linkedin:
+  Creates a post with image on linkedin::
   - https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api?view=li-lms-2024-02&tabs=http#create-a-post
   - https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/images-api?view=li-lms-2024-02&tabs=http
 runtime: python3_10

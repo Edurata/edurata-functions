@@ -3,7 +3,7 @@ import { Handler } from "./types";
 import * as fs from "fs";
 import * as path from "path";
 
-// Helper function to generate a unique file name
+// Helper function to generate a unique file name.
 function generateFileName(url: string): string {
   const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
   const urlHash = Buffer.from(url).toString("hex").substring(0, 6);
