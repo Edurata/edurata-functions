@@ -1,0 +1,14 @@
+apiRevision: edurata.io/v1
+runtime: python3_10
+interface:
+  inputs:
+    properties:
+      code:
+        type: file
+        description: The code with requirements.txt
+    required: [code]
+  outputs:
+    properties:
+      code:
+        type: file
+        description: With the modules installed

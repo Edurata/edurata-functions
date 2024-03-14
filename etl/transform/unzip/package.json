@@ -1,0 +1,13 @@
+{
+  "name": "unzip-file",
+  "version": "1.0.0",
+  "description": "Helper function to unzip a file",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "unzipper": "^0.10.11",
+    "express": "^4.17.1"
+  }
+}

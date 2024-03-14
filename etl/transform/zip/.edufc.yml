@@ -1,0 +1,17 @@
+apiRevision: edurata.io/v1
+name: zip-file
+description: |
+  Helper function to zip a file
+runtime: nodejs20
+interface:
+  inputs:
+    properties:
+      file:
+        type: file
+        description: The file
+    required: [file]
+  outputs:
+    properties:
+      zipped:
+        type: file
+        description: the zipped file

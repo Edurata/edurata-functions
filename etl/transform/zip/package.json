@@ -1,0 +1,13 @@
+{
+  "name": "zip-file",
+  "version": "1.0.0",
+  "description": "Helper function to zip a file",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "archiver": "^5.3.0",
+    "express": "^4.17.1"
+  }
+}

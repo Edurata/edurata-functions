@@ -1,0 +1,17 @@
+apiRevision: edurata.io/v1
+runtime: nodejs20
+entrypoint: dist/tsc/index.js
+include:
+  - dist/tsc/**
+interface:
+  inputs:
+    properties:
+      code:
+        type: file
+        description: The code with package.json
+    required: [code]
+  outputs:
+    properties:
+      code:
+        type: file
+        description: With the modules installed

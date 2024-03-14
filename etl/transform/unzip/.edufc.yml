@@ -1,0 +1,17 @@
+apiRevision: edurata.io/v1
+name: unzip-file
+description: |
+  Helper function to unzip a file
+runtime: nodejs20
+interface:
+  inputs:
+    properties:
+      zippedFile:
+        type: file
+        description: The zipped file to be unzipped
+    required: [zippedFile]
+  outputs:
+    properties:
+      unzipped:
+        type: directory
+        description: the unzipped file(s)
