@@ -1,6 +1,6 @@
 apiRevision: edurata.io/v1
 name: clone-git
-description: Clones a git repo
+description: Clones a git repo and returns the repo code.
 runtime: docker
 registry:
   url: edurata/clone-git
