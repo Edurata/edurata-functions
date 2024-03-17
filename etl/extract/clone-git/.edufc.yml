@@ -2,6 +2,9 @@ apiRevision: edurata.io/v1
 name: clone-git
 description: Clones a git repo
 runtime: nodejs20
+registry:
+  url: edurata/clone-git
+  tag: latest
 interface:
   inputs:
     properties:
