@@ -1,4 +1,6 @@
 description: Clone a Git repository (including private ones) to a temporary directory, with options for sub-paths and refs, using nodegit.
+name: clone-git
+runtime: "nodejs20"
 interface:
   inputs:
     repoUrl:
@@ -22,4 +24,3 @@ interface:
     repoCode:
       type: file
       description: The path to the cloned sub-path in the local file system.
-runtime: nodejs20
