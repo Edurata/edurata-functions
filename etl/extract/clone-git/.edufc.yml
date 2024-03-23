@@ -1,34 +1,25 @@
-apiRevision: edurata.io/v1
-name: clone-git
-description: Clones a git repo and returns the repo code.
-runtime: docker
-registry:
-  url: edurata/clone-git
-  tag: latest
+description: Clone a Git repository (including private ones) to a temporary directory, with options for sub-paths and refs, using nodegit.
 interface:
   inputs:
-    properties:
-      repoUrl:
-        type: string
-        description: The url of the git repo.
-      path:
-        type: string
-        description: The path to inside the repo to return.
-        default: ""
-      ref:
-        type: string
-        description: The git ref to checkout.
-        default: "main"
-      privateUser:
-        type: string
-        description: The private user to use for authentication.
-      privateToken:
-        type: string
-        description: The private token to use for authentication.
-    required:
-      - repoUrl
+    repoUrl:
+      type: string
+      description: The URL of the Git repository to clone.
+    privateToken:
+      type: string
+      description: A token for accessing private repositories. Optional.
+      optional: true
+    path:
+      type: string
+      description: A sub-path within the repository to return.
+    ref:
+      type: string
+      description: A reference within the repository to checkout (branch, tag, or commit). Optional.
+      optional: true
   outputs:
-    properties:
-      repoCode:
-        type: file
-        description: The downloaded git repo
+    status:
+      type: string
+      description: Success or failure message.
+    repoCode:
+      type: file
+      description: The path to the cloned sub-path in the local file system.
+runtime: nodejs20

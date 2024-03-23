@@ -1,60 +1,55 @@
-const simpleGit = require("simple-git");
-const fs = require("fs");
+const nodegit = require("nodegit");
 const path = require("path");
+const fs = require("fs");
 
-// Handler function
+/**
+ * Clones a Git repository to a temporary directory, supports private repositories, and checks out a specified sub-path and ref.
+ * If no sub-path is specified, defaults to the root of the repository.
+ * @param {Object} inputs - The inputs for the function.
+ * @param {string} inputs.repoUrl - The URL of the Git repository to clone.
+ * @param {string} [inputs.privateToken] - A token for accessing private repositories.
+ * @param {string} [inputs.path] - A sub-path within the repository to return. Defaults to the root of the repository.
+ * @param {string} [inputs.ref] - A reference within the repository to checkout.
+ * @returns {Object} The output of the function.
+ */
 async function handler(inputs) {
-  const {
-    repoUrl,
-    path: repoPath,
-    ref = "main",
-    privateUser,
-    privateToken,
-  } = inputs;
-
-  // Determine the local path for the repo
-  const localPath = `./cloned_repos/${path.basename(repoUrl)}`;
-
-  // Check if the repository already exists at the local path
-  if (fs.existsSync(localPath)) {
-    console.log(`Repository already exists at ${localPath}.`);
-    // Additional logic can be added here if you want to pull updates or handle this scenario differently
-  } else {
-    // Setting up the Git client
-    const git = simpleGit();
-    if (privateToken) {
-      // Configure Git for HTTPS token-based authentication
-      git
-        .env("GIT_TERMINAL_PROMPT", "0")
-        .env("GIT_ASKPASS", "echo")
-        .env("GIT_HTTPS_USERNAME", privateUser)
-        .env("GIT_HTTPS_PASSWORD", privateToken);
-    }
-
-    // Clone and checkout
-    await git.clone(repoUrl, localPath);
-    console.log(`Repository cloned to ${localPath}.`);
+  const tempDir = process.env.TMP_DIR || "/tmp";
+  const cloneOptions = {};
+  if (inputs.privateToken) {
+    cloneOptions.fetchOpts = {
+      callbacks: {
+        credentials: () =>
+          nodegit.Cred.userpassPlaintextNew(
+            inputs.privateToken,
+            "x-oauth-basic"
+          ),
+      },
+    };
   }
-
-  // Change working directory to the local path
-  const git = simpleGit(localPath);
-  await git.cwd(localPath);
-  await git.checkout(ref);
-
-  // Extract the specified path
-  const repoCodePath = path.join(localPath, repoPath);
-
-  // Outputs
-  return { repoCode: repoCodePath };
+  const repoPath = path.join(tempDir, `repo-${Date.now()}`);
+  try {
+    await nodegit.Clone(inputs.repoUrl, repoPath, cloneOptions);
+    const finalPath = inputs.path ? path.join(repoPath, inputs.path) : repoPath;
+    // If a ref is specified, attempt to checkout that ref.
+    if (inputs.ref) {
+      const repo = await nodegit.Repository.open(repoPath);
+      const reference = await repo.getBranchCommit(inputs.ref);
+      await nodegit.Checkout.tree(repo, reference, {
+        checkoutStrategy: nodegit.Checkout.STRATEGY.FORCE,
+      });
+    }
+    return { status: "Repository cloned successfully.", repoCode: finalPath };
+  } catch (error) {
+    console.error("Error cloning repository:", error);
+    return { status: "Failed to clone repository.", repoCode: "" };
+  }
 }
 
-// Sample function call (commented out)
-// handler({
-//   repoUrl: 'https://github.com/user/repo.git',
-//   path: 'subdirectory',
-//   ref: 'main',
-//   privateUser: 'username',
-//   privateToken: 'your-token'
-// }).then(console.log);
-
 module.exports = { handler };
+
+// Example function call (commented out)
+handler({
+  repoUrl: "https://github.com/nodegit/nodegit",
+  path: "", // Optional, defaults to the root of the repository
+  ref: "master", // Optional
+}).then((output) => console.log(output));
