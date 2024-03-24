@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { clone, checkout, init, fetch } = require("isomorphic-git");
+const http = require("isomorphic-git/http/node");
 const { promisify } = require("util");
 
 const writeFile = promisify(fs.writeFile);
@@ -19,6 +20,7 @@ async function handler(inputs) {
       dir: repoPath,
       url: inputs.repoUrl,
       singleBranch: true,
+      http,
       depth: 1,
       onAuth: (url, auth) => {
         if (inputs.privateToken) {
@@ -33,6 +35,7 @@ async function handler(inputs) {
       dir: repoPath,
       url: inputs.repoUrl,
       ref: inputs.ref || "HEAD", // Fetch the default branch or the specified ref
+      http,
       depth: 1,
       singleBranch: true,
       onAuth: (url, auth) => {
