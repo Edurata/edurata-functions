@@ -3,24 +3,26 @@ name: clone-git
 runtime: "nodejs20"
 interface:
   inputs:
-    repoUrl:
-      type: string
-      description: The URL of the Git repository to clone.
-    privateToken:
-      type: string
-      description: A token for accessing private repositories. Optional.
-      optional: true
-    path:
-      type: string
-      description: A sub-path within the repository to return.
-    ref:
-      type: string
-      description: A reference within the repository to checkout (branch, tag, or commit). Optional.
-      optional: true
+    properties:
+      repoUrl:
+        type: string
+        description: The URL of the Git repository to clone.
+      privateToken:
+        type: string
+        description: A token for accessing private repositories. Optional.
+        optional: true
+      path:
+        type: string
+        description: A sub-path within the repository to return.
+      ref:
+        type: string
+        description: A reference within the repository to checkout (branch, tag, or commit). Optional.
+        optional: true
   outputs:
-    status:
-      type: string
-      description: Success or failure message.
-    repoCode:
-      type: file
-      description: The path to the cloned sub-path in the local file system.
+    properties:
+      status:
+        type: string
+        description: Success or failure message.
+      repoCode:
+        type: file
+        description: The path to the cloned sub-path in the local file system.
