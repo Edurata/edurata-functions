@@ -1,7 +1,9 @@
 const fs = require("fs");
 const path = require("path");
-const { clone, checkout, init } = require("isomorphic-git");
-const http = require("isomorphic-git/http/node");
+const { clone, checkout, init, fetch } = require("isomorphic-git");
+const { promisify } = require("util");
+
+const writeFile = promisify(fs.writeFile);
 
 async function handler(inputs) {
   const tempDir = process.env.TMP_DIR || "/tmp";
@@ -17,8 +19,22 @@ async function handler(inputs) {
       dir: repoPath,
       url: inputs.repoUrl,
       singleBranch: true,
-      http,
       depth: 1,
+      onAuth: (url, auth) => {
+        if (inputs.privateToken) {
+          return { ...auth, username: inputs.privateToken };
+        }
+      },
+    });
+
+    // Fetch all commits from the remote repository
+    await fetch({
+      fs,
+      dir: repoPath,
+      url: inputs.repoUrl,
+      ref: inputs.ref || "HEAD", // Fetch the default branch or the specified ref
+      depth: 1,
+      singleBranch: true,
       onAuth: (url, auth) => {
         if (inputs.privateToken) {
           return { ...auth, username: inputs.privateToken };
@@ -43,8 +59,8 @@ async function handler(inputs) {
 module.exports = { handler };
 
 // Example function call (commented out)
-handler({
-  repoUrl: "https://github.com/nodegit/nodegit",
-  path: "", // Optional, defaults to the root of the repository
-  ref: "master", // Optional
-}).then((output) => console.log(output));
+// handler({
+//   repoUrl: 'https://github.com/nodegit/nodegit',
+//   path: '', // Optional, defaults to the root of the repository
+//   ref: 'master', // Optional
+// }).then((output) => console.log(output));
