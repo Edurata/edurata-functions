@@ -4,6 +4,6 @@
   "description": "Clones a git repo",
   "main": "index.js",
   "dependencies": {
-    "nodegit": "^0.27.0"
+    "isomorphic-git": "^1.25.6"
   }
 }
