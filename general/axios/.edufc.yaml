@@ -25,6 +25,10 @@ interface:
         type: boolean
         description: if the response should be streamed to a file
         default: false
+      dataFromFile:
+        type: file
+        description: if the request body should be streamed from a file
+        default: false
     required: [url]
   outputs:
     properties:

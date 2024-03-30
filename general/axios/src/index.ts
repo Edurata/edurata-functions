@@ -16,17 +16,23 @@ function axiosWrapper(
   data,
   headers = {},
   params = {},
-  streamToFile: boolean
+  streamToFile: boolean,
+  dataFromFile = ""
 ) {
+  let dataToSend = data;
   const defaultHeaders = {
     ...headers,
   };
+
+  if (dataFromFile) {
+    dataToSend = fs.readFileSync(dataFromFile);
+  }
 
   const options: AxiosRequestConfig = {
     method,
     url,
     headers: defaultHeaders,
-    data,
+    data: dataFromFile,
     params,
     responseType: streamToFile ? "stream" : "json",
   };
@@ -85,8 +91,17 @@ function axiosWrapper(
 }
 
 const handler: Handler = async (inputs) => {
-  const { method, url, data, headers, params, streamToFile } = inputs;
-  return await axiosWrapper(method, url, data, headers, params, streamToFile);
+  const { method, url, data, headers, params, streamToFile, dataFromFile } =
+    inputs;
+  return await axiosWrapper(
+    method,
+    url,
+    data,
+    headers,
+    params,
+    streamToFile,
+    dataFromFile
+  );
 };
 
 export { handler };
