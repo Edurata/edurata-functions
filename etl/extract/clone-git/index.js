@@ -2,9 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const { clone, checkout, init, fetch } = require("isomorphic-git");
 const http = require("isomorphic-git/http/node");
-const { promisify } = require("util");
-
-const writeFile = promisify(fs.writeFile);
 
 async function handler(inputs) {
   const tempDir = process.env.TMP_DIR || "/tmp";
