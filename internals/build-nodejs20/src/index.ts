@@ -9,6 +9,7 @@ const handler = async (inputs) => {
   // Assuming codePath is a directory containing package.json
   try {
     // Synchronously execute npm install in the codePath directory
+    console.log("npm installing in ", codePath);
     execSync("npm install", { cwd: codePath, stdio: "inherit" });
     console.log("NPM modules installed successfully.");
   } catch (error) {
