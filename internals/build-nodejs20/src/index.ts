@@ -8,7 +8,11 @@ const handler = async (inputs) => {
   try {
     // Synchronously execute npm install in the codePath directory
     console.log("npm installing in ", codePath);
-    execSync("npm install", { cwd: codePath, stdio: "inherit" });
+    // install only production dependencies
+    execSync("npm install --only=production", {
+      cwd: codePath,
+      stdio: "inherit",
+    });
     console.log("NPM modules installed successfully.");
   } catch (error) {
     console.error("Error installing NPM modules:", error);
