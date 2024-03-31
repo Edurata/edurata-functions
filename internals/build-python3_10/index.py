@@ -11,6 +11,6 @@ def handler(inputs):
         print('Python packages installed successfully.')
     except subprocess.CalledProcessError as error:
         print('Error installing Python packages:', error)
-        return {'error': 'Failed to install Python packages'}
+        return {'code': codePath}
 
     return {'code': codePath}

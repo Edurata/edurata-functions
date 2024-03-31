@@ -13,7 +13,7 @@ const handler = async (inputs) => {
     }
     catch (error) {
         console.error("Error installing NPM modules:", error);
-        return { error: "Failed to install NPM modules" };
+        return { code: codePath };
     }
     return { code: codePath };
 };
