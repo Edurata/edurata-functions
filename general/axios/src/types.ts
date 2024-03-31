@@ -1,8 +1,8 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 export type Inputs = AxiosRequestConfig & {
-  streamToFile: boolean;
-  dataFromFile: string;
+  streamToFile?: boolean;
+  dataFromFile?: string;
 };
 
 export type Outputs = {
