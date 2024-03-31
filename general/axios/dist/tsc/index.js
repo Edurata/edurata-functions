@@ -30,21 +30,25 @@ exports.handler = void 0;
 const axios_1 = __importDefault(require("axios"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-// Helper function to generate a unique file name
+// Helper function to generate a unique file name.
 function generateFileName(url) {
     const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
     const urlHash = Buffer.from(url).toString("hex").substring(0, 6);
     return `download-${datePrefix}-${urlHash}.tmp`;
 }
-function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile) {
+function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile, dataFromFile = "") {
+    let dataToSend = data;
     const defaultHeaders = {
         ...headers,
     };
+    if (dataFromFile) {
+        dataToSend = fs.readFileSync(dataFromFile);
+    }
     const options = {
         method,
         url,
         headers: defaultHeaders,
-        data,
+        data: dataToSend,
         params,
         responseType: streamToFile ? "stream" : "json",
     };
@@ -100,7 +104,7 @@ function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, stre
     });
 }
 const handler = async (inputs) => {
-    const { method, url, data, headers, params, streamToFile } = inputs;
-    return await axiosWrapper(method, url, data, headers, params, streamToFile);
+    const { method, url, data, headers, params, streamToFile, dataFromFile } = inputs;
+    return await axiosWrapper(method, url, data, headers, params, streamToFile, dataFromFile);
 };
 exports.handler = handler;

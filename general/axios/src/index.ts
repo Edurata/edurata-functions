@@ -32,7 +32,7 @@ function axiosWrapper(
     method,
     url,
     headers: defaultHeaders,
-    data: dataFromFile,
+    data: dataToSend,
     params,
     responseType: streamToFile ? "stream" : "json",
   };
