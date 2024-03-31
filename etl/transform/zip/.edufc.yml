@@ -1,7 +1,7 @@
 apiRevision: edurata.io/v1
-name: zip-file
+name: zip-folder
 description: |
-  Helper function to zip a file
+  Helper function to zip a folder into zip
 runtime: nodejs20
 interface:
   inputs:
