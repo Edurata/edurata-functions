@@ -4,8 +4,6 @@ import { execSync } from "child_process";
 const handler = async (inputs) => {
   const { code: codePath } = inputs;
 
-  const code = fs.readFileSync(codePath, "utf8");
-
   // Assuming codePath is a directory containing package.json
   try {
     // Synchronously execute npm install in the codePath directory
