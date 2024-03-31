@@ -16,7 +16,7 @@ function axiosWrapper(
   data,
   headers = {},
   params = {},
-  streamToFile: boolean,
+  streamToFile = false,
   dataFromFile = ""
 ) {
   let dataToSend = data;
@@ -48,23 +48,22 @@ function axiosWrapper(
 
         return new Promise((resolve, reject) => {
           res.data.pipe(writer);
-          let error: any = null;
-          writer.on("error", (err: any) => {
-            error = err;
+          writer.on("finish", () => {
+            // Close the writer stream when finished writing
+            writer.close();
+            resolve({
+              response: {
+                status: res.status,
+                statusText: res.statusText,
+                headers: res.headers,
+                file: filePath, // Return the path of the downloaded file
+              },
+            });
+          });
+          writer.on("error", (err) => {
+            // Close the writer stream and reject with the error
             writer.close();
             reject(err);
-          });
-          writer.on("close", () => {
-            if (!error) {
-              resolve({
-                response: {
-                  status: res.status,
-                  statusText: res.statusText,
-                  headers: res.headers,
-                  file: filePath, // Return the path of the downloaded file
-                },
-              });
-            }
           });
         });
       } else {

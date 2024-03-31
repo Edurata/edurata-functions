@@ -5,13 +5,15 @@ const archiver = require("archiver");
 // Handler function
 async function handler(inputs) {
   const { file: filePath } = inputs;
-  const output = fs.createWriteStream(`${filePath}.zip`);
+  const output = fs.createWriteStream(`${path.basename(filePath)}.zip`);
   const archive = archiver("zip", {
     zlib: { level: 9 }, // Compression level
   });
 
   return new Promise((resolve, reject) => {
-    output.on("close", () => resolve({ zipped: `${filePath}.zip` }));
+    output.on("close", () =>
+      resolve({ zipped: `${path.basename(filePath)}.zip` })
+    );
     output.on("error", (err) => reject(err));
 
     archive.pipe(output);
@@ -20,22 +22,13 @@ async function handler(inputs) {
       // If the provided path is a file, add it to the archive
       archive.file(filePath, { name: path.basename(filePath) });
     } else {
-      // If the provided path is a directory, add all files and directories in it to the archive
-      const items = fs.readdirSync(filePath);
-      items.forEach((item) => {
-        const itemPath = path.join(filePath, item);
-        archive.directory(itemPath, path.basename(itemPath));
-      });
+      // If the provided path is a directory, add all files from the directory to the root of the archive
+      archive.directory(filePath, false);
     }
 
     archive.finalize();
   });
 }
 
-/* Example function call (commented out)
-handler({ filePath: 'path/to/your/fileOrFolder' })
-  .then((output) => console.log('Zipped:', output.zipped))
-  .catch((error) => console.error(error));
-*/
-
+// Export the handler function
 module.exports = { handler };
