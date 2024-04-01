@@ -30,19 +30,20 @@ exports.handler = void 0;
 const axios_1 = __importDefault(require("axios"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const readFile = require("util").promisify(fs.readFile);
 // Helper function to generate a unique file name.
 function generateFileName(url) {
     const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
     const urlHash = Buffer.from(url).toString("hex").substring(0, 6);
     return `download-${datePrefix}-${urlHash}.tmp`;
 }
-function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile, dataFromFile = "") {
+async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile = false, dataFromFile = "") {
     let dataToSend = data;
     const defaultHeaders = {
         ...headers,
     };
     if (dataFromFile) {
-        dataToSend = fs.readFileSync(dataFromFile);
+        dataToSend = await readFile(dataFromFile);
     }
     const options = {
         method,
@@ -61,23 +62,22 @@ function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, stre
             const writer = fs.createWriteStream(filePath);
             return new Promise((resolve, reject) => {
                 res.data.pipe(writer);
-                let error = null;
+                writer.on("finish", () => {
+                    // Close the writer stream when finished writing
+                    writer.close();
+                    resolve({
+                        response: {
+                            status: res.status,
+                            statusText: res.statusText,
+                            headers: res.headers,
+                            file: filePath, // Return the path of the downloaded file
+                        },
+                    });
+                });
                 writer.on("error", (err) => {
-                    error = err;
+                    // Close the writer stream and reject with the error
                     writer.close();
                     reject(err);
-                });
-                writer.on("close", () => {
-                    if (!error) {
-                        resolve({
-                            response: {
-                                status: res.status,
-                                statusText: res.statusText,
-                                headers: res.headers,
-                                file: filePath, // Return the path of the downloaded file
-                            },
-                        });
-                    }
                 });
             });
         }
