@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
-import { Handler } from "./types";
+import { Handler, Outputs } from "./types";
 import * as fs from "fs";
 import * as path from "path";
-
+const readFile = require("util").promisify(fs.readFile);
 // Helper function to generate a unique file name.
 function generateFileName(url: string): string {
   const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
@@ -10,7 +10,7 @@ function generateFileName(url: string): string {
   return `download-${datePrefix}-${urlHash}.tmp`;
 }
 
-function axiosWrapper(
+async function axiosWrapper(
   method = "GET",
   url,
   data,
@@ -18,14 +18,14 @@ function axiosWrapper(
   params = {},
   streamToFile = false,
   dataFromFile = ""
-) {
+): Promise<Outputs> {
   let dataToSend = data;
   const defaultHeaders = {
     ...headers,
   };
 
   if (dataFromFile) {
-    dataToSend = fs.readFileSync(dataFromFile);
+    dataToSend = await readFile(dataFromFile);
   }
 
   const options: AxiosRequestConfig = {
@@ -86,7 +86,7 @@ function axiosWrapper(
       }
       console.log(err.message);
       return { error: err };
-    });
+    }) as Outputs;
 }
 
 const handler: Handler = async (inputs) => {
