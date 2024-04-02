@@ -1,0 +1,23 @@
+description: |
+  This function generates an Instagram feed picture or story from provided text, using Pillow in Python.
+  The user can specify the type (feed or story), the text to display, and optional text attributes like font size and color.
+interface:
+  inputs:
+    type:
+      description: The type of image to generate ('feed' or 'story').
+      type: string
+    text:
+      description: The text to display on the image.
+      type: string
+    fontSize:
+      description: The size of the font. Default is 24.
+      type: integer
+      default: 24
+    textColor:
+      description: The color of the text. Default is black.
+      type: string
+      default: "black"
+  outputs:
+    imagePath:
+      description: The path to the generated image file.
+      type: file
