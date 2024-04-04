@@ -72,7 +72,7 @@ async function axiosWrapper(
             status: res.status,
             statusText: res.statusText,
             headers: res.headers,
-            data: res.data,
+            // data: res.data,
             config: res.config,
           },
         };
