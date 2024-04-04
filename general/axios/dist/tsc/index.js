@@ -87,7 +87,7 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
                     status: res.status,
                     statusText: res.statusText,
                     headers: res.headers,
-                    data: res.data,
+                    // data: res.data,
                     config: res.config,
                 },
             };
