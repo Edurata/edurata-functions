@@ -1,23 +1,41 @@
+name: text-to-image
 description: |
-  This function generates an Instagram feed picture or story from provided text, using Pillow in Python.
-  The user can specify the type (feed or story), the text to display, and optional text attributes like font size and color.
+  This function generates an image with a gradient background and renders provided text,
+  including emojis, centered within the image. The image can be tailored for either
+  social media feeds or stories by specifying the image type. Customization options
+  include text color, background gradient color, and padding.
 interface:
   inputs:
-    type:
-      description: The type of image to generate ('feed' or 'story').
-      type: string
-    text:
-      description: The text to display on the image.
-      type: string
-    fontSize:
-      description: The size of the font. Default is 24.
-      type: integer
-      default: 24
-    textColor:
-      description: The color of the text. Default is black.
-      type: string
-      default: "black"
+    properties:
+      type:
+        type: string
+        description: The type of image to generate ("feed" for square or "story" for portrait).
+        enum: ["feed", "story"]
+        default: story
+      text:
+        type: string
+        description: The text to render on the image, including emojis.
+      textColor:
+        type: string
+        description: The color of the text.
+        default: "black"
+      color:
+        type: array
+        description: The RGB color of the gradient's base, default is navy.
+        default: [0, 0, 128]
+        items:
+          type: integer
+      verticalPadding:
+        type: integer
+        description: The vertical padding around the text.
+        default: 30
+      horizontalPadding:
+        type: integer
+        description: The horizontal padding around the text.
+        default: 30
+    required: ["text"]
   outputs:
-    imagePath:
-      description: The path to the generated image file.
-      type: file
+    properties:
+      imagePath:
+        type: file
+        description: The file path of the generated image.
