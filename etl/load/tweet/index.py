@@ -51,8 +51,8 @@ def handler(inputs):
         "success": True
     }
 
-# if __name__ == "__main__":
-#     handler({
-#         "messages": ["Hello World"],
-#         "mediaPaths": ["./__tests__/test.png"]
-#     })
+if __name__ == "__main__":
+    print(handler({
+        "messages": ["Hello World!"],
+        # "mediaPaths": ["./__tests__/test.png"]
+    }))

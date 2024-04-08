@@ -1,0 +1,35 @@
+name: post_to_linkedin_blog
+description: Posts an article to LinkedIn using LinkedIn's Share API.
+interface:
+  inputs:
+    properties:
+      accessToken:
+        type: string
+        description: "The access token for authenticating API requests with LinkedIn."
+      author:
+        type: string
+        description: "The URN identifier of the author (person or organization). E.g., 'urn:li:person:ABC123XYZ'."
+      title:
+        type: string
+        description: "The title of the article."
+      content:
+        type: string
+        description: "The main text content of the article."
+      shareCommentary:
+        type: string
+        description: "A comment or introductory text to accompany the article when shared."
+      shareMediaCategory:
+        type: string
+        description: "The category of media being shared. Typically 'ARTICLE' for blog posts."
+    required:
+      [accessToken, author, title, content, shareCommentary, shareMediaCategory]
+    env:
+  outputs:
+    properties:
+      shareId:
+        type: string
+        description: "The ID of the share activity created on LinkedIn."
+      message:
+        type: string
+        description: "A message about the result of the operation."
+    required: [shareId, message]

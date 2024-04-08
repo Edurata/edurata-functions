@@ -1,0 +1,33 @@
+name: post_to_devto
+description: Posts an article to dev.to using dev.to's API.
+interface:
+  inputs:
+    properties:
+      API_KEY:
+        type: env
+        description: "The API key for authenticating requests to dev.to."
+      title:
+        type: string
+        description: "The title of the article."
+      bodyMarkdown:
+        type: string
+        description: "The content of the article in Markdown format."
+      tags:
+        type: array
+        description: "A list of tags for the article."
+      series:
+        type: string
+        description: "The series the article belongs to."
+      published:
+        type: boolean
+        description: "Whether the article should be published immediately. True or False."
+    required: [apiKey, title, bodyMarkdown]
+  outputs:
+    properties:
+      articleId:
+        type: string
+        description: "The ID of the created article."
+      message:
+        type: string
+        description: "A message about the result of the operation."
+    required: [articleId, message]

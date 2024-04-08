@@ -1,0 +1,33 @@
+name: post_to_medium
+description: Posts an article to Medium.com using Medium's API.
+interface:
+  inputs:
+    properties:
+      ACCESS_TOKEN:
+        type: env
+        description: "The access token for authenticating API requests."
+      title:
+        type: string
+        description: "The title of the post."
+      content:
+        type: string
+        description: "The content of the post in HTML or Markdown."
+      contentFormat:
+        type: string
+        description: "The format of the content. Can be 'html' or 'markdown'."
+      tags:
+        type: array
+        description: "A list of tags for the post."
+      publishStatus:
+        type: string
+        description: "The publish status. Can be 'public', 'draft', or 'unlisted'."
+    required: [accessToken, title, content, contentFormat, publishStatus]
+  outputs:
+    properties:
+      postId:
+        type: string
+        description: "The ID of the created post."
+      message:
+        type: string
+        description: "A message about the result of the operation."
+    required: [postId, message]

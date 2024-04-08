@@ -72,7 +72,7 @@ async function axiosWrapper(
             status: res.status,
             statusText: res.statusText,
             headers: res.headers,
-            data: !dataFromFile ? res.data : "[Too long]",
+            data: !dataFromFile ? res.data : undefined,
             config: res.config,
           },
         };
