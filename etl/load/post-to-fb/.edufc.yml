@@ -1,0 +1,25 @@
+name: post_to_facebook
+description: Posts a message to a Facebook Page using the Facebook Graph API.
+interface:
+  inputs:
+    properties:
+      accessToken:
+        type: string
+        description: "The access token for authenticating API requests with Facebook."
+      pageId:
+        type: string
+        description: "The ID of the Facebook Page where the post will be published."
+      message:
+        type: string
+        description: "The message to post."
+    required: [accessToken, pageId, message]
+    env:
+  outputs:
+    properties:
+      postId:
+        type: string
+        description: "The ID of the created post on Facebook."
+      message:
+        type: string
+        description: "A message about the result of the operation."
+    required: [postId, message]
