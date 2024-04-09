@@ -3,17 +3,18 @@ const OpenAI = require("openai");
 const openai = new OpenAI({ apiKey: process.env.API_KEY });
 
 async function handler(inputs) {
-  const { systemMessage, messages } = inputs;
+  const { systemMessage, message } = inputs;
 
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
-        { role: "system", content: systemMessage },
-        messages.map((message) => {
-          return { role: "user", content: message };
-        }),
-      ].flat(),
+        {
+          role: "system",
+          content: systemMessage || "You are a helpful assistant.",
+        },
+        { role: "user", content: message },
+      ],
     });
     console.log("OpenAI response: ", JSON.stringify(completion));
     return {
