@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
+const fs_1 = __importDefault(require("fs"));
 const child_process_1 = require("child_process");
 const handler = async (inputs) => {
     const { code: codePath } = inputs;
@@ -8,7 +12,16 @@ const handler = async (inputs) => {
     try {
         // Synchronously execute npm install in the codePath directory
         console.log("npm installing in ", codePath);
-        (0, child_process_1.execSync)("npm install", { cwd: codePath, stdio: "inherit" });
+        // install only production dependencies
+        (0, child_process_1.execSync)("npm install --only=production", {
+            cwd: codePath,
+            stdio: "inherit",
+        });
+        // remove package.json and package-lock.json
+        if (fs_1.default.existsSync(`${codePath}/package-lock.json`))
+            fs_1.default.unlinkSync(`${codePath}/package-lock.json`);
+        if (fs_1.default.existsSync(`${codePath}/package.json`))
+            fs_1.default.unlinkSync(`${codePath}/package.json`);
         console.log("NPM modules installed successfully.");
     }
     catch (error) {

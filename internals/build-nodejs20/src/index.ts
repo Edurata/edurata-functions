@@ -13,6 +13,12 @@ const handler = async (inputs) => {
       cwd: codePath,
       stdio: "inherit",
     });
+
+    // remove package.json and package-lock.json
+    if (fs.existsSync(`${codePath}/package-lock.json`))
+      fs.unlinkSync(`${codePath}/package-lock.json`);
+    if (fs.existsSync(`${codePath}/package.json`))
+      fs.unlinkSync(`${codePath}/package.json`);
     console.log("NPM modules installed successfully.");
   } catch (error) {
     console.error("Error installing NPM modules:", error);
