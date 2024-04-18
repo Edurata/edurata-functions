@@ -18,6 +18,10 @@ interface:
       body:
         type: string
         description: The message body
+      AWS_REGION:
+        type: env
+        description: The aws region
+        default: eu-central-1
       AWS_ACCESS_KEY_ID:
         type: env
         description: The aws access key id

@@ -1,12 +1,13 @@
 import boto3
+import os
 
-def send_email(sender, to, subject, body, region_name="eu-west-1"):
+def send_email(sender, to, subject, body):
     # The character encoding for the email.
     CHARSET = "UTF-8"
     print("Sending email to: " + to)
 
     # Create a new SES resource and specify a region.
-    client = boto3.client('ses', region_name=region_name)
+    client = boto3.client('ses', region_name=os.environ['AWS_REGION'])
 
     print("Sending email to: " + to)
     #Provide the contents of the email.

@@ -14,7 +14,7 @@ const handler = async (inputs) => {
       stdio: "inherit",
     });
 
-    // remove package.json and package-lock.json
+    // remove package.json and package-lock.json since they cause when executing
     if (fs.existsSync(`${codePath}/package-lock.json`))
       fs.unlinkSync(`${codePath}/package-lock.json`);
     if (fs.existsSync(`${codePath}/package.json`))
