@@ -3,7 +3,7 @@ from mysql.connector import Error
 import os
 import json
 
-# Handler.
+# Handler..
 def handler(inputs):
     query = inputs['query']
     connection_config = {
