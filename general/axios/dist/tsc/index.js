@@ -102,11 +102,12 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
         console.log(err.message);
         return { error: err };
     }));
-    console.log("response:", response);
     return response;
 }
 const handler = async (inputs) => {
     const { method, url, data, headers, params, streamToFile, dataFromFile } = inputs;
-    return await axiosWrapper(method, url, data, headers, params, streamToFile, dataFromFile);
+    const response = await axiosWrapper(method, url, data, headers, params, streamToFile, dataFromFile);
+    console.log("response:", response);
+    return response;
 };
 exports.handler = handler;

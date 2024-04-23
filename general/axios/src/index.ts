@@ -87,14 +87,13 @@ async function axiosWrapper(
       console.log(err.message);
       return { error: err };
     })) as Outputs;
-  console.log("response:", response);
   return response;
 }
 
 const handler: Handler = async (inputs) => {
   const { method, url, data, headers, params, streamToFile, dataFromFile } =
     inputs;
-  return await axiosWrapper(
+  const response = await axiosWrapper(
     method,
     url,
     data,
@@ -103,6 +102,8 @@ const handler: Handler = async (inputs) => {
     streamToFile,
     dataFromFile
   );
+  console.log("response:", response);
+  return response;
 };
 
 export { handler };

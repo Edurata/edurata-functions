@@ -16,5 +16,5 @@
     "sourceMap": false,
     "outDir": "dist/tsc"
   },
-  "include": ["src/index.ts"]
+  "include": ["src/**/*.ts"]
 }
