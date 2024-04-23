@@ -73,7 +73,6 @@ async function axiosWrapper(
             statusText: res.statusText,
             headers: res.headers,
             data: !dataFromFile ? res.data : undefined,
-            config: res.config,
           },
         };
       }
@@ -107,4 +106,4 @@ const handler: Handler = async (inputs) => {
   return response;
 };
 
-export { handler };
+module.exports = { handler };
