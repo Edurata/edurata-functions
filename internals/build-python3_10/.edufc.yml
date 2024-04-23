@@ -1,6 +1,6 @@
 apiRevision: edurata.io/v1
 runtime: python3_10
-description: Installs python packages
+description: Installs python packages.
 interface:
   inputs:
     properties:
