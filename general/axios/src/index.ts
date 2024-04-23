@@ -90,7 +90,7 @@ async function axiosWrapper(
   return response;
 }
 
-// test..
+// test.
 const handler: Handler = async (inputs) => {
   const { method, url, data, headers, params, streamToFile, dataFromFile } =
     inputs;
