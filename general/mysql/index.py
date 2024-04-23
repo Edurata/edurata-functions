@@ -4,7 +4,7 @@ import os
 import json
 
 # Main
-def handler(inputs):
+def handler(inputs, context):
     query = inputs['query']
     connection_config = {
         "host": os.getenv('MYSQL_HOST'),
