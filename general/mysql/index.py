@@ -5,6 +5,7 @@ import json
 
 # Main
 def handler(inputs, context):
+    connection = None  # Initialize connection variable
     query = inputs['query']
     connection_config = {
         "host": os.getenv('MYSQL_HOST'),
@@ -22,7 +23,7 @@ def handler(inputs, context):
     except Error as e:
         return {"error": str(e)}
     finally:
-        if connection.is_connected():
+        if connection and connection.is_connected():  # Check if connection is not None
             cursor.close()
             connection.close()
 
