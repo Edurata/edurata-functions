@@ -1,8 +1,9 @@
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Handler, Outputs } from "./types";
 import * as fs from "fs";
 import * as path from "path";
-const readFile = require("util").promisify(fs.readFile);
+import { Readable } from "stream";
+
 // Helper function to generate a unique file name.
 function generateFileName(url: string): string {
   const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
@@ -12,81 +13,79 @@ function generateFileName(url: string): string {
 
 async function axiosWrapper(
   method = "GET",
-  url,
-  data,
-  headers = {},
-  params = {},
+  url: string,
+  data: any,
+  headers: any = {},
+  params: any = {},
   streamToFile = false,
   dataFromFile = ""
 ): Promise<Outputs> {
-  let dataToSend = data;
   const defaultHeaders = {
     ...headers,
   };
-
-  if (dataFromFile) {
-    dataToSend = await readFile(dataFromFile);
-  }
 
   const options: AxiosRequestConfig = {
     method,
     url,
     headers: defaultHeaders,
-    data: dataToSend,
     params,
     responseType: streamToFile ? "stream" : "json",
   };
 
   console.log("options:", options);
 
-  return axios(options)
-    .then((res) => {
-      if (streamToFile) {
-        const fileName = generateFileName(url);
-        const filePath = path.join(__dirname, fileName);
-        const writer = fs.createWriteStream(filePath);
-
-        return new Promise((resolve, reject) => {
-          res.data.pipe(writer);
-          writer.on("finish", () => {
-            // Close the writer stream when finished writing
-            writer.close();
-            resolve({
-              response: {
-                status: res.status,
-                statusText: res.statusText,
-                headers: res.headers,
-                file: filePath, // Return the path of the downloaded file
-              },
-            });
+  try {
+    const response: AxiosResponse =
+      dataFromFile && streamToFile
+        ? await axios({
+            ...options,
+            data: fs.createReadStream(dataFromFile),
+          })
+        : await axios({
+            ...options,
+            data:
+              typeof data === "string" || data instanceof Buffer
+                ? data
+                : JSON.stringify(data),
           });
-          writer.on("error", (err) => {
-            // Close the writer stream and reject with the error
-            writer.close();
-            reject(err);
+
+    if (streamToFile) {
+      const fileName = generateFileName(url);
+      const filePath = path.join(__dirname, fileName);
+      const writer = fs.createWriteStream(filePath);
+      response.data.pipe(writer);
+
+      return new Promise<Outputs>((resolve, reject) => {
+        writer.on("finish", () => {
+          writer.close();
+          resolve({
+            response: {
+              status: response.status,
+              statusText: response.statusText,
+              headers: response.headers,
+              // @ts-ignore
+              file: filePath,
+            },
           });
         });
-      } else {
-        return {
-          response: {
-            status: res.status,
-            statusText: res.statusText,
-            headers: res.headers,
-            data: !dataFromFile ? res.data : undefined,
-            config: res.config,
-          },
-        };
-      }
-    })
-    .catch((err: AxiosError) => {
-      if (err.response) {
-        console.warn("err.response.data:", err.response.data);
-        console.warn("err.response.status:", err.response.status);
-        console.warn("err.response.headers:", err.response.headers);
-      }
-      console.log(err.message);
-      return { error: err };
-    }) as Outputs;
+        writer.on("error", (err) => {
+          reject(err);
+        });
+      });
+    } else {
+      return {
+        response: {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers,
+          data: response.data,
+          config: response.config,
+        },
+      };
+    }
+  } catch (error) {
+    return { error };
+  }
 }
 
 const handler: Handler = async (inputs) => {
