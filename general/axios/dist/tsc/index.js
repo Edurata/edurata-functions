@@ -30,7 +30,6 @@ exports.handler = void 0;
 const axios_1 = __importDefault(require("axios"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-const readFile = require("util").promisify(fs.readFile);
 // Helper function to generate a unique file name.
 function generateFileName(url) {
     const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
@@ -38,18 +37,23 @@ function generateFileName(url) {
     return `download-${datePrefix}-${urlHash}.tmp`;
 }
 async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile = false, dataFromFile = "") {
-    let dataToSend = data;
+    let requestData = data;
+    // If data is provided from a file, create a read stream
+    if (dataFromFile) {
+        requestData = fs.createReadStream(dataFromFile);
+    }
+    else if (typeof data === "string") {
+        // If data is a string, convert it to a Buffer
+        requestData = Buffer.from(data);
+    }
     const defaultHeaders = {
         ...headers,
     };
-    if (dataFromFile) {
-        dataToSend = await readFile(dataFromFile);
-    }
     const options = {
         method,
         url,
         headers: defaultHeaders,
-        data: dataToSend,
+        data: requestData,
         params,
         responseType: streamToFile ? "stream" : "json",
     };
@@ -70,6 +74,7 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
                             status: res.status,
                             statusText: res.statusText,
                             headers: res.headers,
+                            // @ts-ignore
                             file: filePath, // Return the path of the downloaded file
                         },
                     });
@@ -87,7 +92,7 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
                     status: res.status,
                     statusText: res.statusText,
                     headers: res.headers,
-                    data: !dataFromFile ? res.data : "[Too long]",
+                    data: res.data,
                     config: res.config,
                 },
             };
