@@ -38,9 +38,9 @@ function generateFileName(url) {
 }
 async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile = false, dataFromFile = "") {
     let requestData = data;
-    // If data is provided from a file, create a read stream
+    // If data is provided from a file, read the file synchronously and get a buffer
     if (dataFromFile) {
-        requestData = fs.createReadStream(dataFromFile);
+        requestData = fs.readFileSync(dataFromFile);
     }
     else if (typeof data === "string") {
         // If data is a string, convert it to a Buffer
@@ -63,28 +63,15 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
         if (streamToFile) {
             const fileName = generateFileName(url);
             const filePath = path.join(__dirname, fileName);
-            const writer = fs.createWriteStream(filePath);
-            return new Promise((resolve, reject) => {
-                res.data.pipe(writer);
-                writer.on("finish", () => {
-                    // Close the writer stream when finished writing
-                    writer.close();
-                    resolve({
-                        response: {
-                            status: res.status,
-                            statusText: res.statusText,
-                            headers: res.headers,
-                            // @ts-ignore
-                            file: filePath, // Return the path of the downloaded file
-                        },
-                    });
-                });
-                writer.on("error", (err) => {
-                    // Close the writer stream and reject with the error
-                    writer.close();
-                    reject(err);
-                });
-            });
+            fs.writeFileSync(filePath, res.data); // Write the buffer to the file
+            return {
+                response: {
+                    status: res.status,
+                    statusText: res.statusText,
+                    headers: res.headers,
+                    file: filePath, // Return the path of the downloaded file
+                },
+            };
         }
         else {
             return {
