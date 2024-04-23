@@ -8,7 +8,10 @@ def handler(inputs):
     # Assuming codePath is a directory containing requirements.txt
     try:
         # Synchronously execute pip install in the codePath directory
-        subprocess.check_call([os.sys.executable, '-m', 'pip', 'install', '-r', os.path.join(codePath, 'requirements.txt'), '-t', python_modules_path])
+        # subprocess.check_call([os.sys.executable, '-m', 'pip', 'install', '-r', os.path.join(codePath, 'requirements.txt'), '-t', python_modules_path])
+        # Install directly in root directory
+        subprocess.check_call([os.sys.executable, '-m', 'pip', 'install', '-r', os.path.join(codePath, 'requirements.txt'), '-t', "./"])
+
         print('Python packages installed successfully in', python_modules_path)
 
         # List all files and folders on the first level of codePath directory

@@ -26,4 +26,4 @@ def handler(inputs):
             connection.close()
 
 # Sample function call (commented out for reference)
-# print(handler({"query": "SELECT * FROM users"}))
+print(handler({"query": "SELECT * FROM users"}))
