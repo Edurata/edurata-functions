@@ -39,7 +39,7 @@ async function axiosWrapper(
 
   console.log("options:", options);
 
-  return axios(options)
+  const response = (await axios(options)
     .then((res) => {
       if (streamToFile) {
         const fileName = generateFileName(url);
@@ -86,7 +86,9 @@ async function axiosWrapper(
       }
       console.log(err.message);
       return { error: err };
-    }) as Outputs;
+    })) as Outputs;
+  console.log("response:", response);
+  return response;
 }
 
 const handler: Handler = async (inputs) => {

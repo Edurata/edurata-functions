@@ -54,7 +54,7 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
         responseType: streamToFile ? "stream" : "json",
     };
     console.log("options:", options);
-    return (0, axios_1.default)(options)
+    const response = (await (0, axios_1.default)(options)
         .then((res) => {
         if (streamToFile) {
             const fileName = generateFileName(url);
@@ -101,7 +101,9 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
         }
         console.log(err.message);
         return { error: err };
-    });
+    }));
+    console.log("response:", response);
+    return response;
 }
 const handler = async (inputs) => {
     const { method, url, data, headers, params, streamToFile, dataFromFile } = inputs;
