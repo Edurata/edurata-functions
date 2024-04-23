@@ -6,6 +6,9 @@ runtime: nodejs20
 entrypoint: dist/tsc/index.js
 include:
   - dist/tsc/**
+resources:
+  memory: 2
+  cpu: 1
 interface:
   inputs:
     properties:
