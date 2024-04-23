@@ -1,8 +1,8 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { Handler, Outputs } from "./types";
 import * as fs from "fs";
 import * as path from "path";
-
+const readFile = require("util").promisify(fs.readFile);
 // Helper function to generate a unique file name.
 function generateFileName(url: string): string {
   const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
@@ -12,32 +12,27 @@ function generateFileName(url: string): string {
 
 async function axiosWrapper(
   method = "GET",
-  url: string,
-  data: string | NodeJS.ReadableStream | Buffer,
+  url,
+  data,
   headers = {},
   params = {},
   streamToFile = false,
   dataFromFile = ""
 ): Promise<Outputs> {
-  let requestData: string | NodeJS.ReadableStream | Buffer = data;
-
-  // If data is provided from a file, read the file synchronously and get a buffer
-  if (dataFromFile) {
-    requestData = fs.readFileSync(dataFromFile);
-  } else if (typeof data === "string") {
-    // If data is a string, convert it to a Buffer
-    requestData = Buffer.from(data);
-  }
-
+  let dataToSend = data;
   const defaultHeaders = {
     ...headers,
   };
+
+  if (dataFromFile) {
+    dataToSend = await readFile(dataFromFile);
+  }
 
   const options: AxiosRequestConfig = {
     method,
     url,
     headers: defaultHeaders,
-    data: requestData,
+    data: dataToSend,
     params,
     responseType: streamToFile ? "stream" : "json",
   };
@@ -45,26 +40,39 @@ async function axiosWrapper(
   console.log("options:", options);
 
   return axios(options)
-    .then((res: AxiosResponse) => {
+    .then((res) => {
       if (streamToFile) {
         const fileName = generateFileName(url);
         const filePath = path.join(__dirname, fileName);
-        fs.writeFileSync(filePath, res.data); // Write the buffer to the file
-        return {
-          response: {
-            status: res.status,
-            statusText: res.statusText,
-            headers: res.headers,
-            file: filePath, // Return the path of the downloaded file
-          },
-        };
+        const writer = fs.createWriteStream(filePath);
+
+        return new Promise((resolve, reject) => {
+          res.data.pipe(writer);
+          writer.on("finish", () => {
+            // Close the writer stream when finished writing
+            writer.close();
+            resolve({
+              response: {
+                status: res.status,
+                statusText: res.statusText,
+                headers: res.headers,
+                file: filePath, // Return the path of the downloaded file
+              },
+            });
+          });
+          writer.on("error", (err) => {
+            // Close the writer stream and reject with the error
+            writer.close();
+            reject(err);
+          });
+        });
       } else {
         return {
           response: {
             status: res.status,
             statusText: res.statusText,
             headers: res.headers,
-            data: res.data,
+            data: !dataFromFile ? res.data : undefined,
             config: res.config,
           },
         };
