@@ -34,3 +34,4 @@ inputs:
   MYSQL_PASSWORD: ${secrets.MYSQL_PASSWORD}
   MYSQL_USER: ${variables.MYSQL_USER}
   MYSQL_HOST: ${variables.MYSQL_HOST}
+  MYSQL_DATABASE: ${variables.MYSQL_DATABASE}
