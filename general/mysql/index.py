@@ -28,4 +28,4 @@ def handler(inputs, context):
             connection.close()
 
 # Sample function call (commented out for reference)
-print(handler({"query": "INSERT INTO users2(id, username, email) VALUES (DEFAULT, 'test', 'example_email@example.com');"}, None))
+# print(handler({"query": "INSERT INTO users2(id, username, email) VALUES (DEFAULT, 'test', 'example_email@example.com');"}, None))
