@@ -2,5 +2,6 @@ node_modules/
 logs/
 dist/**/*
 oauth-private.json
+.env
 .token
 .token.json

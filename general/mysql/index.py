@@ -3,7 +3,7 @@ from mysql.connector import Error
 import os
 import json
 
-# Main
+# Main.
 def handler(inputs, context):
     connection = None  # Initialize connection variable
     query = inputs['query']
@@ -28,4 +28,4 @@ def handler(inputs, context):
             connection.close()
 
 # Sample function call (commented out for reference)
-# print(handler({"query": "SELECT * FROM users"}))
+print(handler({"query": "INSERT INTO users2(id, username, email) VALUES (DEFAULT, 'test', 'example_email@example.com');"}, None))
