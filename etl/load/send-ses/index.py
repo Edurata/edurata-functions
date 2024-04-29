@@ -34,7 +34,7 @@ def send_email(sender, to, subject, body):
 
     print("Email sent! Message ID:"),
     print(response['MessageId'])
-    return True
+    return response
 
 def handler(inputs):
     if 'sender' not in inputs or 'to' not in inputs:
@@ -43,4 +43,5 @@ def handler(inputs):
     to = inputs.get("to")
     subject = inputs.get("subject","")
     body = inputs.get("body", "")
-    send_email(sender, to, subject, body)
+    response = send_email(sender, to, subject, body)
+    return response
