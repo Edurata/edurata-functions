@@ -1,5 +1,6 @@
 import boto3
 import os
+import html
 
 def send_email(sender, to, subject, body):
     # The character encoding for the email.
@@ -21,7 +22,7 @@ def send_email(sender, to, subject, body):
             'Body': {
                 'Html': {
                     'Charset': CHARSET,
-                    'Data': body.replaceAll("\n", "<br>")
+                    'Data': html.escape(body).replace("\n", "<br>")
                 }
             },
             'Subject': {
