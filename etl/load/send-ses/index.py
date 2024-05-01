@@ -19,10 +19,10 @@ def send_email(sender, to, subject, body):
         },
         Message={
             'Body': {
-                'Text': {
+                'Html': {
                     'Charset': CHARSET,
-                    'Data': body,
-                },
+                    'Data': body.replaceAll("\n", "<br>")
+                }
             },
             'Subject': {
                 'Charset': CHARSET,
