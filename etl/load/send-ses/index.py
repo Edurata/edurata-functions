@@ -11,6 +11,8 @@ def send_email(sender, to, subject, body):
     client = boto3.client('ses', region_name=os.environ['AWS_REGION'])
 
     print("Sending email to: " + to)
+    body = body.replace("\\n", "\n")
+    body = body.replace("\\\n", "\n")
     #Provide the contents of the email.
     response = client.send_email(
         Destination={
