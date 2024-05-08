@@ -24,7 +24,7 @@ def send_email(sender, to, subject, body):
             'Body': {
                 'Html': {
                     'Charset': CHARSET,
-                    'Data': html.escape(body).replace("\n", "<br>")
+                    'Data': body.replace("\n", "<br>")
                 }
             },
             'Subject': {
