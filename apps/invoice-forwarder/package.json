@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "gmail-processor": "github:ahochsteger/gmail-processor"
+  }
+}

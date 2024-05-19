@@ -1,0 +1,37 @@
+name: hubspot_contact_creator
+description: A function to create a contact or a list of contacts in HubSpot.
+inputs:
+  properties:
+    HUBSPOT_API_KEY:
+      type: env
+      description: HubSpot API Key
+    contacts:
+      type: array
+      items:
+        type: object
+        properties:
+          email:
+            type: string
+            description: The email address of the contact
+          first_name:
+            type: string
+            description: The first name of the contact
+          last_name:
+            type: string
+            description: The last name of the contact
+          additional_properties:
+            type: object
+            description: Additional properties for the contact
+outputs:
+  properties:
+    result:
+      type: array
+      items:
+        type: object
+        properties:
+          contact_id:
+            type: string
+            description: The ID of the created contact
+          status:
+            type: string
+            description: The status of the creation request

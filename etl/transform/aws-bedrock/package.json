@@ -1,0 +1,13 @@
+{
+  "name": "aws-bedrock-command",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Make one command to chat with gpt-3",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock": "^3.577.0"
+  }
+}
