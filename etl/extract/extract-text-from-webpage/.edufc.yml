@@ -6,7 +6,7 @@ interface:
     properties:
       CRAWL_PASSWORD:
         type: env
-        description: Crawlbase API password
+        description: Crawlbase API password.
       url:
         type: string
         description: The URL of the website to scrape.
