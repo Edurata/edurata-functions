@@ -19,7 +19,7 @@ inputs:
             description: The first name of the contact
           last_name:
             type: string
-            description: The last name of the contact
+            description: The last name of the contact.
           additional_properties:
             type: object
             description: Additional properties for the contact
