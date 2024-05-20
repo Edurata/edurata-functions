@@ -1,5 +1,6 @@
 name: hubspot_contact_creator
 description: A function to create a contact or a list of contacts in HubSpot.
+runtime: python3_10
 inputs:
   properties:
     HUBSPOT_API_KEY:
