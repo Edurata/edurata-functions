@@ -1,5 +1,6 @@
 name: text_extractor
 description: A function to scrape a website at a given URL and return the text content using Crawlbase.
+runtime: python3_10
 interface:
   inputs:
     properties:
