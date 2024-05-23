@@ -1,0 +1,32 @@
+name: MicrosoftExcelAPIClient
+description: A function to make calls to Microsoft Graph API for Excel using an OAuth token.
+interface:
+  inputs:
+    properties:
+      workbook_id:
+        type: string
+        description: The ID of the Excel workbook.
+      worksheet_name:
+        type: string
+        description: The name of the worksheet.
+      range:
+        type: string
+        description: The range of cells to read or write.
+      oauth_token:
+        type: string
+        description: The OAuth token for authentication.
+      data:
+        type: object
+        description: The data to write to the worksheet (required for write operations).
+    required:
+      - workbook_id
+      - worksheet_name
+      - range
+      - oauth_token
+  outputs:
+    properties:
+      response:
+        type: object
+        description: The response from the Microsoft Graph API.
+    required:
+      - response
