@@ -1,0 +1,46 @@
+name: GmailAPIClient
+description: A function to make calls to the Gmail API using an OAuth token.
+interface:
+  inputs:
+    properties:
+      operation:
+        type: string
+        enum: ["read", "send"]
+      user_id:
+        type: string
+        description: The user's email address. Use "me" to indicate the authenticated user.
+      oauth_token:
+        type: string
+        description: The OAuth token for authentication.
+      query:
+        type: string
+        description: The query string to search emails (required for read operation).
+        required: false
+      email:
+        type: object
+        description: The email content to send (required for send operation).
+        properties:
+          to:
+            type: string
+            description: The recipient's email address.
+          subject:
+            type: string
+            description: The subject of the email.
+          body:
+            type: string
+            description: The body of the email.
+        required:
+          - to
+          - subject
+          - body
+    required:
+      - operation
+      - user_id
+      - oauth_token
+  outputs:
+    properties:
+      response:
+        type: object
+        description: The response from the Gmail API.
+    required:
+      - response
