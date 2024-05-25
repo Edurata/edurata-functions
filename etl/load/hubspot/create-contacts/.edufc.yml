@@ -20,6 +20,9 @@ inputs:
           last_name:
             type: string
             description: The last name of the contact.
+          company_hubspot_id:
+            type: string
+            description: The Hubspot id of the company
           additional_properties:
             type: object
             description: Additional properties for the contact

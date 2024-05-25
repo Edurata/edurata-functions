@@ -2,18 +2,34 @@ import requests
 import os
 
 def create_contact(api_key, contact):
-    url = "https://api.hubapi.com/contacts/v1/contact"
+    url = "https://api.hubapi.com/crm/v3/objects/contacts"
     headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
+        "content-type": "application/json",
+        "authorization": f"Bearer {api_key}"
     }
     data = {
-        "properties": [
-            {"property": "email", "value": contact["email"]},
-            {"property": "firstname", "value": contact["first_name"]},
-            {"property": "lastname", "value": contact["last_name"]}
-        ]
+        "properties": {
+            "email": contact["email"],
+            "firstname": contact["first_name"],
+            "lastname": contact["last_name"],
+            "additional_properties": contact["additional_properties"]
+        },
+        "associations": []
     }
+
+    if "company_hubspot_id" in contact:
+        data["associations"].append({
+            "to": {
+                "id": contact["company_hubspot_id"]
+            },
+            "types": [
+                {
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "associationTypeId": 279
+                }
+            ]
+        })
+
     for key, value in contact.get("additional_properties", {}).items():
         data["properties"].append({"property": key, "value": value})
 
