@@ -33,13 +33,13 @@ def handler(inputs):
     return {"result": results}
 
 # Sample function call
-inputs = {
-    "companies": [
-        {
-            "name": "Example Company",
-            "domain": "example.com",
-            "additional_properties": {"phone": "1234567890"}
-        }
-    ]
-}
-print(handler(inputs))
+# inputs = {
+#     "companies": [
+#         {
+#             "name": "Example Company",
+#             "domain": "example.com",
+#             "additional_properties": {"phone": "1234567890"}
+#         }
+#     ]
+# }
+# print(handler(inputs))
