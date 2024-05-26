@@ -1,38 +1,39 @@
 name: hubspot_company_creator
 description: A function to create a company or a list of companies in HubSpot.
 runtime: python3_10
-inputs:
-  properties:
-    HUBSPOT_API_KEY:
-      type: env
-      description: HubSpot API Key.
-    companies:
-      type: array
-      items:
-        type: object
-        properties:
-          name:
-            type: string
-            description: The name of the company.
-          domain:
-            type: string
-            description: The domain of the company.
-          additional_properties:
-            type: object
-            description: Additional properties for the company.
-outputs:
-  properties:
-    result:
-      type: array
-      items:
-        type: object
-        properties:
-          company_id:
-            type: string
-            description: The ID of the created company.
-          status:
-            type: string
-            description: The status of the creation request.
-          error:
-            type: string
-            description: Error message if the creation fails.
+interface:
+  inputs:
+    properties:
+      HUBSPOT_API_KEY:
+        type: env
+        description: HubSpot API Key.
+      companies:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              description: The name of the company.
+            domain:
+              type: string
+              description: The domain of the company.
+            additional_properties:
+              type: object
+              description: Additional properties for the company.
+  outputs:
+    properties:
+      result:
+        type: array
+        items:
+          type: object
+          properties:
+            company_id:
+              type: string
+              description: The ID of the created company.
+            status:
+              type: string
+              description: The status of the creation request.
+            error:
+              type: string
+              description: Error message if the creation fails.
