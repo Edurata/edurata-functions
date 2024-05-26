@@ -10,8 +10,8 @@ def create_contact(api_key, contact):
     data = {
         "properties": {
             "email": contact["email"],
-            "firstname": contact["first_name"],
-            "lastname": contact["last_name"],
+            "firstname": contact["firstname"],
+            "lastname": contact["lastname"],
             "additional_properties": contact["additional_properties"]
         },
         "associations": []
