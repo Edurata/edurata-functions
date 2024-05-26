@@ -12,7 +12,7 @@ def create_contact(api_key, contact):
             "email": contact["email"],
             "firstname": contact["firstname"],
             "lastname": contact["lastname"],
-            "additional_properties": contact["additional_properties"]
+            "additional_properties": contact["additional_properties"] if "additional_properties" in contact else {}
         },
         "associations": []
     }
