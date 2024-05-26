@@ -8,16 +8,11 @@ def create_company(api_key, company):
         "authorization": f"Bearer {api_key}"
     }
     data = {
-        "properties": {
-            "name": company["name"],
-            "domain": company["domain"]
-        }
+        "properties": company
     }
-
-    for key, value in company.get("additional_properties", {}).items():
-        data["properties"][key] = value
-
+    print("Sending data to HubSpot: ", data)
     response = requests.post(url, json=data, headers=headers)
+    print("Response from HubSpot: ", response.text)
     if response.status_code == 201:
         return {"company_id": response.json()["id"], "status": "success"}
     else:
