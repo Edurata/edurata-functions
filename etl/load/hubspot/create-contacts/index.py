@@ -29,11 +29,10 @@ def create_contact(api_key, contact):
                 }
             ]
         })
-
-    for key, value in contact.get("additional_properties", {}).items():
-        data["properties"].append({"property": key, "value": value})
+    print("Sending data to HubSpot: ", data)
 
     response = requests.post(url, json=data, headers=headers)
+    print("Response from HubSpot: ", response.text)
     if response.status_code == 200:
         return {"contact_id": response.json()["vid"], "status": "success"}
     else:
