@@ -12,8 +12,6 @@ def create_contact(api_key, contact):
             "email": contact["email"],
             "firstname": contact["firstname"],
             "lastname": contact["lastname"],
-            # Also check if of type object
-            "additional_properties": contact["additional_properties"] if "additional_properties" in contact and isinstance(contact["additional_properties"], dict) else {}
         },
         "associations": []
     }
