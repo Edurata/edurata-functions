@@ -20,6 +20,9 @@ def create_company(api_key, company):
 
 def handler(inputs):
     api_key = os.getenv("HUBSPOT_API_KEY")
+    if (api_key == None):
+        return {"error": "API key not found."}
+    print(api_key)
     companies = inputs.get("companies", [])
     results = []
     for company in companies:
@@ -28,13 +31,12 @@ def handler(inputs):
     return {"result": results}
 
 # Sample function call
-# inputs = {
-#     "companies": [
-#         {
-#             "name": "Example Company",
-#             "domain": "example.com",
-#             "additional_properties": {"phone": "1234567890"}
-#         }
-#     ]
-# }
-# print(handler(inputs))
+inputs = {
+    "companies": [
+        {
+            "name": "Example Company",
+            "domain": "example.com",
+        }
+    ]
+}
+print(handler(inputs))
