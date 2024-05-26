@@ -32,8 +32,9 @@ def create_contact(api_key, contact):
 
     response = requests.post(url, json=data, headers=headers)
     print("Response from HubSpot: ", response.text)
-    if response.status_code == 200:
-        return {"contact_id": response.json()["vid"], "status": "success"}
+    print("Response status code: ", response.status_code)
+    if response.status_code[0] == 2:
+        return {"contact_id": response.json()["id"], "status": "success"}
     else:
         return {"contact_id": None, "status": "failure", "error": response.text}
 
