@@ -1,5 +1,5 @@
 name: hubspot_company_creator
-description: A function to create a company or a list of companies in HubSpot.
+description: A function to create a company or a list of companies in HubSpot..
 runtime: python3_10
 interface:
   inputs:
