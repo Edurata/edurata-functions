@@ -1,9 +1,37 @@
 import subprocess
 import os
+import re
+
+def modify_handler_signature(code):
+    # Define the regular expression pattern
+    pattern = r"def handler\(([^,)]+)\):"
+    
+    # Define the replacement string
+    replacement = r"def handler(\1, additional_parameter):"
+    
+    # Perform the substitution
+    modified_code = re.sub(pattern, replacement, code)
+    
+    return modified_code
+
+def modify_handlers_recursively(directory):
+    for root, _, files in os.walk(directory):
+        for file_name in files:
+            if file_name.endswith('.py'):
+                file_path = os.path.join(root, file_name)
+                with open(file_path, 'r+') as file:
+                    content = file.read()
+                    modified_content = modify_handler_signature(content)
+                    file.seek(0)
+                    file.write(modified_content)
+                    file.truncate()
 
 def handler(inputs):
     codePath = inputs['code']
     python_modules_path = codePath
+
+    # Modify handler signature recursively
+    modify_handlers_recursively(codePath)
 
     # Assuming codePath is a directory containing requirements.txt
     try:
