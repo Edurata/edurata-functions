@@ -1,0 +1,25 @@
+name: AWSRekognitionAnalysis
+description: This function analyzes an image file using AWS Rekognition.
+interface:
+  inputs:
+    properties:
+      image_file:
+        type: file
+        description: The image file to analyze.
+      AWS_ACCESS_KEY_ID:
+        type: env
+        description: AWS Access Key ID.
+      AWS_SECRET_ACCESS_KEY:
+        type: env
+        description: AWS Secret Access Key.
+      AWS_REGION:
+        type: env
+        description: AWS Region.
+  outputs:
+    properties:
+      labels:
+        type: array
+        description: The detected labels from the image.
+      text:
+        type: array
+        description: The detected text from the image.

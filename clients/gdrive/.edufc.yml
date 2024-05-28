@@ -1,0 +1,32 @@
+name: google_drive_client
+description: A client to upload and download files from Google Drive using OAuth access token.
+interface:
+  inputs:
+    properties:
+      action:
+        type: string
+        description: "Action to perform: 'upload' or 'download'"
+      file_path:
+        type: file
+        description: "Path to the local file to upload"
+      drive_file_id:
+        type: string
+        description: "Google Drive file ID for downloading"
+      upload_file_name:
+        type: string
+        description: "Name of the file to upload to Google Drive"
+  outputs:
+    properties:
+      message:
+        type: string
+        description: "Result message of the action"
+      drive_file_id:
+        type: string
+        description: "ID of the uploaded file on Google Drive"
+      download_file_path:
+        type: file
+        description: "Path to the downloaded file"
+    required: []
+  required: [action]
+inputs:
+  OAUTH_TOKEN: ${secrets.GOOGLE_DRIVE_OAUTH_TOKEN}
