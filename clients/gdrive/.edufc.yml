@@ -1,5 +1,6 @@
 name: google_drive_client
 description: A client to upload and download files from Google Drive using OAuth access token.
+runtime: python3_10
 interface:
   inputs:
     properties:
