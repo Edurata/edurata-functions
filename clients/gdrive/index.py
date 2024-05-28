@@ -33,7 +33,7 @@ def upload_file(service, file_path, upload_file_name):
     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     return file.get('id')
 
-def handler(inputs):
+def handler(inputs, todoRemove):
     action = inputs['action']
     file_path = inputs.get('file_path')
     drive_file_id = inputs.get('drive_file_id')
