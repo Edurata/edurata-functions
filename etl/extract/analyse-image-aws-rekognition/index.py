@@ -6,6 +6,7 @@ def handler(inputs):
     aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
     aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
     aws_region = os.getenv('AWS_REGION')
+    types = inputs['types']
     
     # Initialize the Rekognition client
     rekognition = boto3.client(
@@ -18,22 +19,28 @@ def handler(inputs):
     # Read the image file
     with open(inputs['image_file'], 'rb') as image:
         image_bytes = image.read()
-
-    # Analyze the image
-    response_labels = rekognition.detect_labels(Image={'Bytes': image_bytes})
-    response_faces = rekognition.detect_faces(Image={'Bytes': image_bytes}, Attributes=['ALL'])
-    response_text = rekognition.detect_text(Image={'Bytes': image_bytes})
-    response_celebrities = rekognition.recognize_celebrities(Image={'Bytes': image_bytes})
-
-    # Prepare the outputs
-    outputs = {
-        'labels': response_labels.get('Labels', []),
-        'faces': response_faces.get('FaceDetails', []),
-        'text': response_text.get('TextDetections', []),
-        'celebrities': response_celebrities.get('CelebrityFaces', [])
+    
+    response_labels = []
+    response_faces = []
+    response_text = []
+    response_celebrities = []
+    
+    # Check if 'labels' is in types
+    if "labels" in types:
+        response_labels = rekognition.detect_labels(Image={'Bytes': image_bytes})
+    if "faces" in types:
+        response_faces = rekognition.detect_faces(Image={'Bytes': image_bytes}, Attributes=['ALL'])
+    if "text" in types:
+        response_text = rekognition.detect_text(Image={'Bytes': image_bytes})
+    if "celebrities" in types:
+        response_celebrities = rekognition.recognize_celebrities(Image={'Bytes': image_bytes})
+    
+    return {
+        "labels": response_labels,
+        "faces": response_faces,
+        "text": response_text,
+        "celebrities": response_celebrities
     }
-
-    return outputs
 
 # Sample function call
 # inputs = {

@@ -1,5 +1,6 @@
 name: AWSRekognitionAnalysis
 description: This function analyzes an image file using AWS Rekognition.
+runtime: python3_10
 interface:
   inputs:
     properties:
@@ -15,6 +16,16 @@ interface:
       AWS_REGION:
         type: env
         description: AWS Region.
+      types:
+        type: array
+        items:
+          description: The type of analysis to perform. Options are 'labels' or 'text' or 'faces' or 'celebrities'.
+          default: labels
+    required:
+      - image_file
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_REGION
   outputs:
     properties:
       labels:
@@ -23,3 +34,7 @@ interface:
       text:
         type: array
         description: The detected text from the image.
+      faces:
+        type: array
+      celebrities:
+        type: array
