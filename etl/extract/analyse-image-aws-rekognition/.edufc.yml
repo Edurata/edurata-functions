@@ -19,6 +19,7 @@ interface:
       types:
         type: array
         items:
+          type: string
           description: The type of analysis to perform. Options are 'labels' or 'text' or 'faces' or 'celebrities'.
           default: labels
     required:
