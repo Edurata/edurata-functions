@@ -1,0 +1,46 @@
+name: ImageCropAndFilter
+description: A function that crops an image to a specified box and filters out a specified color range if defined.
+interface:
+  inputs:
+    properties:
+      image:
+        type: file
+        description: The input image file.
+      crop_box:
+        type: object
+        properties:
+          left:
+            type: number
+          upper:
+            type: number
+          right:
+            type: number
+          lower:
+            type: number
+        required: [left, upper, right, lower]
+        description: The box to crop the image to.
+      color_range:
+        type: object
+        properties:
+          lower_bound:
+            type: array
+            items:
+              type: number
+            minItems: 3
+            maxItems: 3
+            description: The lower bound of the color range to filter out (inclusive).
+          upper_bound:
+            type: array
+            items:
+              type: number
+            minItems: 3
+            maxItems: 3
+            description: The upper bound of the color range to filter out (inclusive).
+        required: [lower_bound, upper_bound]
+        description: The color range to filter out.
+    required: [image]
+  outputs:
+    properties:
+      processed_image:
+        type: file
+        description: The processed image file.
