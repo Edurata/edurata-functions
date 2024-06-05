@@ -1,33 +1,48 @@
-name: google_drive_client
-description: A client to upload and download files from Google Drive using OAuth access token.
+name: google_drive_file_handler
+description: Function to handle Google Drive file operations including upload, download, delete, and list.
 runtime: python3_10
 interface:
   inputs:
     properties:
+      OAUTH_TOKEN:
+        type: env
+        description: OAuth token for Google Drive.
       action:
         type: string
-        description: "Action to perform: 'upload' or 'download'"
+        description: Action to perform (upload, download, delete, list).
       file_path:
-        type: file
-        description: "Path to the local file to upload"
+        type: string
+        description: Path to the local file for upload.
       drive_file_id:
         type: string
-        description: "Google Drive file ID for downloading"
+        description: ID of the Google Drive file for download or delete.
       upload_file_name:
         type: string
-        description: "Name of the file to upload to Google Drive"
+        description: Name of the file to upload to Google Drive.
+      folder_id:
+        type: string
+        description: ID of the folder to list files from.
+    required: ["action"]
   outputs:
     properties:
-      message:
+      download_file_path:
         type: string
-        description: "Result message of the action"
+        description: Path to the downloaded file.
       drive_file_id:
         type: string
-        description: "ID of the uploaded file on Google Drive"
-      download_file_path:
-        type: file
-        description: "Path to the downloaded file"
-    required: []
-  required: [action]
-inputs:
-  OAUTH_TOKEN: ${secrets.GOOGLE_DRIVE_OAUTH_TOKEN}
+        description: ID of the uploaded file on Google Drive.
+      message:
+        type: string
+        description: Status message for delete operation.
+      files:
+        type: array
+        description: List of files in Google Drive.
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              description: ID of the file.
+            name:
+              type: string
+              description: Name of the file.

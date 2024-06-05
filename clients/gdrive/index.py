@@ -33,11 +33,24 @@ def upload_file(service, file_path, upload_file_name):
     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     return file.get('id')
 
-def handler(inputs, todoRemove):
+# Delete a file from Google Drive
+def delete_file(service, file_id):
+    service.files().delete(fileId=file_id).execute()
+    return {'message': 'File deleted successfully'}
+
+# List files in Google Drive
+def list_files(service, folder_id=None):
+    query = f"'{folder_id}' in parents" if folder_id else None
+    results = service.files().list(q=query, pageSize=10, fields="files(id, name)").execute()
+    items = results.get('files', [])
+    return [{'id': item['id'], 'name': item['name']} for item in items]
+
+def handler(inputs):
     action = inputs['action']
     file_path = inputs.get('file_path')
     drive_file_id = inputs.get('drive_file_id')
     upload_file_name = inputs.get('upload_file_name')
+    folder_id = inputs.get('folder_id')
 
     service = init_drive_api()
 
@@ -51,8 +64,16 @@ def handler(inputs, todoRemove):
             return {'message': 'file_path and upload_file_name are required for uploading'}
         uploaded_file_id = upload_file(service, file_path, upload_file_name)
         return {'drive_file_id': uploaded_file_id}
+    elif action == 'delete':
+        if not drive_file_id:
+            return {'message': 'drive_file_id is required for deleting'}
+        delete_response = delete_file(service, drive_file_id)
+        return delete_response
+    elif action == 'list':
+        files = list_files(service, folder_id)
+        return {'files': files}
     else:
-        return {'message': 'Invalid action. Please specify "upload" or "download".'}
+        return {'message': 'Invalid action. Please specify "upload", "download", "delete", or "list".'}
 
 # Sample function call
 # os.environ['OAUTH_TOKEN'] = 'your_oauth_token'
@@ -66,5 +87,17 @@ def handler(inputs, todoRemove):
 #     'action': 'upload',
 #     'file_path': '/path/to/local/file',
 #     'upload_file_name': 'uploaded_file_name'
+# }
+# print(handler(inputs))
+
+# inputs = {
+#     'action': 'delete',
+#     'drive_file_id': 'your_drive_file_id'
+# }
+# print(handler(inputs))
+
+# inputs = {
+#     'action': 'list',
+#     'folder_id': 'your_folder_id'
 # }
 # print(handler(inputs))

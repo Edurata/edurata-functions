@@ -1,0 +1,19 @@
+name: pdfFormHandler
+description: Fills in form data of a PDF file or reads form fields
+runtime: nodejs20
+interface:
+  inputs:
+    properties:
+      action:
+        type: string
+      pdfFilePath:
+        type: file
+      formData:
+        type: object
+    required: [action, pdfFilePath]
+  outputs:
+    properties:
+      outputFilePath:
+        type: file
+      formFields:
+        type: object
