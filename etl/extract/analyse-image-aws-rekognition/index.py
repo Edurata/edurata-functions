@@ -36,10 +36,10 @@ def handler(inputs):
         response_celebrities = rekognition.recognize_celebrities(Image={'Bytes': image_bytes})
     
     return {
-        "labels": response_labels["Labels"],
-        "faces": response_faces["FaceDetails"],
-        "text": response_text["TextDetections"],
-        "celebrities": response_celebrities["CelebrityFaces"]
+        "labels": response_labels["Labels"] if "Labels" in response_labels else [],
+        "faces": response_faces["FaceDetails"] if "FaceDetails" in response_faces else [],
+        "text": response_text["TextDetections"] if "TextDetections" in response_text else [],
+        "celebrities": response_celebrities["CelebrityFaces"] if "CelebrityFaces" in response_celebrities else []
     }
 
 # Sample function call
