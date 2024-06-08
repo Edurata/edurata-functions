@@ -30,7 +30,7 @@ interface:
         type: array
         description: The paths to the media to tweet
         items:
-          type: string
+          type: file
     required:
       - API_KEY
       - API_SECRET
