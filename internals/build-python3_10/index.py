@@ -2,12 +2,13 @@ import subprocess
 import os
 import re
 
+# This is necessary in case python is run in a lambda
 def modify_handler_signature(code):
     # Define the regular expression pattern
     pattern = r"def handler\(([^,)]+)\):"
     
     # Define the replacement string
-    replacement = r"def handler(\1, additional_parameter):"
+    replacement = r"def handler(\1, additional_parameter = 'Dummy'):"
     
     # Perform the substitution
     modified_code = re.sub(pattern, replacement, code)
