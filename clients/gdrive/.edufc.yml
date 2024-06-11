@@ -6,7 +6,7 @@ interface:
     properties:
       OAUTH_TOKEN:
         type: env
-        description: OAuth token for Google Drive.
+        description: OAuth token for Google Drive..
       action:
         type: string
         description: Action to perform (upload, download, delete, list).
