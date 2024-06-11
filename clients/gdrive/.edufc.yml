@@ -47,4 +47,4 @@ interface:
               type: string
               description: Name of the file.
 inputs:
-  OAUTH_TOKEN: ${secrets.GOOGLE_OAUTH_TOKEN}
+  OAUTH_TOKEN: ${secrets.GOOGLE_DRIVE_OAUTH_TOKEN}
