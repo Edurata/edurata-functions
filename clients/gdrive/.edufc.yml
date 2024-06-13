@@ -1,5 +1,5 @@
 name: google_drive_file_handler
-description: Function to handle Google Drive file operations including upload, download, delete, and list.
+description: Function to handle Google Drive file operations including upload, download, delete, and list...
 runtime: python3_10
 interface:
   inputs:
