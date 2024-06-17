@@ -5,20 +5,22 @@ interface:
     properties:
       pdf_path:
         type: file
-      field_data:
-        type: object
-        properties:
-          field_name:
-            type: string
-          field_value:
-            type: string
-        required:
-          - field_name
-          - field_value
+      fields_data:
+        type: array
+        items:
+          type: object
+          properties:
+            field_name:
+              type: string
+            field_value:
+              type: string
+          required:
+            - field_name
+            - field_value
   outputs:
     properties:
       filled_pdf_path:
         type: file
     required:
       - filled_pdf_path
-  description: Fills in a text field inside a PDF based on the given field name and value and saves the filled PDF.
+  description: Fills in text fields inside a PDF based on the given field names and values, and saves the filled PDF.

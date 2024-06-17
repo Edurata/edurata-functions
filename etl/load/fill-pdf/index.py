@@ -1,40 +1,28 @@
-import PyPDF2
-from PyPDF2.generic import NameObject, TextStringObject
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-import io
+from pypdf import PdfReader, PdfWriter
+
+def fill_pdf_fields(pdf_path, fields_data):
+    reader = PdfReader(pdf_path)
+    writer = PdfWriter()
+    
+    page = reader.pages[0]
+    fields = reader.get_fields()
+
+    writer.add_page(page)
+
+    field_values = {field['field_name']: field['field_value'] for field in fields_data}
+    writer.update_page_form_field_values(writer.pages[0], field_values)
+
+    return writer
 
 def handler(inputs):
     pdf_path = inputs['pdf_path']
-    field_name = inputs['field_data']['field_name']
-    field_value = inputs['field_data']['field_value']
+    fields_data = inputs['fields_data']
     
-    # Read the existing PDF
-    pdf_reader = PyPDF2.PdfFileReader(pdf_path)
-    pdf_writer = PyPDF2.PdfFileWriter()
-    
-    # Create a new PDF to overlay
-    packet = io.BytesIO()
-    can = canvas.Canvas(packet, pagesize=letter)
-    
-    # Assuming a simple fixed position for demonstration purposes
-    can.drawString(100, 750, field_value)
-    can.save()
-    
-    packet.seek(0)
-    overlay_pdf = PyPDF2.PdfFileReader(packet)
-    
-    for page_num in range(pdf_reader.getNumPages()):
-        page = pdf_reader.getPage(page_num)
-        
-        if page_num == 0:  # Add overlay only to the first page for demonstration
-            page.mergePage(overlay_pdf.getPage(0))
-        
-        pdf_writer.addPage(page)
+    writer = fill_pdf_fields(pdf_path, fields_data)
     
     filled_pdf_path = 'filled_pdf.pdf'
-    with open(filled_pdf_path, 'wb') as output_pdf:
-        pdf_writer.write(output_pdf)
+    with open(filled_pdf_path, 'wb') as output_stream:
+        writer.write(output_stream)
     
     outputs = {
         'filled_pdf_path': filled_pdf_path
@@ -45,10 +33,10 @@ def handler(inputs):
 # Sample function call
 # inputs = {
 #     'pdf_path': 'example.pdf',
-#     'field_data': {
-#         'field_name': 'Name',
-#         'field_value': 'John Doe'
-#     }
+#     'fields_data': [
+#         {'field_name': 'Name', 'field_value': 'John Doe'},
+#         {'field_name': 'Date', 'field_value': '2024-06-17'}
+#     ]
 # }
 # outputs = handler(inputs)
 # print(outputs)
