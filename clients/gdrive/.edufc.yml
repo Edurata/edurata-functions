@@ -5,8 +5,8 @@ interface:
   inputs:
     properties:
       OAUTH_TOKEN:
-        type: env
-        description: OAuth token for Google Drive..
+        type: string
+        description: OAuth token for Google Drive. Needs to be string so refresh works.
       action:
         type: string
         description: Action to perform (upload, download, delete, list).
@@ -22,7 +22,7 @@ interface:
       folder_id:
         type: string
         description: ID of the folder to list files from.
-    required: ["action"]
+    required: ["action", "OAUTH_TOKEN"]
   outputs:
     properties:
       download_file_path:

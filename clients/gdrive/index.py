@@ -77,11 +77,11 @@ def handler(inputs):
 
 # Sample function call
 # os.environ['OAUTH_TOKEN'] = 'your_oauth_token'
-# inputs = {
-#     'action': 'download',
-#     'drive_file_id': 'your_drive_file_id'
-# }
-# print(handler(inputs))
+inputs = {
+    'action': 'download',
+    'drive_file_id': '1JgLjmPTXGCszekzzKXFnw6MshidfFTwK'
+}
+print(handler(inputs))
 
 # inputs = {
 #     'action': 'upload',

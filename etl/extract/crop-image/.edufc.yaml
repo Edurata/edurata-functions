@@ -1,0 +1,30 @@
+name: image_section_extractor
+runtime: python3_10
+interface:
+  inputs:
+    properties:
+      image_path:
+        type: file
+      coordinates:
+        type: object
+        properties:
+          left:
+            type: integer
+          top:
+            type: integer
+          right:
+            type: integer
+          bottom:
+            type: integer
+        required:
+          - left
+          - top
+          - right
+          - bottom
+  outputs:
+    properties:
+      cropped_image_path:
+        type: file
+    required:
+      - cropped_image_path
+  description: Extracts a section of an image based on given coordinates and saves the cropped image.
