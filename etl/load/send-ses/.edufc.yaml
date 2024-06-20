@@ -18,6 +18,11 @@ interface:
       body:
         type: string
         description: The message body
+      attachments:
+        type: array
+        items:
+          type: file
+        description: List of files to attach to the email
       AWS_REGION:
         type: env
         description: The aws region
