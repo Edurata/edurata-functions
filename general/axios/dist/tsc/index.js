@@ -53,7 +53,7 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
         responseType: streamToFile ? "stream" : "json",
     };
     console.log("options:", options);
-    const response = (await (0, axios_1.default)(options)
+    const response = await (0, axios_1.default)(options)
         .then((res) => {
         if (streamToFile) {
             const fileName = generateFileName(url);
@@ -62,7 +62,6 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
             return new Promise((resolve, reject) => {
                 res.data.pipe(writer);
                 writer.on("finish", () => {
-                    // Close the writer stream when finished writing
                     writer.close();
                     resolve({
                         response: {
@@ -74,7 +73,6 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
                     });
                 });
                 writer.on("error", (err) => {
-                    // Close the writer stream and reject with the error
                     writer.close();
                     reject(err);
                 });
@@ -99,7 +97,7 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
         }
         console.log(err.message);
         return { error: err };
-    }));
+    });
     return response;
 }
 // test.
@@ -110,3 +108,13 @@ const handler = async (inputs) => {
     return response;
 };
 module.exports = { handler };
+// Sample function call for testing
+// const inputs = {
+//   method: "GET",
+//   url: "https://api.example.com/data",
+//   headers: {},
+//   params: { query: "value" },
+//   streamToFile: false,
+//   dataFromFile: ""
+// };
+// handler(inputs).then(response => console.log(response));

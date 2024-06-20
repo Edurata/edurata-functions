@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
-import { Handler, Outputs } from "./types";
 import * as fs from "fs";
 import * as path from "path";
 const readFile = require("util").promisify(fs.readFile);
+
 // Helper function to generate a unique file name.
 function generateFileName(url: string): string {
   const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
@@ -18,7 +18,7 @@ async function axiosWrapper(
   params = {},
   streamToFile = false,
   dataFromFile = ""
-): Promise<Outputs> {
+) {
   let dataToSend = data;
   const defaultHeaders = {
     ...headers,
@@ -39,7 +39,7 @@ async function axiosWrapper(
 
   console.log("options:", options);
 
-  const response = (await axios(options)
+  const response = await axios(options)
     .then((res) => {
       if (streamToFile) {
         const fileName = generateFileName(url);
@@ -49,7 +49,6 @@ async function axiosWrapper(
         return new Promise((resolve, reject) => {
           res.data.pipe(writer);
           writer.on("finish", () => {
-            // Close the writer stream when finished writing
             writer.close();
             resolve({
               response: {
@@ -61,7 +60,6 @@ async function axiosWrapper(
             });
           });
           writer.on("error", (err) => {
-            // Close the writer stream and reject with the error
             writer.close();
             reject(err);
           });
@@ -85,14 +83,14 @@ async function axiosWrapper(
       }
       console.log(err.message);
       return { error: err };
-    })) as Outputs;
+    });
+
   return response;
 }
 
 // test.
-const handler: Handler = async (inputs) => {
-  const { method, url, data, headers, params, streamToFile, dataFromFile } =
-    inputs;
+const handler = async (inputs) => {
+  const { method, url, data, headers, params, streamToFile, dataFromFile } = inputs;
   const response = await axiosWrapper(
     method,
     url,
@@ -107,3 +105,14 @@ const handler: Handler = async (inputs) => {
 };
 
 module.exports = { handler };
+
+// Sample function call for testing
+// const inputs = {
+//   method: "GET",
+//   url: "https://api.example.com/data",
+//   headers: {},
+//   params: { query: "value" },
+//   streamToFile: false,
+//   dataFromFile: ""
+// };
+// handler(inputs).then(response => console.log(response));

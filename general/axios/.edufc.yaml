@@ -1,7 +1,7 @@
 apiRevision: edurata.io/v1
 name: axios
 description: |
-  Generic function to call apis using the node package axios and optionally stream the response to a file..
+  Generic function to call APIs using the node package axios and optionally stream the response to a file.
 runtime: nodejs20
 entrypoint: dist/tsc/index.js
 include:
@@ -11,23 +11,26 @@ interface:
     properties:
       url:
         type: string
-        description: The url to fetch
+        description: The URL to fetch
       method:
         type: string
-        description: The http method
+        description: The HTTP method
       headers:
         type: object
-        description: The http headers
+        description: The HTTP headers
       data:
         type: object
-        description: The http body
+        description: The HTTP body
+      params:
+        type: object
+        description: The query parameters
       streamToFile:
         type: boolean
-        description: if the response should be streamed to a file
+        description: If the response should be streamed to a file
         default: false
       dataFromFile:
         type: file
-        description: if the request body should be streamed from a file
+        description: If the request body should be streamed from a file
         default: false
     required: [url]
   outputs:
@@ -37,19 +40,19 @@ interface:
         properties:
           data:
             type: object
-            description: The http response body
+            description: The HTTP response body
           status:
             type: number
-            description: The http status code
+            description: The HTTP status code
           statusText:
             type: string
-            description: The http status text
+            description: The HTTP status text
           headers:
             type: object
-            description: The http response headers
+            description: The HTTP response headers
           file:
             type: file
-            description: if streamToFile is true, this will contain the filepath.
+            description: If streamToFile is true, this will contain the file path.
       error:
         type: object
         properties:
@@ -61,13 +64,13 @@ interface:
             description: The error code
           config:
             type: object
-            description: The http request config
+            description: The HTTP request config
           request:
             type: object
-            description: The http request
+            description: The HTTP request
           response:
             type: object
-            description: The http response
+            description: The HTTP response
           isAxiosError:
             type: boolean
             description: Whether the error is an axios error
