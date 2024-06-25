@@ -1,43 +1,39 @@
 apiRevision: edurata.io/v1
 name: tweet
 description: |
-  wrapper for twitter api to make a tweet
+  Wrapper for Twitter API to make a tweet
 runtime: python3_10
 interface:
   inputs:
     properties:
       API_KEY:
         type: env
-        description: The twitter api key
+        description: The Twitter API key
       API_SECRET:
         type: env
-        description: The twitter api secret
+        description: The Twitter API secret
       ACCESS_TOKEN:
         type: env
-        description: The twitter access token
+        description: The Twitter access token
       ACCESS_TOKEN_SECRET:
         type: env
-        description: The twitter access token secret
+        description: The Twitter access token secret
       BEARER_TOKEN:
         type: env
-        description: The twitter bearer token
-      messages:
-        type: array
-        description: The messages to tweet
-        items:
-          type: string
-      mediaPaths:
-        type: array
-        description: The paths to the media to tweet
-        items:
-          type: file
+        description: The Twitter bearer token
+      message:
+        type: string
+        description: The message to tweet
+      mediaPath:
+        type: file
+        description: The path to the media to tweet
     required:
       - API_KEY
       - API_SECRET
       - ACCESS_TOKEN
       - ACCESS_TOKEN_SECRET
       - BEARER_TOKEN
-      - messages
+      - message
   outputs:
     properties:
       success:
