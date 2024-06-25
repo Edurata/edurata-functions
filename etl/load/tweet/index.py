@@ -49,5 +49,5 @@ def handler(inputs):
 if __name__ == "__main__":
     print(handler({
         "message": "Hello World!",
-        # "mediaPath": "./__tests__/test.png"
+        "mediaPath": "./__tests__/test.png"
     }))

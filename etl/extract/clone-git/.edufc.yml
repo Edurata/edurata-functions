@@ -10,14 +10,14 @@ interface:
       privateToken:
         type: string
         description: A token for accessing private repositories. Optional.
-        optional: true
       path:
         type: string
         description: A sub-path within the repository to return.
       ref:
         type: string
         description: A reference within the repository to checkout (branch, tag, or commit). Optional.
-        optional: true
+    required:
+      - repoUrl 
   outputs:
     properties:
       status:
