@@ -1,7 +1,7 @@
 apiRevision: edurata.io/v1
 name: tweet
 description: |
-  Wrapper for Twitter API to make a tweet
+  Wrapper for Twitter API to make a tweet.
 runtime: python3_10
 interface:
   inputs:
