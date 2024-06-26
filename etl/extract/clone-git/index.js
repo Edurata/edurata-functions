@@ -19,8 +19,8 @@ async function handler(inputs) {
     http,
     depth: 1,
     onAuth: (url, auth) => {
-      if (inputs.privateToken) {
-        return { ...auth, username: inputs.privateToken };
+      if (inputs.auth && inputs.auth.privateToken) {
+        return { ...auth, username: inputs.auth.privateToken };
       }
     },
   });
@@ -35,8 +35,8 @@ async function handler(inputs) {
     depth: 1,
     singleBranch: true,
     onAuth: (url, auth) => {
-      if (inputs.privateToken) {
-        return { ...auth, username: inputs.privateToken };
+      if (inputs.auth && inputs.auth.privateToken) {
+        return { ...auth, username: inputs.auth.privateToken };
       }
     },
   });

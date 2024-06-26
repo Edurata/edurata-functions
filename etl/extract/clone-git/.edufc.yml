@@ -7,9 +7,15 @@ interface:
       repoUrl:
         type: string
         description: The URL of the Git repository to clone.
-      privateToken:
-        type: string
-        description: A token for accessing private repositories. Optional.
+      auth:
+        type: object
+        properties:
+          privateUser:
+            type: string
+            description: A username for accessing private repositories. Optional.
+          privateToken:
+            type: string
+            description: A token for accessing private repositories. Optional.
       path:
         type: string
         description: A sub-path within the repository to return.
