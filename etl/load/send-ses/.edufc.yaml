@@ -15,7 +15,7 @@ interface:
       subject:
         type: string
         description: The message subject
-      body:
+      html_body:
         type: string
         description: The message body in html
       attachments:

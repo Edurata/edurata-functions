@@ -2,7 +2,6 @@ import boto3
 import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
 from email.utils import formatdate
 
 def send_email(sender, to, subject, html_body, attachments):
@@ -20,17 +19,11 @@ def send_email(sender, to, subject, html_body, attachments):
     msg['To'] = to
     msg['Date'] = formatdate(localtime=True)
 
-    # Create a multipart/alternative child container.
-    msg_body = MIMEMultipart('alternative')
-
     # Encode the HTML content.
     htmlpart = MIMEText(html_body, 'html', CHARSET)
 
-    # Attach the HTML part to the child container.
-    msg_body.attach(htmlpart)
-
-    # Attach the multipart/alternative child container to the multipart/mixed parent container.
-    msg.attach(msg_body)
+    # Attach the HTML part directly to the parent container.
+    msg.attach(htmlpart)
 
     # Attach files
     for attachment in attachments:
