@@ -10,8 +10,8 @@ def handler(inputs):
     recipient = inputs['to']
     subject = inputs['subject']
     html_body = inputs['html_body']
-    attachments = inputs['attachments']
-    
+    attachments = inputs.get('attachments', [])
+
     aws_region = os.getenv('AWS_REGION', 'eu-central-1')
     aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
     aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
