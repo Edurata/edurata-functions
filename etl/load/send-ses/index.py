@@ -3,9 +3,9 @@ import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
-from email.utils import COMMASPACE, formatdate
+from email.utils import formatdate
 
-def send_email(sender, to, subject, body, attachments):
+def send_email(sender, to, subject, html_body, attachments):
     # The character encoding for the email.
     CHARSET = "UTF-8"
     print("Sending email to: " + to)
@@ -23,12 +23,10 @@ def send_email(sender, to, subject, body, attachments):
     # Create a multipart/alternative child container.
     msg_body = MIMEMultipart('alternative')
 
-    # Encode the HTML and plain text content.
-    textpart = MIMEText(body.replace("\\n", "\n"), 'plain', CHARSET)
-    htmlpart = MIMEText(body.replace("\n", "<br>"), 'html', CHARSET)
+    # Encode the HTML content.
+    htmlpart = MIMEText(html_body, 'html', CHARSET)
 
-    # Attach the text and HTML parts to the child container.
-    msg_body.attach(textpart)
+    # Attach the HTML part to the child container.
     msg_body.attach(htmlpart)
 
     # Attach the multipart/alternative child container to the multipart/mixed parent container.
@@ -55,8 +53,7 @@ def send_email(sender, to, subject, body, attachments):
         }
     )
 
-    print("Email sent! Message ID:"),
-    print(response['MessageId'])
+    print("Email sent! Message ID:", response['MessageId'])
     return response
 
 def handler(inputs):
@@ -64,11 +61,11 @@ def handler(inputs):
         raise Exception('required inputs not present')
     sender = inputs.get("sender")
     to = inputs.get("to")
-    subject = inputs.get("subject","")
-    body = inputs.get("body", "")
+    subject = inputs.get("subject", "")
+    html_body = inputs.get("html_body", "")
     attachments = inputs.get("attachments", [])
 
-    response = send_email(sender, to, subject, body, attachments)
+    response = send_email(sender, to, subject, html_body, attachments)
     return {'status': True if response else False}
 
 # Sample function call (commented out)
@@ -76,7 +73,7 @@ def handler(inputs):
 #     "sender": "example@example.com",
 #     "to": "recipient@example.com",
 #     "subject": "Test Email",
-#     "body": "This is a test email.",
+#     "html_body": "<p>This is a test email.</p>",
 #     "attachments": ["/path/to/attachment1.txt", "/path/to/attachment2.pdf"]
 # }
 # print(handler(inputs))
