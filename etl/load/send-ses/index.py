@@ -1,72 +1,91 @@
-import boto3
 import os
+import boto3
+from botocore.exceptions import ClientError
 from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.utils import formatdate
+from email.mime.base import MIMEBase
+from email import encoders
 
-def send_email(sender, to, subject, html_body, attachments):
-    # The character encoding for the email.
-    CHARSET = "UTF-8"
-    print("Sending email to: " + to)
+def handler(inputs):
+    sender = inputs['sender']
+    recipient = inputs['to']
+    subject = inputs['subject']
+    html_body = inputs['html_body']
+    attachments = inputs['attachments']
+    
+    aws_region = os.getenv('AWS_REGION', 'eu-central-1')
+    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 
-    # Create a new SES resource and specify a region.
-    client = boto3.client('ses', region_name=os.environ['AWS_REGION'])
+    client = boto3.client(
+        'ses',
+        region_name=aws_region,
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key
+    )
 
     # Create a multipart/mixed parent container.
     msg = MIMEMultipart('mixed')
     msg['Subject'] = subject
     msg['From'] = sender
-    msg['To'] = to
-    msg['Date'] = formatdate(localtime=True)
+    msg['To'] = recipient
 
-    # Encode the HTML content.
-    htmlpart = MIMEText(html_body, 'html', CHARSET)
+    # Create a multipart/alternative child container.
+    msg_body = MIMEMultipart('alternative')
+    textpart = "This email requires an HTML-compatible email client."
+    htmlpart = html_body
 
-    # Attach the HTML part directly to the parent container.
-    msg.attach(htmlpart)
+    # Record the MIME types of both parts - text/plain and text/html.
+    part1 = MIMEBase('text', 'plain')
+    part1.set_payload(textpart)
+    part2 = MIMEBase('text', 'html')
+    part2.set_payload(htmlpart)
+
+    # Attach parts into message container.
+    msg_body.attach(part1)
+    msg_body.attach(part2)
+
+    # Attach the multipart/alternative child container to the multipart/mixed
+    # parent container.
+    msg.attach(msg_body)
 
     # Attach files
-    for attachment in attachments:
-        # Read the file content and guess its MIME type
-        with open(attachment, 'rb') as f:
-            part = MIMEApplication(f.read())
-            part.add_header(
-                'Content-Disposition',
-                'attachment',
-                filename=os.path.basename(attachment)
-            )
-            msg.attach(part)
+    for file_path in attachments:
+        part = MIMEBase('application', 'octet-stream')
+        with open(file_path, 'rb') as attachment:
+            part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header(
+            'Content-Disposition',
+            f'attachment; filename={os.path.basename(file_path)}',
+        )
+        msg.attach(part)
 
-    # Send the email
-    response = client.send_raw_email(
-        Source=sender,
-        Destinations=[to],
-        RawMessage={
-            'Data': msg.as_string(),
-        }
-    )
+    try:
+        # Provide the contents of the email.
+        response = client.send_raw_email(
+            Source=sender,
+            Destinations=[
+                recipient,
+            ],
+            RawMessage={
+                'Data': msg.as_string(),
+            },
+        )
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+        return {'status': False}
+    else:
+        return {'status': True}
 
-    print("Email sent! Message ID:", response['MessageId'])
-    return response
-
-def handler(inputs):
-    if 'sender' not in inputs or 'to' not in inputs:
-        raise Exception('required inputs not present')
-    sender = inputs.get("sender")
-    to = inputs.get("to")
-    subject = inputs.get("subject", "")
-    html_body = inputs.get("html_body", "")
-    attachments = inputs.get("attachments", [])
-
-    response = send_email(sender, to, subject, html_body, attachments)
-    return {'status': True if response else False}
-
-# Sample function call (commented out)
+# Sample function call
 # inputs = {
-#     "sender": "example@example.com",
-#     "to": "recipient@example.com",
-#     "subject": "Test Email",
-#     "html_body": "<p>This is a test email.</p>",
-#     "attachments": ["/path/to/attachment1.txt", "/path/to/attachment2.pdf"]
+#     'sender': 'sender@example.com',
+#     'to': 'recipient@example.com',
+#     'subject': 'Test Email',
+#     'html_body': '<h1>Test Email</h1><p>This is a test email.</p>',
+#     'attachments': ['/path/to/attachment1', '/path/to/attachment2']
 # }
+# os.environ['AWS_ACCESS_KEY_ID'] = 'your_access_key_id'
+# os.environ['AWS_SECRET_ACCESS_KEY'] = 'your_secret_access_key'
+# os.environ['AWS_REGION'] = 'eu-central-1'
 # print(handler(inputs))
