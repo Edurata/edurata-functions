@@ -9,7 +9,7 @@ def handler(inputs):
     sender = inputs['sender']
     recipient = inputs['to']
     subject = inputs['subject']
-    html_body = inputs['html_body'].replace('\n', '<br>')
+    html_body = inputs['html_body'].replace('\\n', '<br>').replace('\n', '<br>')
     attachments = inputs.get('attachments', [])
 
     aws_region = os.getenv('AWS_REGION', 'eu-central-1')
