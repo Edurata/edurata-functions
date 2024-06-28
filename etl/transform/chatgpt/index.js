@@ -3,11 +3,11 @@ const OpenAI = require("openai");
 const openai = new OpenAI({ apiKey: process.env.API_KEY });
 
 async function handler(inputs) {
-  const { systemMessage, message } = inputs;
+  const { systemMessage, message, model = "gpt-3.5-turbo" } = inputs;
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model,
       messages: [
         {
           role: "system",
