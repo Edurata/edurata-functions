@@ -7,7 +7,7 @@ const readFile = require("util").promisify(fs.readFile);
 function generateFileName(url: string): string {
   const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
   const urlHash = Buffer.from(url).toString("hex").substring(0, 6);
-  return `download-${datePrefix}-${urlHash}.tmp`;
+  return `download-${datePrefix}-${urlHash}`;
 }
 
 async function axiosWrapper(
@@ -90,7 +90,15 @@ async function axiosWrapper(
 
 // test.
 const handler = async (inputs) => {
-  const { method, url, data, headers, params, streamToFile, dataFromFile } = inputs;
+  const {
+    method,
+    url,
+    data,
+    headers,
+    params,
+    streamToFile,
+    dataFromFile,
+  } = inputs;
   const response = await axiosWrapper(
     method,
     url,

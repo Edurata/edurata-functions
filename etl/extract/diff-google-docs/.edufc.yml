@@ -1,0 +1,22 @@
+name: document_revision_diff
+runtime: python3_10
+description: Retrieve and compare the latest two revisions of a Google Document to find differences.
+inputs:
+  properties:
+    document_id:
+      type: string
+      description: The ID of the document to retrieve revisions from.
+    API_TOKEN:
+      type: env
+      description: The API key for accessing the Google Docs API.
+outputs:
+  properties:
+    differences:
+      type: string
+      description: The differences between the latest two revisions.
+    error:
+      type: string
+      description: Error message if the operation fails.
+    details:
+      type: object
+      description: Additional details about the error, if any.
