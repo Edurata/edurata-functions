@@ -1,0 +1,14 @@
+name: create_gdrive_folder_path
+runtime: nodejs20
+interface:
+  inputs:
+    properties:
+      folder_path:
+        type: string
+        description: "The folder path to create in Google Drive, e.g., 'hello/foo/bar'."
+    required: ["folder_path"]
+  outputs:
+    properties:
+      message:
+        type: string
+        description: "Status message of the folder creation process."
