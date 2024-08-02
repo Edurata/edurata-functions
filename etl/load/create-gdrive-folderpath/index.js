@@ -2,7 +2,7 @@ const axios = require('axios');
 
 // Function to authenticate with Google Drive API
 async function authenticate() {
-    const token = process.env.GOOGLE_DRIVE_API_TOKEN; // Store your access token as an environment variable
+    const token = process.env.OAUTH_TOKEN; // Store your access token as an environment variable
     return token;
 }
 

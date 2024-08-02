@@ -3,6 +3,9 @@ runtime: nodejs20
 interface:
   inputs:
     properties:
+      OAUTH_TOKEN:
+        type: env
+        description: "OAuth token for Google Drive API."
       folder_path:
         type: string
         description: "The folder path to create in Google Drive, e.g., 'hello/foo/bar'."
