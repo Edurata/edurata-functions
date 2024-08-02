@@ -9,7 +9,7 @@ interface:
       folder_path:
         type: string
         description: "The folder path to create in Google Drive, e.g., 'hello/foo/bar'."
-    required: ["folder_path"]
+    required: ["folder_path", "OAUTH_TOKEN"]
   outputs:
     properties:
       message:
