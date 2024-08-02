@@ -16,6 +16,9 @@ interface:
       drive_file_id:
         type: string
         description: ID of the Google Drive file for download or delete.
+      parent_folder_id:
+        type: string
+        description: ID of the parent folder for the uploaded file.
       upload_file_name:
         type: string
         description: Name of the file to upload to Google Drive.
