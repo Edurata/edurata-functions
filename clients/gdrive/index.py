@@ -27,8 +27,12 @@ def download_file(service, file_id):
     return file_path
 
 # Upload a file to Google Drive
-def upload_file(service, file_path, upload_file_name):
+def upload_file(service, file_path, upload_file_name, parent_folder_id=None):
+    # Modify the file metadata to include the parent folder ID if specified
     file_metadata = {'name': upload_file_name}
+    if parent_folder_id:
+        file_metadata['parents'] = [parent_folder_id]
+        
     media = MediaFileUpload(file_path, resumable=True)
     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     return file.get('id')
@@ -50,6 +54,7 @@ def handler(inputs):
     file_path = inputs.get('file_path')
     drive_file_id = inputs.get('drive_file_id')
     upload_file_name = inputs.get('upload_file_name')
+    parent_folder_id = inputs.get('parent_folder_id')  # Added for specifying parent folder ID
     folder_id = inputs.get('folder_id')
 
     service = init_drive_api()
@@ -62,7 +67,7 @@ def handler(inputs):
     elif action == 'upload':
         if not file_path or not upload_file_name:
             return {'message': 'file_path and upload_file_name are required for uploading'}
-        uploaded_file_id = upload_file(service, file_path, upload_file_name)
+        uploaded_file_id = upload_file(service, file_path, upload_file_name, parent_folder_id)
         return {'drive_file_id': uploaded_file_id}
     elif action == 'delete':
         if not drive_file_id:
@@ -77,16 +82,18 @@ def handler(inputs):
 
 # Sample function call
 # os.environ['OAUTH_TOKEN'] = 'your_oauth_token'
-inputs = {
-    'action': 'download',
-    'drive_file_id': '1JgLjmPTXGCszekzzKXFnw6MshidfFTwK'
-}
-print(handler(inputs))
+# inputs = {
+#     'action': 'download',
+#     'drive_file_id': '1JgLjmPTXGCszekzzKXFnw6MshidfFTwK'
+# }
+# print(handler(inputs))
 
+# Updated upload example with parent folder ID
 # inputs = {
 #     'action': 'upload',
 #     'file_path': '/path/to/local/file',
-#     'upload_file_name': 'uploaded_file_name'
+#     'upload_file_name': 'uploaded_file_name',
+#     'parent_folder_id': 'your_parent_folder_id'
 # }
 # print(handler(inputs))
 
