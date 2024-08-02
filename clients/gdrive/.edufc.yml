@@ -11,7 +11,7 @@ interface:
         type: string
         description: Action to perform (upload, download, delete, list).
       file_path:
-        type: string
+        type: file
         description: Path to the local file for upload.
       drive_file_id:
         type: string
