@@ -24,7 +24,7 @@ interface:
         type: string
         description: "The publish status. Can be 'public', 'draft', or 'unlisted'."
         default: "draft"
-    required: [ACCESS_TOKEN, title, content, contentFormat, publishStatus]
+    required: [ACCESS_TOKEN, title, content]
   outputs:
     properties:
       postId:
