@@ -19,11 +19,13 @@ interface:
       shareCommentary:
         type: string
         description: "A comment or introductory text to accompany the article when shared."
+        default: "Check out this article!"
       shareMediaCategory:
         type: string
         description: "The category of media being shared. Typically 'ARTICLE' for blog posts."
+        default: "ARTICLE"
     required:
-      [accessToken, author, title, content, shareCommentary, shareMediaCategory]
+      [accessToken, author, title, content]
     env:
   outputs:
     properties:
