@@ -1,5 +1,6 @@
 name: post_to_medium
 description: Posts an article to Medium.com using Medium's API.
+runtime: python3_10
 interface:
   inputs:
     properties:
