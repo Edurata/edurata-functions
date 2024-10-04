@@ -16,13 +16,15 @@ interface:
       contentFormat:
         type: string
         description: "The format of the content. Can be 'html' or 'markdown'."
+        default: "html"
       tags:
         type: array
         description: "A list of tags for the post."
       publishStatus:
         type: string
         description: "The publish status. Can be 'public', 'draft', or 'unlisted'."
-    required: [accessToken, title, content, contentFormat, publishStatus]
+        default: "draft"
+    required: [ACCESS_TOKEN, title, content, contentFormat, publishStatus]
   outputs:
     properties:
       postId:
