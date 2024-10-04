@@ -1,5 +1,6 @@
 name: post_to_linkedin_blog
 description: Posts an article to LinkedIn using LinkedIn's Share API.
+runtime: python3_10
 interface:
   inputs:
     properties:
