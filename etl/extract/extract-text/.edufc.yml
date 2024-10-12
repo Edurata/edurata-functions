@@ -1,0 +1,13 @@
+name: "text_extractor"
+runtime: "python3_10"
+description: "A function to extract text from files such as PDF, HTML, Word, or plain text files."
+inputs:
+  properties:
+    input_file:
+      type: "file"
+      description: "The file from which to extract the text."
+outputs:
+  properties:
+    extracted_text:
+      type: "string"
+      description: "The extracted text from the provided file."
