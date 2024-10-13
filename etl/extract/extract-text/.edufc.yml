@@ -1,5 +1,5 @@
 name: "text_extractor"
-runtime: "python3_10"
+runtime: python3_10
 description: "A function to extract text from files such as PDF, HTML, Word, or plain text files."
 inputs:
   properties:

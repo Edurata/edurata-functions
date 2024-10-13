@@ -17,6 +17,7 @@ async function axiosWrapper(
   headers = {},
   params = {},
   streamToFile = false,
+  streamToFileName = null,
   dataFromFile = ""
 ) {
   let dataToSend = data;
@@ -42,7 +43,7 @@ async function axiosWrapper(
   const response = await axios(options)
     .then((res) => {
       if (streamToFile) {
-        const fileName = generateFileName(url);
+        const fileName = streamToFileName || generateFileName(url);
         const filePath = path.join(__dirname, fileName);
         const writer = fs.createWriteStream(filePath);
 
