@@ -30,13 +30,30 @@ const axios_1 = __importDefault(require("axios"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const readFile = require("util").promisify(fs.readFile);
+// Helper function to extract filename from Content-Disposition or URL
+function getFileNameFromHeadersOrUrl(res, url) {
+    const disposition = res.headers["content-disposition"];
+    let fileName = "";
+    if (disposition && disposition.includes("filename=")) {
+        const fileNameMatch = disposition.match(/filename="?(.+)"?/);
+        if (fileNameMatch?.[1]) {
+            fileName = fileNameMatch[1];
+        }
+    }
+    // Fallback to extracting from the URL
+    if (!fileName) {
+        const urlPath = new URL(url).pathname;
+        fileName = path.basename(urlPath);
+    }
+    return fileName || generateFileName(url); // Fallback to unique name if necessary
+}
 // Helper function to generate a unique file name.
 function generateFileName(url) {
     const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
     const urlHash = Buffer.from(url).toString("hex").substring(0, 6);
-    return `download-${datePrefix}-${urlHash}.tmp`;
+    return `download-${datePrefix}-${urlHash}`;
 }
-async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile = false, dataFromFile = "") {
+async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile = false, streamToFileName = null, dataFromFile = "") {
     let dataToSend = data;
     const defaultHeaders = {
         ...headers,
@@ -56,7 +73,7 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
     const response = await (0, axios_1.default)(options)
         .then((res) => {
         if (streamToFile) {
-            const fileName = generateFileName(url);
+            const fileName = streamToFileName || getFileNameFromHeadersOrUrl(res, url);
             const filePath = path.join(__dirname, fileName);
             const writer = fs.createWriteStream(filePath);
             return new Promise((resolve, reject) => {
@@ -100,21 +117,13 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
     });
     return response;
 }
-// test.
-const handler = async (inputs) => {
-    const { method, url, data, headers, params, streamToFile, dataFromFile } = inputs;
-    const response = await axiosWrapper(method, url, data, headers, params, streamToFile, dataFromFile);
-    console.log("response:", response);
-    return response;
-};
-module.exports = { handler };
 // Sample function call for testing
 // const inputs = {
 //   method: "GET",
-//   url: "https://api.example.com/data",
+//   url: "https://example.com/file.txt",
 //   headers: {},
-//   params: { query: "value" },
-//   streamToFile: false,
+//   params: {},
+//   streamToFile: true,
 //   dataFromFile: ""
 // };
 // handler(inputs).then(response => console.log(response));

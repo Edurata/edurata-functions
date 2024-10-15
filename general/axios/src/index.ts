@@ -3,6 +3,27 @@ import * as fs from "fs";
 import * as path from "path";
 const readFile = require("util").promisify(fs.readFile);
 
+// Helper function to extract filename from Content-Disposition or URL
+function getFileNameFromHeadersOrUrl(res, url: string): string {
+  const disposition = res.headers["content-disposition"];
+  let fileName = "";
+
+  if (disposition && disposition.includes("filename=")) {
+    const fileNameMatch = disposition.match(/filename="?(.+)"?/);
+    if (fileNameMatch?.[1]) {
+      fileName = fileNameMatch[1];
+    }
+  }
+
+  // Fallback to extracting from the URL
+  if (!fileName) {
+    const urlPath = new URL(url).pathname;
+    fileName = path.basename(urlPath);
+  }
+
+  return fileName || generateFileName(url); // Fallback to unique name if necessary
+}
+
 // Helper function to generate a unique file name.
 function generateFileName(url: string): string {
   const datePrefix = new Date().toISOString().replace(/[:.]/g, "-");
@@ -43,7 +64,8 @@ async function axiosWrapper(
   const response = await axios(options)
     .then((res) => {
       if (streamToFile) {
-        const fileName = streamToFileName || generateFileName(url);
+        const fileName =
+          streamToFileName || getFileNameFromHeadersOrUrl(res, url);
         const filePath = path.join(__dirname, fileName);
         const writer = fs.createWriteStream(filePath);
 
@@ -89,39 +111,13 @@ async function axiosWrapper(
   return response;
 }
 
-// test.
-const handler = async (inputs) => {
-  const {
-    method,
-    url,
-    data,
-    headers,
-    params,
-    streamToFile,
-    dataFromFile,
-  } = inputs;
-  const response = await axiosWrapper(
-    method,
-    url,
-    data,
-    headers,
-    params,
-    streamToFile,
-    dataFromFile
-  );
-  console.log("response:", response);
-  return response;
-};
-
-module.exports = { handler };
-
 // Sample function call for testing
 // const inputs = {
 //   method: "GET",
-//   url: "https://api.example.com/data",
+//   url: "https://example.com/file.txt",
 //   headers: {},
-//   params: { query: "value" },
-//   streamToFile: false,
+//   params: {},
+//   streamToFile: true,
 //   dataFromFile: ""
 // };
 // handler(inputs).then(response => console.log(response));
