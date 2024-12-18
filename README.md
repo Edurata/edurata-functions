@@ -4,6 +4,8 @@
   # **Edurata Functions**
   
   _Open-source workflow templates for orchestrating Python and Node.js functions._
+  
+  _find the accompanying [Edurata Workflows here](https://github.com/Edurata/edurata-workflows)_
 
   ![License](https://img.shields.io/github/license/Edurata/edurata-functions)
   ![Last Commit](https://img.shields.io/github/last-commit/Edurata/edurata-functions)
