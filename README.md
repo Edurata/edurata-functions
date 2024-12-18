@@ -1,10 +1,42 @@
-# Edurata functions
+<div align="center">
+  <img src="./logo-white.png" alt="Edurata Logo" width="150" />
+  
+  # **Edurata Functions**
+  
+  _Open-source workflow templates for orchestrating Python and Node.js functions._
 
-This is a collection of data processing functions that can be used on the Edurata platform. The functions are written in Python and Nodejs and are for public use.
+  ![License](https://img.shields.io/github/license/edurata/edurata-workflows)
+  ![Last Commit](https://img.shields.io/github/last-commit/edurata/edurata-workflows)
+  ![Issues](https://img.shields.io/github/issues/edurata/edurata-workflows)
+</div>
 
-## Structure
+---
 
-- `clients`: Contains generic functions that can be used with a whole third party api. For example instead of only a function to write to a google doc file, we have a client function to interact with the whole google docs api. This means that the interface is usually more complex.
-- `general`: Contains functions that are not specific to any third party api. For example a function "axios" which is a general http client.
-- `internals`: Contains functions that are used internally by the edurata platform but are open source for transparency. For example for the build functions workflow.
-- `etl`: Divided into `extract`, `transform` and `load`. Contains functions that are used to extract data from a source, transform it and load it to a destination. For example a function to extract data from a google doc file, transform it to a json and load it to a google sheet. They are more specific than the `clients` functions.
+# **About Edurata Functions**
+
+Edurata Functions is a collection of data processing functions designed for the Edurata platform. These functions are written in **Python** and **Node.js**, available for public use, and optimized for automation and integration tasks.
+
+---
+
+## **Repository Structure**
+
+### 📂 `clients`
+- **Purpose:** Generic functions that interact with entire third-party APIs.
+- **Example:** A function interfacing with Google Docs API, offering extensive API functionality beyond writing to a single document.
+
+### 📂 `general`
+- **Purpose:** API-agnostic functions providing essential utilities.
+- **Example:** An HTTP client function like `axios` for sending general HTTP requests.
+
+### 📂 `internals`
+- **Purpose:** Internal functions used by the Edurata platform, shared for transparency.
+- **Example:** Workflow automation scripts for internal builds or deployments.
+
+### 📂 `etl`
+- **Purpose:** Functions structured into `extract`, `transform`, and `load` categories.
+- **Example:** Extracting data from a Google Doc, transforming it to JSON, and loading it into a Google Sheet.
+
+---
+
+**🚀 Get Started:** Use these functions as a foundation for your automation projects on the Edurata platform. Contributions and enhancements are always welcome!
+
