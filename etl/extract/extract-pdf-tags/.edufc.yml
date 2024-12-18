@@ -1,0 +1,19 @@
+name: pdf_tag_content_extractor
+runtime: python3_10
+description: Scans a folder for PDFs, extracts text from each PDF, searches for a tag, and returns the content following the tag.
+interface:
+  inputs:
+    properties:
+      folder_path:
+        type: string
+        description: Path to the folder containing PDF files to scan.
+      search_tag:
+        type: string
+        description: Tag to search for within the PDF content.
+    required: [folder_path, search_tag]
+  outputs:
+    properties:
+      tag_contents:
+        type: array
+        description: List of dictionaries containing the file name and content found after the specified tag in each PDF.
+    required: [tag_contents]
