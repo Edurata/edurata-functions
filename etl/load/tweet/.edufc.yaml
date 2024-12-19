@@ -6,18 +6,6 @@ runtime: python3_10
 interface:
   inputs:
     properties:
-      API_KEY:
-        type: env
-        description: The Twitter API key
-      API_SECRET:
-        type: env
-        description: The Twitter API secret
-      ACCESS_TOKEN:
-        type: env
-        description: The Twitter access token
-      ACCESS_TOKEN_SECRET:
-        type: env
-        description: The Twitter access token secret
       BEARER_TOKEN:
         type: env
         description: The Twitter bearer token
@@ -26,12 +14,8 @@ interface:
         description: The message to tweet
       mediaPath:
         type: file
-        description: The path to the media to tweet
+        description: The path to the media to tweet (optional)
     required:
-      - API_KEY
-      - API_SECRET
-      - ACCESS_TOKEN
-      - ACCESS_TOKEN_SECRET
       - BEARER_TOKEN
       - message
   outputs:
