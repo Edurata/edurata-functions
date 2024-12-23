@@ -1,6 +1,6 @@
 apiRevision: edurata.io/v1
 name: sleep-python
-runtime: python3_8
+runtime: python3_10
 interface:
   inputs:
     properties:
