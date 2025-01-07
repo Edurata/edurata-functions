@@ -16,6 +16,7 @@ interface:
       model:
         type: string
         description: The model to use
+        enum: [gpt-3.5-turbo, gpt-4o]
         default: gpt-3.5-turbo
       API_KEY:
         type: env
