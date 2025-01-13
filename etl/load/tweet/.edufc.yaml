@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 name: tweet
 description: |
   Wrapper for Twitter API to make a tweet.

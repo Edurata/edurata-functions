@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 name: data-to-s3
 description: |
   wrapper to upload data to s3

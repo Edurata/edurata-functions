@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 name: get-drive-file
 description: |
   Get a file from google drive

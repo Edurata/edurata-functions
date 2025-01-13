@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 name: fetch-telegram
 description: |
   wrapper for telegram to pull posts

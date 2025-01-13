@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 runtime: python3_10
 description: Installs python packages.
 interface:

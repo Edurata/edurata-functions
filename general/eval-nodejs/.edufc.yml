@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 name: eval-nodejs
 description: |
   eval a small snippet of nodejs code

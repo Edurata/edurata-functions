@@ -1,32 +1,45 @@
-name: send-gmail-email
+name: email_send_with_thread
 runtime: python3_10
-description: Send a generic email with Gmail API, including customizable subject, body, and attachments.
+description: Sends an email via the Gmail API, optionally as part of an existing thread, with customizable subject, body, and attachments.
 interface:
   inputs:
     properties:
       GMAIL_API_KEY:
         type: env
-        description: The Gmail API key
+        description: API key for authenticating with Gmail.
       userEmail:
         type: string
-        description: The sender's email address
+        description: The sender's email address.
       recipient:
         type: string
-        description: The recipient's email address
+        description: The recipient's email address.
       subject:
         type: string
-        description: The subject of the email
+        description: The subject of the email.
       body:
         type: string
-        description: The body of the email
+        description: The body of the email.
       attachments:
         type: array
         items:
-          type: file
-        description: List of paths to files to attach
-    required: ["userEmail", "recipient", "subject", "body"]
+          type: string
+        description: List of file paths to attach.
+      threadId:
+        type: string
+        description: The thread ID to include the email in an existing thread.
+    required:
+      - userEmail
+      - recipient
+      - subject
+      - body
   outputs:
     properties:
       messageId:
         type: string
-        description: The ID of the sent email
+        description: The ID of the sent email.
+      threadId:
+        type: string
+        description: The thread ID of the email conversation.
+    required:
+      - messageId
+      - threadId

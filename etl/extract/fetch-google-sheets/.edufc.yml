@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 name: fetch-google-sheets
 description: |
   Get data from google sheets with the google api.

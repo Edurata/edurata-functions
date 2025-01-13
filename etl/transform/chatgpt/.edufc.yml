@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 name: chatgpt-command
 description: |
   Make one command to chat with gpt-3.

@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 name: send-ses
 description: |
   Send an email using AWS SES and aws boto3.

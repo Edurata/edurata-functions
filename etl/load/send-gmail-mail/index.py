@@ -9,6 +9,7 @@ from email import encoders
 def handler(inputs):
     """
     Sends an email via the Gmail API with customizable subject, body, and attachments.
+    Can send the email as part of an existing thread if threadId is provided.
 
     Args:
         inputs (dict): A dictionary containing:
@@ -17,10 +18,12 @@ def handler(inputs):
             - subject (str): The subject of the email.
             - body (str): The body text of the email.
             - attachments (list): List of file paths to attach (optional).
+            - threadId (str): Optional. The thread ID to include the email in an existing thread.
 
     Returns:
         dict: A dictionary containing:
             - messageId (str): The ID of the sent email.
+            - threadId (str): The thread ID of the email conversation.
     """
     # Check if the Gmail API key is defined
     gmail_api_key = os.getenv("GMAIL_API_KEY")
@@ -32,6 +35,7 @@ def handler(inputs):
     subject = inputs['subject']
     body = inputs['body']
     attachments = inputs.get('attachments', [])
+    thread_id = inputs.get('threadId', None)
 
     # Create email
     msg = MIMEMultipart()
@@ -64,11 +68,18 @@ def handler(inputs):
     data = {
         'raw': raw_message,
     }
+    if thread_id:
+        data['threadId'] = thread_id
+
     url = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
     response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 200:
-        return {"messageId": response.json().get("id")}
+        response_data = response.json()
+        return {
+            "messageId": response_data.get("id"),
+            "threadId": response_data.get("threadId")
+        }
     else:
         raise Exception(f"Failed to send email: {response.status_code}, {response.text}")
 
@@ -78,7 +89,8 @@ def handler(inputs):
 #     "recipient": "recipient-email@gmail.com",
 #     "subject": "Your Subject Here",
 #     "body": "The body of your email goes here.",
-#     "attachments": ["/path/to/file1.pdf", "/path/to/file2.pdf"]
+#     "attachments": ["/path/to/file1.pdf", "/path/to/file2.pdf"],
+#     "threadId": "12345abc"  # Optional
 # }
 # outputs = handler(inputs)
 # print(outputs)

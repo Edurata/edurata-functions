@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 name: get-google-images
 description: |
   wrapper to get images for a search term

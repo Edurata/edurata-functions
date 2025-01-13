@@ -1,4 +1,4 @@
-apiRevision: edurata.io/v1
+apiRevision: edurata.io/function/v1
 name: translate-deepl
 description: |
   Generic function to call apis using axios.
