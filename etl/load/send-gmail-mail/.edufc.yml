@@ -1,0 +1,32 @@
+name: send-gmail-email
+runtime: python3_10
+description: Send a generic email with Gmail API, including customizable subject, body, and attachments.
+interface:
+  inputs:
+    properties:
+      GMAIL_API_KEY:
+        type: env
+        description: The Gmail API key
+      userEmail:
+        type: string
+        description: The sender's email address
+      recipient:
+        type: string
+        description: The recipient's email address
+      subject:
+        type: string
+        description: The subject of the email
+      body:
+        type: string
+        description: The body of the email
+      attachments:
+        type: array
+        items:
+          type: file
+        description: List of paths to files to attach
+    required: ["userEmail", "recipient", "subject", "body"]
+  outputs:
+    properties:
+      messageId:
+        type: string
+        description: The ID of the sent email
