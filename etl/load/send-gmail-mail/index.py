@@ -22,6 +22,11 @@ def handler(inputs):
         dict: A dictionary containing:
             - messageId (str): The ID of the sent email.
     """
+    # Check if the Gmail API key is defined
+    gmail_api_key = os.getenv("GMAIL_API_KEY")
+    if not gmail_api_key:
+        raise Exception("The Gmail API key is not defined. Please set the GMAIL_API_KEY environment variable.")
+
     user_email = inputs['userEmail']
     recipient = inputs['recipient']
     subject = inputs['subject']
@@ -53,7 +58,7 @@ def handler(inputs):
 
     # Send email using Gmail API
     headers = {
-        'Authorization': f'Bearer {os.getenv("GMAIL_API_KEY")}',
+        'Authorization': f'Bearer {gmail_api_key}',
         'Content-Type': 'application/json',
     }
     data = {
