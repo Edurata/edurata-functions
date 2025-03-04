@@ -1,0 +1,24 @@
+name: airflow_dynamic_operator_executor
+runtime: python3_10
+description: A function to dynamically execute Airflow tasks with specified operators and executors.
+interface:
+  inputs:
+    properties:
+      operator_path:
+        type: string
+        description: The Python module path of the Airflow operator (e.g., 'airflow.operators.bash.BashOperator').
+      operator_params:
+        type: string
+        description: Parameters for the operator as a JSON string.
+      executor_type:
+        type: string
+        description: The executor to use ('LocalExecutor' or 'KubernetesExecutor').
+      execution_context:
+        type: string
+        description: Context information for task execution as a JSON string.
+    required: [operator_path, operator_params, executor_type]
+  outputs:
+    properties:
+      result:
+        type: string
+        description: The result or status of the executed task.

@@ -1,0 +1,24 @@
+name: ansible_wrapper_function
+runtime: python3_10
+description: A function to dynamically execute Ansible tasks by specifying the module, task, and configuration.
+interface:
+  inputs:
+    properties:
+      module:
+        type: string
+        description: The Ansible module to be used (e.g., 'shell', 'copy', 'ping').
+      task:
+        type: string
+        description: The task or action to execute with the specified module.
+      config:
+        type: string
+        description: Configuration options for the specified module in JSON or YAML format.
+      inventory:
+        type: string
+        description: Path to the Ansible inventory file.
+    required: [module, task, config, inventory]
+  outputs:
+    properties:
+      result:
+        type: string
+        description: The output of the executed Ansible task.
