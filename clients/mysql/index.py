@@ -4,7 +4,7 @@ import os
 import json
 
 # Main..
-def handler(inputs, context):
+def handler(inputs):
     connection = None  
     cursor = None  # Ensure cursor is initialized
     query = inputs.get('query')
