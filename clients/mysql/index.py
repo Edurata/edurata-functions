@@ -19,6 +19,7 @@ def handler(inputs):
     
     # Ensure all required environment variables are set
     if not all(connection_config.values()):
+        print(connection_config)
         return {"error": "Missing one or more required database environment variables."}
 
     try:
