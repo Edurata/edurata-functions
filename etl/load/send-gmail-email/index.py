@@ -10,6 +10,7 @@ def handler(inputs):
     """
     Sends an email via the Gmail API with customizable subject, body, and attachments.
     Can send the email as part of an existing thread if threadId is provided.
+    Can create a draft instead of sending the email if createDraft is set to True.
 
     Args:
         inputs (dict): A dictionary containing:
@@ -19,10 +20,11 @@ def handler(inputs):
             - body (str): The body text of the email.
             - attachments (list): List of file paths to attach (optional).
             - threadId (str): Optional. The thread ID to include the email in an existing thread.
+            - createDraft (bool): Optional. If True, the email will be saved as a draft instead of being sent.
 
     Returns:
         dict: A dictionary containing:
-            - messageId (str): The ID of the sent email.
+            - messageId (str): The ID of the sent email or draft.
             - threadId (str): The thread ID of the email conversation.
     """
     # Check if the Gmail API key is defined
@@ -36,6 +38,7 @@ def handler(inputs):
     body = inputs['body']
     attachments = inputs.get('attachments', [])
     thread_id = inputs.get('threadId', None)
+    create_draft = inputs.get('createDraft', False)
 
     # Create email
     msg = MIMEMultipart()
@@ -60,18 +63,23 @@ def handler(inputs):
     # Encode email as base64
     raw_message = base64.urlsafe_b64encode(msg.as_bytes()).decode()
 
-    # Send email using Gmail API
+    # Prepare API request
     headers = {
         'Authorization': f'Bearer {gmail_api_key}',
         'Content-Type': 'application/json',
     }
     data = {
-        'raw': raw_message,
+        'message': {'raw': raw_message}
     }
     if thread_id:
-        data['threadId'] = thread_id
+        data['message']['threadId'] = thread_id
 
-    url = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
+    # Determine whether to send the email or save as a draft
+    if create_draft:
+        url = "https://gmail.googleapis.com/gmail/v1/users/me/drafts"
+    else:
+        url = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
+
     response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 200:
@@ -81,16 +89,17 @@ def handler(inputs):
             "threadId": response_data.get("threadId")
         }
     else:
-        raise Exception(f"Failed to send email: {response.status_code}, {response.text}")
+        raise Exception(f"Failed to process email: {response.status_code}, {response.text}")
 
-# Example usage
+# Example usage:
 # inputs = {
 #     "userEmail": "your-email@gmail.com",
 #     "recipient": "recipient-email@gmail.com",
 #     "subject": "Your Subject Here",
 #     "body": "The body of your email goes here.",
 #     "attachments": ["/path/to/file1.pdf", "/path/to/file2.pdf"],
-#     "threadId": "12345abc"  # Optional
+#     "threadId": "12345abc",  # Optional
+#     "createDraft": True  # Set to True to save as a draft instead of sending
 # }
 # outputs = handler(inputs)
 # print(outputs)
