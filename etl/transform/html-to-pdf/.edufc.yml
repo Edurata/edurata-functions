@@ -1,0 +1,18 @@
+name: html_to_pdf_converter
+runtime: python3_10
+interface:
+  inputs:
+    properties:
+      html_file:
+        type: file
+        description: "Path to the input HTML file."
+    required:
+      - html_file
+  outputs:
+    properties:
+      pdf_file:
+        type: file
+        description: "Path to the output PDF file."
+    required:
+      - pdf_file
+description: "A function that converts an HTML file to a PDF file."
