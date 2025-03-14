@@ -52,7 +52,7 @@ def handler(inputs):
             result = cursor.fetchall()
 
             # Convert complex data types before JSON serialization
-            return {"result": json.dumps(result, default=serialize_custom)}
+            return {"result": result}
 
     except Error as e:
         return {"error": str(e)}
