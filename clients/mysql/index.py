@@ -3,11 +3,22 @@ from mysql.connector import Error
 import os
 import json
 from datetime import datetime
+from decimal import Decimal
+import uuid
+import base64
 
-# Function to convert datetime objects to string
-def serialize_datetime(obj):
+# Function to convert complex objects to JSON-compatible format
+def serialize_custom(obj):
     if isinstance(obj, datetime):
-        return obj.strftime('%Y-%m-%d %H:%M:%S')  # Format as needed
+        return obj.strftime('%Y-%m-%d %H:%M:%S')  # Convert datetime to string
+    elif isinstance(obj, Decimal):
+        return float(obj)  # Convert Decimal to float
+    elif isinstance(obj, bytes):
+        return base64.b64encode(obj).decode('utf-8')  # Encode binary data as base64 string
+    elif isinstance(obj, uuid.UUID):
+        return str(obj)  # Convert UUID object to string
+    elif isinstance(obj, set):  
+        return list(obj)  # Convert set to list
     raise TypeError(f"Type {type(obj)} not serializable")
 
 # Main handler function
@@ -40,8 +51,8 @@ def handler(inputs):
 
             result = cursor.fetchall()
 
-            # Convert datetime fields to strings before JSON serialization
-            return {"result": json.dumps(result, default=serialize_datetime)}
+            # Convert complex data types before JSON serialization
+            return {"result": json.dumps(result, default=serialize_custom)}
 
     except Error as e:
         return {"error": str(e)}
