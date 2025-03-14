@@ -2,11 +2,18 @@ import mysql.connector
 from mysql.connector import Error
 import os
 import json
+from datetime import datetime
 
-# Main..
+# Function to convert datetime objects to string
+def serialize_datetime(obj):
+    if isinstance(obj, datetime):
+        return obj.strftime('%Y-%m-%d %H:%M:%S')  # Format as needed
+    raise TypeError(f"Type {type(obj)} not serializable")
+
+# Main handler function
 def handler(inputs):
     connection = None  
-    cursor = None  # Ensure cursor is initialized
+    cursor = None
     query = inputs.get('query')
     
     # Load database configuration from environment variables
@@ -17,7 +24,6 @@ def handler(inputs):
         "database": os.getenv('MYSQL_DATABASE')
     }
     
-    # Ensure all required environment variables are set
     if not all(connection_config.values()):
         print(connection_config)
         return {"error": "Missing one or more required database environment variables."}
@@ -28,19 +34,19 @@ def handler(inputs):
             cursor = connection.cursor(dictionary=True)
             cursor.execute(query)
 
-            # Check if the query is a modification query
             if query.strip().lower().startswith(("insert", "update", "delete")):
                 connection.commit()
                 return {"result": "Query executed successfully."}
 
             result = cursor.fetchall()
-            return {"result": json.dumps(result)}
+
+            # Convert datetime fields to strings before JSON serialization
+            return {"result": json.dumps(result, default=serialize_datetime)}
 
     except Error as e:
         return {"error": str(e)}
 
     finally:
-        # Ensure both cursor and connection are closed
         if cursor:
             cursor.close()
         if connection and connection.is_connected():
