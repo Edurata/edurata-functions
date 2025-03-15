@@ -1,4 +1,4 @@
-import pdfkit
+from weasyprint import HTML
 import os
 
 def handler(inputs):
@@ -10,7 +10,7 @@ def handler(inputs):
     output_pdf = html_file.replace(".html", ".pdf")
 
     try:
-        pdfkit.from_file(html_file, output_pdf)
+        HTML(filename=html_file).write_pdf(output_pdf)
     except Exception as e:
         raise RuntimeError(f"Failed to convert HTML to PDF: {str(e)}")
     
