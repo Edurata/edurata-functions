@@ -9,7 +9,7 @@ const handler = async (inputs) => {
     // Synchronously execute npm install in the codePath directory
     console.log("npm installing in ", codePath);
     // install only production dependencies
-    execSync("npm install --only=production", {
+    execSync("npm install --only=production --ignore-scripts", {
       cwd: codePath,
       stdio: "inherit",
     });
