@@ -30,5 +30,7 @@ async function handler(inputs) {
   return { pdf_file: outputPdf };
 }
 
+module.exports = { handler };
+
 // Example function call (Commented Out)
 // handler({ html_file: "example.html" }).then(console.log).catch(console.error);
