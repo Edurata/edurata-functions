@@ -1,4 +1,4 @@
-from weasyprint import HTML
+from xhtml2pdf import pisa
 import os
 
 def handler(inputs):
@@ -10,12 +10,15 @@ def handler(inputs):
     output_pdf = html_file.replace(".html", ".pdf")
 
     try:
-        HTML(filename=html_file).write_pdf(output_pdf)
+        with open(html_file, "r", encoding="utf-8") as html_source:
+            with open(output_pdf, "wb") as pdf_output:
+                pisa_status = pisa.CreatePDF(html_source, dest=pdf_output)
+                if pisa_status.err:
+                    raise RuntimeError("Failed to generate PDF")
     except Exception as e:
-        raise RuntimeError(f"Failed to convert HTML to PDF: {str(e)}")
+        raise RuntimeError(f"PDF generation error: {str(e)}")
     
-    outputs = {"pdf_file": output_pdf}
-    return outputs
+    return {"pdf_file": output_pdf}
 
 # Example function call (Commented Out)
 # inputs = {"html_file": "example.html"}

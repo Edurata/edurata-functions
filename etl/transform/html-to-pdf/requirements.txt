@@ -1,1 +1,1 @@
-weasyprint
+xhtml2pdf
