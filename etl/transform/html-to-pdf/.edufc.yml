@@ -1,5 +1,5 @@
 name: html_to_pdf_converter
-runtime: python3_10
+runtime: nodejs20
 interface:
   inputs:
     properties:
