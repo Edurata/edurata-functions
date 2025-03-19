@@ -2,7 +2,7 @@ name: mysql_query_function
 runtime: python3_10
 description: |
   This function executes a query on a MySQL database.
-  The query is passed as an input and the result is returned as a string.
+  The query is passed as an input and the result is returned as a string..
 interface:
   inputs:
     properties:
