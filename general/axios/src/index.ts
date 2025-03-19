@@ -57,7 +57,7 @@ async function axiosWrapper(
         const fileName =
           streamToFileName || fileNameFromHeader || generateFileName(url);
 
-        const filePath = path.join(__dirname, fileName);
+        const filePath = path.join("/tmp", fileName);
         const writer = fs.createWriteStream(filePath);
 
         return new Promise((resolve, reject) => {

@@ -5,15 +5,14 @@ const archiver = require("archiver");
 // Handler function
 async function handler(inputs) {
   const { file: filePath } = inputs;
-  const output = fs.createWriteStream(`${path.basename(filePath)}.zip`);
+  const outputFilePath = path.join("/tmp", `${path.basename(filePath)}.zip`);
+  const output = fs.createWriteStream(outputFilePath);
   const archive = archiver("zip", {
     zlib: { level: 9 }, // Compression level
   });
 
   return new Promise((resolve, reject) => {
-    output.on("close", () =>
-      resolve({ zipped: `${path.basename(filePath)}.zip` })
-    );
+    output.on("close", () => resolve({ zipped: outputFilePath }));
     output.on("error", (err) => reject(err));
 
     archive.pipe(output);
