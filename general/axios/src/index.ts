@@ -39,7 +39,7 @@ async function axiosWrapper(
     method,
     url,
     headers: defaultHeaders,
-    data: dataToSend,
+    ...(method !== "GET" && { data: dataToSend }),
     params,
     responseType: streamToFile ? "stream" : "json",
   };
@@ -96,7 +96,7 @@ async function axiosWrapper(
         console.warn("err.response.headers:", err.response.headers);
       }
       console.log(err.message);
-      return { error: err };
+      throw err;
     });
 
   return response;

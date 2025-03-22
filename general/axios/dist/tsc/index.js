@@ -53,7 +53,7 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
         method,
         url,
         headers: defaultHeaders,
-        data: dataToSend,
+        ...(method !== "GET" && { data: dataToSend }),
         params,
         responseType: streamToFile ? "stream" : "json",
     };
@@ -67,7 +67,7 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
                 ? getFileNameFromHeader(contentDisposition)
                 : null;
             const fileName = streamToFileName || fileNameFromHeader || generateFileName(url);
-            const filePath = path.join(__dirname, fileName);
+            const filePath = path.join("/tmp", fileName);
             const writer = fs.createWriteStream(filePath);
             return new Promise((resolve, reject) => {
                 res.data.pipe(writer);
@@ -106,7 +106,7 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
             console.warn("err.response.headers:", err.response.headers);
         }
         console.log(err.message);
-        return { error: err };
+        throw err;
     });
     return response;
 }
