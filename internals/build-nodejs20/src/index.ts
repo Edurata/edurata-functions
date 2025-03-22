@@ -9,10 +9,13 @@ const handler = async (inputs) => {
     // Synchronously execute npm install in the codePath directory
     console.log("npm installing in ", codePath);
     // install only production dependencies
-    execSync("npm install --only=production --ignore-scripts", {
-      cwd: codePath,
-      stdio: "inherit",
-    });
+    execSync(
+      "npm install --only=production --ignore-scripts --cache ./tmp-npm-cache",
+      {
+        cwd: codePath,
+        stdio: "inherit",
+      }
+    );
 
     // remove package.json and package-lock.json since they cause when executing
     if (fs.existsSync(`${codePath}/package-lock.json`))
