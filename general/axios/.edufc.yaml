@@ -1,7 +1,7 @@
 apiRevision: edurata.io/function/v1
 name: axios
 description: |
-  Generic function to call APIs using the node package axios and optionally stream the response to a file.
+  Generic function to call APIs using the node package axios and optionally stream the response to a file..
 runtime: nodejs20
 entrypoint: dist/tsc/index.js
 include:
