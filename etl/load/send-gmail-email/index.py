@@ -45,7 +45,7 @@ def handler(inputs):
     msg['From'] = user_email
     msg['To'] = recipient
     msg['Subject'] = subject
-    msg.attach(MIMEText(body, 'plain'))
+    msg.attach(MIMEText(body, 'html'))
 
     # Attach files if provided
     for attachment_path in attachments:
