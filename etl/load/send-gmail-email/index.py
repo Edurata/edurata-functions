@@ -32,7 +32,7 @@ def handler(inputs):
     if not gmail_api_key:
         raise Exception("The Gmail API key is not defined. Please set the GMAIL_API_KEY environment variable.")
 
-    user_email = inputs['userEmail']
+    user_email = "me"
     recipient = inputs['recipient']
     subject = inputs['subject']
     body = inputs['body']
