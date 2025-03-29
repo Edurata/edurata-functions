@@ -2,6 +2,7 @@ apiRevision: edurata.io/function/v1
 runtime: nodejs20
 entrypoint: dist/tsc/index.js
 include: [dist/tsc/*]
+description: "Test"
 interface:
   inputs:
     properties:

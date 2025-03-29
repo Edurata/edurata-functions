@@ -1,6 +1,7 @@
 apiRevision: edurata.io/function/v1
 name: sleep-python
 runtime: python3_10
+description: "Test"
 interface:
   inputs:
     properties:
