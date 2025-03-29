@@ -68,11 +68,22 @@ def handler(inputs):
         'Authorization': f'Bearer {gmail_api_key}',
         'Content-Type': 'application/json',
     }
-    data = {
-        'message': {'raw': raw_message}
-    }
-    if thread_id:
-        data['message']['threadId'] = thread_id
+    if create_draft:
+        data = {
+            'message': {
+                'raw': raw_message
+            }
+        }
+        if thread_id:
+            data['message']['threadId'] = thread_id
+    else:
+        data = {
+            'raw': raw_message
+        }
+        if thread_id:
+            data['threadId'] = thread_id
+        if thread_id:
+            data['message']['threadId'] = thread_id
 
     # Determine whether to send the email or save as a draft
     if create_draft:
