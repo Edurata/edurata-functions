@@ -1,6 +1,10 @@
 apiRevision: edurata.io/function/v1
 runtime: nodejs20
 entrypoint: dist/tsc/index.js
+description: |
+  This function builds a Node.js 20 application by installing the necessary modules and dependencies.
+  It uses the package.json file to determine the required modules and installs them in the dist/tsc directory.
+  The function is designed to be used as part of a larger workflow, where the code is provided as input.
 include:
   - dist/tsc/**
 interface:
