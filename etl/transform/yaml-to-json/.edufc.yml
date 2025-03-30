@@ -1,0 +1,21 @@
+name: yaml_json_converter
+runtime: python3_10
+description: Converts a YAML file to JSON or a JSON file to YAML.
+interface:
+  inputs:
+    type: object
+    properties:
+      input_file:
+        type: file
+        description: Path to the input YAML or JSON file
+      output_format:
+        type: string
+        description: Desired output format, either 'json' or 'yaml'
+    required: [input_file, output_format]
+  outputs:
+    type: object
+    properties:
+      output_file:
+        type: file
+        description: Path to the converted output file
+    required: [output_file]
