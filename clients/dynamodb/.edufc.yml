@@ -1,0 +1,38 @@
+name: dynamodb_crud_wrapper
+runtime: python3_10
+
+description: |
+  A DynamoDB CRUD wrapper that performs Create, Read, Update, and Delete operations
+  on a specified DynamoDB table using provided item data and key. AWS credentials are
+  provided via environment variables.
+
+interface:
+  inputs:
+    type: object
+    required: [operation, table_name, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY]
+    properties:
+      AWS_ACCESS_KEY_ID:
+        type: env
+      AWS_SECRET_ACCESS_KEY:
+        type: env
+      AWS_REGION:
+        type: env
+        default: us-east-1
+      operation:
+        type: string
+        description: One of 'create', 'read', 'update', 'delete'
+      table_name:
+        type: string
+        description: Name of the DynamoDB table
+      item:
+        type: object
+        description: The item data to put or update (required for create/update)
+      key:
+        type: object
+        description: The key to identify the item (required for read/delete/update)
+  outputs:
+    type: object
+    properties:
+      result:
+        type: object
+        description: Result of the DynamoDB operation
