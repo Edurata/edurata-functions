@@ -24,7 +24,8 @@ async function axiosWrapper(
   params = {},
   streamToFile = false,
   streamToFileName = null,
-  dataFromFile = ""
+  dataFromFile = "",
+  throwError = true
 ) {
   let dataToSend = data;
   const defaultHeaders = {
@@ -96,7 +97,9 @@ async function axiosWrapper(
         console.warn("err.response.headers:", err.response.headers);
       }
       console.log(err.message);
-      throw err;
+      if (throwError) {
+        throw err;
+      }
     });
 
   return response;
@@ -113,6 +116,7 @@ const handler = async (inputs) => {
     streamToFile,
     streamToFileName,
     dataFromFile,
+    throwError,
   } = inputs;
   const response = await axiosWrapper(
     method,
@@ -122,7 +126,8 @@ const handler = async (inputs) => {
     params,
     streamToFile,
     streamToFileName,
-    dataFromFile
+    dataFromFile,
+    throwError
   );
   console.log("response:", response);
   return response;

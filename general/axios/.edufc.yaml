@@ -9,6 +9,10 @@ include:
 interface:
   inputs:
     properties:
+      throwError:
+        type: boolean
+        description: If the function should throw an error on failure
+        default: true
       url:
         type: string
         description: The URL to fetch

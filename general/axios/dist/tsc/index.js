@@ -41,7 +41,7 @@ function getFileNameFromHeader(contentDisposition) {
     const match = contentDisposition?.match(/filename="?([^"]+)"?/);
     return match ? match[1] : null;
 }
-async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile = false, streamToFileName = null, dataFromFile = "") {
+async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile = false, streamToFileName = null, dataFromFile = "", throwError = true) {
     let dataToSend = data;
     const defaultHeaders = {
         ...headers,
@@ -106,14 +106,16 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
             console.warn("err.response.headers:", err.response.headers);
         }
         console.log(err.message);
-        throw err;
+        if (throwError) {
+            throw err;
+        }
     });
     return response;
 }
 // test.
 const handler = async (inputs) => {
-    const { method, url, data, headers, params, streamToFile, streamToFileName, dataFromFile, } = inputs;
-    const response = await axiosWrapper(method, url, data, headers, params, streamToFile, streamToFileName, dataFromFile);
+    const { method, url, data, headers, params, streamToFile, streamToFileName, dataFromFile, throwError, } = inputs;
+    const response = await axiosWrapper(method, url, data, headers, params, streamToFile, streamToFileName, dataFromFile, throwError);
     console.log("response:", response);
     return response;
 };
