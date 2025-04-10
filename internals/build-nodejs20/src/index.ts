@@ -8,12 +8,22 @@ const handler = async (inputs) => {
   try {
     // Synchronously execute npm install in the codePath directory
     console.log("npm installing in ", codePath);
+    const tmpNpmDir = "/tmp/npm-tmp";
+    fs.mkdirSync(tmpNpmDir, { recursive: true });
     // install only production dependencies
     execSync(
-      "npm install --only=production --ignore-scripts --cache ./tmp-npm-cache",
+      "npm install --only=production --ignore-scripts --no-audit --no-fund --cache /tmp/npm-cache",
       {
         cwd: codePath,
         stdio: "inherit",
+        env: {
+          ...process.env,
+          // Override all npm-related locations
+          npm_config_cache: "/tmp/npm-cache",
+          npm_config_tmp: "/tmp/npm-tmp",
+          npm_config_prefix: "/tmp/npm-prefix",
+          HOME: "/tmp", // for .npmrc fallback
+        },
       }
     );
 
