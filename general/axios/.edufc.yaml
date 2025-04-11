@@ -19,6 +19,7 @@ interface:
       method:
         type: string
         description: The HTTP method
+        default: GET
       headers:
         type: object
         description: The HTTP headers
