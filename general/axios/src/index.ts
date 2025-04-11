@@ -45,8 +45,7 @@ async function axiosWrapper(
     responseType: streamToFile ? "stream" : "json",
   };
 
-  console.log("options:");
-  console.log(options);
+  console.log("options:" + JSON.stringify(options));
 
   const response = await axios(options)
     .then((res) => {
@@ -109,7 +108,7 @@ async function axiosWrapper(
 // test.
 const handler = async (inputs) => {
   const {
-    method,
+    method = "GET",
     url,
     data,
     headers,
