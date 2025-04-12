@@ -56,7 +56,7 @@ def handler(inputs):
             encoders.encode_base64(part)
             part.add_header(
                 'Content-Disposition',
-                f'attachment; filename={attachment_name}'
+                f'attachment; filename="{attachment_name}"'
             )
             msg.attach(part)
 
