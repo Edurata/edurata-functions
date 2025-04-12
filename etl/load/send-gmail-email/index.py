@@ -68,7 +68,7 @@ def handler(inputs):
             file_data,
             maintype=maintype,
             subtype=subtype,
-            headers=[("Content-Disposition", content_disposition)]
+            headers=[f"Content-Disposition: {content_disposition}"]
         )
     # print msg
     print(msg)
