@@ -51,6 +51,8 @@ def handler(inputs):
     # Attach files if provided
     for attachment_path in attachments:
         attachment_name = os.path.basename(attachment_path)
+        print(f"Attaching file: {attachment_name} of path {attachment_path}")
+
         with open(attachment_path, "rb") as attachment_file:
             part = MIMEBase('application', 'octet-stream')
             part.set_payload(attachment_file.read())
@@ -60,7 +62,7 @@ def handler(inputs):
                 f'attachment; filename="{attachment_name}"; filename*=UTF-8\'\'{quote(attachment_name)}'
             )
             msg.attach(part)
-
+    print(f"Email created with msg: {msg}")
     # Encode email as base64
     raw_message = base64.urlsafe_b64encode(msg.as_bytes()).decode()
 
