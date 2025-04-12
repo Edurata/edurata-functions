@@ -1,11 +1,9 @@
 import base64
 import os
 import requests
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
+from email.message import EmailMessage
 from urllib.parse import quote
+import mimetypes
 
 def handler(inputs):
     """
@@ -18,7 +16,7 @@ def handler(inputs):
             - userEmail (str): The sender's email address.
             - recipient (str): The recipient's email address.
             - subject (str): The subject of the email.
-            - body (str): The body text of the email.
+            - body (str): The body text of the email (HTML supported).
             - attachments (list): List of file paths to attach (optional).
             - threadId (str): Optional. The thread ID to include the email in an existing thread.
             - createDraft (bool): Optional. If True, the email will be saved as a draft instead of being sent.
@@ -28,74 +26,71 @@ def handler(inputs):
             - messageId (str): The ID of the sent email or draft.
             - threadId (str): The thread ID of the email conversation.
     """
+
     # Check if the Gmail API key is defined
     gmail_api_key = os.getenv("GMAIL_API_KEY")
     if not gmail_api_key:
         raise Exception("The Gmail API key is not defined. Please set the GMAIL_API_KEY environment variable.")
 
     user_email = inputs.get("userEmail", "me")
-    recipient = inputs['recipient']
-    subject = inputs['subject']
-    body = inputs['body']
-    attachments = inputs.get('attachments', [])
-    thread_id = inputs.get('threadId', None)
-    create_draft = inputs.get('createDraft', False)
+    recipient = inputs["recipient"]
+    subject = inputs["subject"]
+    body = inputs["body"]
+    attachments = inputs.get("attachments", [])
+    thread_id = inputs.get("threadId")
+    create_draft = inputs.get("createDraft", False)
 
-    # Create email
-    msg = MIMEMultipart()
-    msg['From'] = user_email
-    msg['To'] = recipient
-    msg['Subject'] = subject
-    msg.attach(MIMEText(body, 'html'))
+    # Create the EmailMessage object
+    msg = EmailMessage()
+    msg["From"] = user_email
+    msg["To"] = recipient
+    msg["Subject"] = subject
+    msg.set_content(body, subtype="html")
 
-    # Attach files if provided
+    # Attach files
     for attachment_path in attachments:
         attachment_name = os.path.basename(attachment_path)
-        print(f"Attaching file: {attachment_name} of path {attachment_path}")
+        print(f"Attaching file: {attachment_name} from {attachment_path}")
+
+        # Guess the MIME type or fallback to octet-stream
+        mime_type, _ = mimetypes.guess_type(attachment_path)
+        maintype, subtype = (mime_type or "application/octet-stream").split("/", 1)
 
         with open(attachment_path, "rb") as attachment_file:
-            part = MIMEBase('application', 'octet-stream')
-            part.set_payload(attachment_file.read())
-            encoders.encode_base64(part)
+            file_data = attachment_file.read()
 
-            # Compose header manually to avoid unwanted MIME encoding
-            encoded_name = quote(attachment_name)
-            disposition = f'attachment; filename="{attachment_name}"; filename*=UTF-8\'\'{encoded_name}'
-            part["Content-Disposition"] = disposition  # ← use direct assignment instead of add_header
+        # Encode the filename for Content-Disposition
+        encoded_name = quote(attachment_name)
+        content_disposition = f'attachment; filename="{attachment_name}"; filename*=UTF-8\'\'{encoded_name}'
 
-            msg.attach(part)
-    print(f"Email created with msg: {msg}")
-    # Encode email as base64
+        # Attach with custom header
+        msg.add_attachment(
+            file_data,
+            maintype=maintype,
+            subtype=subtype,
+            headers=[("Content-Disposition", content_disposition)]
+        )
+
+    # Encode the message in base64
     raw_message = base64.urlsafe_b64encode(msg.as_bytes()).decode()
 
-    # Prepare API request
     headers = {
-        'Authorization': f'Bearer {gmail_api_key}',
-        'Content-Type': 'application/json',
+        "Authorization": f"Bearer {gmail_api_key}",
+        "Content-Type": "application/json",
     }
-    if create_draft:
-        data = {
-            'message': {
-                'raw': raw_message
-            }
-        }
-        if thread_id:
-            data['message']['threadId'] = thread_id
-    else:
-        data = {
-            'raw': raw_message
-        }
-        if thread_id:
-            data['threadId'] = thread_id
-        if thread_id:
-            data['message']['threadId'] = thread_id
 
-    # Determine whether to send the email or save as a draft
     if create_draft:
+        data = {"message": {"raw": raw_message}}
+        if thread_id:
+            data["message"]["threadId"] = thread_id
         url = "https://gmail.googleapis.com/gmail/v1/users/me/drafts"
     else:
+        data = {"raw": raw_message}
+        if thread_id:
+            data["threadId"] = thread_id
         url = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
 
+    # Send request to Gmail API
     response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 200:
