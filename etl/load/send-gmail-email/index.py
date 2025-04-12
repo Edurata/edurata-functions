@@ -57,10 +57,12 @@ def handler(inputs):
             part = MIMEBase('application', 'octet-stream')
             part.set_payload(attachment_file.read())
             encoders.encode_base64(part)
-            part.add_header(
-                'Content-Disposition',
-                f'attachment; filename="{attachment_name}"; filename*=UTF-8\'\'{quote(attachment_name)}'
-            )
+
+            # Compose header manually to avoid unwanted MIME encoding
+            encoded_name = quote(attachment_name)
+            disposition = f'attachment; filename="{attachment_name}"; filename*=UTF-8\'\'{encoded_name}'
+            part["Content-Disposition"] = disposition  # ← use direct assignment instead of add_header
+
             msg.attach(part)
     print(f"Email created with msg: {msg}")
     # Encode email as base64
