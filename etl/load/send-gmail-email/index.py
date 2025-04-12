@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+from urllib.parse import quote
 
 def handler(inputs):
     """
@@ -56,7 +57,7 @@ def handler(inputs):
             encoders.encode_base64(part)
             part.add_header(
                 'Content-Disposition',
-                f'attachment; filename="{attachment_name}"'
+                f'attachment; filename="{attachment_name}"; filename*=UTF-8\'\'{quote(attachment_name)}'
             )
             msg.attach(part)
 
