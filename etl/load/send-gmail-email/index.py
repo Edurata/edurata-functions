@@ -70,7 +70,8 @@ def handler(inputs):
             subtype=subtype,
             headers=[("Content-Disposition", content_disposition)]
         )
-
+    # print msg
+    print(msg)
     # Encode the message in base64
     raw_message = base64.urlsafe_b64encode(msg.as_bytes()).decode()
 
