@@ -18,6 +18,10 @@ interface:
         description: The model to use
         enum: [gpt-3.5-turbo, gpt-4o]
         default: gpt-3.5-turbo
+      parseResponseToJson:
+        type: boolean
+        description: Whether to parse the response to json or not.
+        default: false
       API_KEY:
         type: env
         description: The deepl api key.
