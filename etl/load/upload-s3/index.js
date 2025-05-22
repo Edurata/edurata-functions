@@ -12,8 +12,9 @@ async function handler(inputs) {
 
   const { bucket_name, files } = inputs;
   let success = true;
-
+  console.log("bucket_name", bucket_name);
   for (const file of files) {
+    console.log("file", file);
     const params = {
       Bucket: bucket_name,
       Key: file.key,
@@ -44,12 +45,11 @@ async function handler(inputs) {
 }
 
 // Sample function call (commented out)
-// handler({
-//   bucket_name: 'your-bucket-name',
-//   files: [
-//     { content: 'Hello, world!', key: 'example1.txt' },
-//     { path: '/path/to/file.txt', key: 'example2.txt' }
-//   ]
-// });
+handler({
+  bucket_name: 'your-bucket-name',
+  files: [
+    { path: './test/testfile.txt', key: 'example2.txt' }
+  ]
+});
 
 module.exports = { handler };
