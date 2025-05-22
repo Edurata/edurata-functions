@@ -45,11 +45,11 @@ async function handler(inputs) {
 }
 
 // Sample function call (commented out)
-handler({
-  bucket_name: 'your-bucket-name',
-  files: [
-    { path: './test/testfile.txt', key: 'example2.txt' }
-  ]
-});
+// handler({
+//   bucket_name: 'your-bucket-name',
+//   files: [
+//     { path: './test/testfile.txt', key: 'example2.txt' }
+//   ]
+// });
 
 module.exports = { handler };
