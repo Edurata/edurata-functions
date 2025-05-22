@@ -36,7 +36,7 @@ async function handler(inputs) {
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      success = false;
+      throw error; // This will ensure the job fails
     }
   }
 
