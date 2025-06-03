@@ -1,0 +1,31 @@
+name: fill_pdf_form_by_fieldname
+runtime: python3_10
+description: Fill form fields of a PDF using a mapping of field names to values or list all field names in dry run mode.
+interface:
+  input:
+    type: object
+    properties:
+      pdf_template:
+        type: file
+        description: The original PDF file with form fields to be filled.
+      field_values:
+        type: object
+        additionalProperties:
+          type: string
+        description: Dictionary mapping form field names to their desired values.
+      dry_run:
+        type: boolean
+        default: false
+        description: If true, only list the form field names without filling anything.
+    required: [pdf_template]
+  output:
+    type: object
+    properties:
+      filled_pdf:
+        type: file
+        description: Path to the PDF file with form fields filled out (only if dry_run is false).
+      form_fields:
+        type: array
+        items:
+          type: string
+        description: List of form field names found in the PDF.

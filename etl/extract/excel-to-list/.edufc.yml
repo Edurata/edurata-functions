@@ -1,0 +1,17 @@
+name: extract_excel_rows
+runtime: python3_10
+description: Extracts all rows from an Excel file excluding the header and returns them as an array of JSON objects mapping each column to its corresponding value.
+interface:
+  inputs:
+    type: object
+    properties:
+      file:
+        type: file
+        description: Excel file (.xlsx or .xls) from which to extract data
+    required: [file]
+  outputs:
+    type: object
+    properties:
+      rows:
+        type: array
+        description: List of rows as JSON objects

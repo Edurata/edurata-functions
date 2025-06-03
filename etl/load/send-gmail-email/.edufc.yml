@@ -18,7 +18,7 @@ interface:
         description: The subject of the email.
       body:
         type: string
-        description: The body of the email.
+        description: The body in html format of the email.
       attachments:
         type: array
         items:

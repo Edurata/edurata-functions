@@ -1,0 +1,20 @@
+name: date_formatter
+runtime: python3_10
+description: Returns the current date in a specified format including localized display options.
+interface:
+  inputs:
+    type: object
+    properties:
+      format:
+        type: string
+        description: Either "iso", "locale", "localized", or a custom strftime format string.
+      locale:
+        type: string
+        description: Optional locale code like "de_DE" or "fr_FR" for localized formats.
+    required: []
+  outputs:
+    type: object
+    properties:
+      date:
+        type: string
+        description: The formatted current date.

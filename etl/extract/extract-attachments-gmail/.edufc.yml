@@ -1,0 +1,24 @@
+name: download-and-save-gmail-attachment
+runtime: python3_10
+description: Downloads one or more attachments from a Gmail message and saves them as files.
+interface:
+  inputs:
+    properties:
+      GMAIL_API_KEY:
+        type: env
+        description: The API key for the Gmail API
+      message_id:
+        type: string
+        description: ID of the Gmail message
+      attachment_id:
+        type: string
+        description: Optional specific attachment ID to download
+    required:
+      - message_id
+  outputs:
+    properties:
+      new_files:
+        type: array
+        items:
+          type: file
+          description: The paths to the saved attachment files
