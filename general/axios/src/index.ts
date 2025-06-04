@@ -31,7 +31,9 @@ async function axiosWrapper(
   const defaultHeaders = { ...headers };
 
   if (dataFromFile) {
+    const stats = fs.statSync(dataFromFile);
     dataToSend = fs.createReadStream(dataFromFile);
+    defaultHeaders["Content-Length"] = stats.size;
   }
 
   const options: AxiosRequestConfig = {
