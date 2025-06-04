@@ -43,11 +43,9 @@ function getFileNameFromHeader(contentDisposition) {
 }
 async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}, streamToFile = false, streamToFileName = null, dataFromFile = "", throwError = true) {
     let dataToSend = data;
-    const defaultHeaders = {
-        ...headers,
-    };
+    const defaultHeaders = { ...headers };
     if (dataFromFile) {
-        dataToSend = await readFile(dataFromFile);
+        dataToSend = fs.createReadStream(dataFromFile);
     }
     const options = {
         method,
@@ -57,11 +55,17 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
         params,
         responseType: streamToFile ? "stream" : "json",
     };
-    console.log("options:" + JSON.stringify(options));
-    const response = await (0, axios_1.default)(options)
-        .then((res) => {
+    console.log("axios options:", {
+        method,
+        url,
+        headers: defaultHeaders,
+        params,
+        responseType: options.responseType,
+        data: dataFromFile ? `[stream from ${dataFromFile}]` : data,
+    });
+    try {
+        const res = await (0, axios_1.default)(options);
         if (streamToFile) {
-            // Check if Content-Disposition header is available to extract filename
             const contentDisposition = res.headers["content-disposition"];
             const fileNameFromHeader = contentDisposition
                 ? getFileNameFromHeader(contentDisposition)
@@ -69,7 +73,8 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
             const fileName = streamToFileName || fileNameFromHeader || generateFileName(url);
             const filePath = path.join("/tmp", fileName);
             const writer = fs.createWriteStream(filePath);
-            return new Promise((resolve, reject) => {
+            return await new Promise((resolve, reject) => {
+                writer.on("error", reject);
                 res.data.pipe(writer);
                 writer.on("finish", () => {
                     writer.close();
@@ -78,13 +83,9 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
                             status: res.status,
                             statusText: res.statusText,
                             headers: res.headers,
-                            file: filePath, // Return the path of the downloaded file
+                            file: filePath,
                         },
                     });
-                });
-                writer.on("error", (err) => {
-                    writer.close();
-                    reject(err);
                 });
             });
         }
@@ -98,21 +99,21 @@ async function axiosWrapper(method = "GET", url, data, headers = {}, params = {}
                 },
             };
         }
-    })
-        .catch((err) => {
-        if (err.response) {
-            console.warn("err.response.data:", err.response.data);
-            console.warn("err.response.status:", err.response.status);
-            console.warn("err.response.headers:", err.response.headers);
+    }
+    catch (err) {
+        const error = err;
+        if (error.response) {
+            console.warn("err.response.data:", error.response.data);
+            console.warn("err.response.status:", error.response.status);
+            console.warn("err.response.headers:", error.response.headers);
         }
-        console.log(err.message);
+        console.error(error.message);
         if (throwError) {
-            throw err;
+            throw error;
         }
-    });
-    return response;
+        return null;
+    }
 }
-// test.
 const handler = async (inputs) => {
     const { method = "GET", url, data, headers, params, streamToFile, streamToFileName, dataFromFile, throwError, } = inputs;
     const response = await axiosWrapper(method, url, data, headers, params, streamToFile, streamToFileName, dataFromFile, throwError);

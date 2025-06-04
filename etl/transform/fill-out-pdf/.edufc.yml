@@ -2,7 +2,7 @@ name: fill_pdf_form_by_fieldname
 runtime: python3_10
 description: Fill form fields of a PDF using a mapping of field names to values or list all field names in dry run mode.
 interface:
-  input:
+  inputs:
     type: object
     properties:
       pdf_template:
@@ -18,7 +18,7 @@ interface:
         default: false
         description: If true, only list the form field names without filling anything.
     required: [pdf_template]
-  output:
+  outputs:
     type: object
     properties:
       filled_pdf:

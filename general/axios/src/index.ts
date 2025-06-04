@@ -28,12 +28,10 @@ async function axiosWrapper(
   throwError = true
 ) {
   let dataToSend = data;
-  const defaultHeaders = {
-    ...headers,
-  };
+  const defaultHeaders = { ...headers };
 
   if (dataFromFile) {
-    dataToSend = await readFile(dataFromFile);
+    dataToSend = fs.createReadStream(dataFromFile);
   }
 
   const options: AxiosRequestConfig = {
@@ -45,67 +43,69 @@ async function axiosWrapper(
     responseType: streamToFile ? "stream" : "json",
   };
 
-  console.log("options:" + JSON.stringify(options));
+  console.log("axios options:", {
+    method,
+    url,
+    headers: defaultHeaders,
+    params,
+    responseType: options.responseType,
+    data: dataFromFile ? `[stream from ${dataFromFile}]` : data,
+  });
 
-  const response = await axios(options)
-    .then((res) => {
-      if (streamToFile) {
-        // Check if Content-Disposition header is available to extract filename
-        const contentDisposition = res.headers["content-disposition"];
-        const fileNameFromHeader = contentDisposition
-          ? getFileNameFromHeader(contentDisposition)
-          : null;
-        const fileName =
-          streamToFileName || fileNameFromHeader || generateFileName(url);
+  try {
+    const res = await axios(options);
 
-        const filePath = path.join("/tmp", fileName);
-        const writer = fs.createWriteStream(filePath);
+    if (streamToFile) {
+      const contentDisposition = res.headers["content-disposition"];
+      const fileNameFromHeader = contentDisposition
+        ? getFileNameFromHeader(contentDisposition)
+        : null;
+      const fileName =
+        streamToFileName || fileNameFromHeader || generateFileName(url);
 
-        return new Promise((resolve, reject) => {
-          res.data.pipe(writer);
-          writer.on("finish", () => {
-            writer.close();
-            resolve({
-              response: {
-                status: res.status,
-                statusText: res.statusText,
-                headers: res.headers,
-                file: filePath, // Return the path of the downloaded file
-              },
-            });
-          });
-          writer.on("error", (err) => {
-            writer.close();
-            reject(err);
+      const filePath = path.join("/tmp", fileName);
+      const writer = fs.createWriteStream(filePath);
+
+      return await new Promise((resolve, reject) => {
+        writer.on("error", reject);
+        res.data.pipe(writer);
+        writer.on("finish", () => {
+          writer.close();
+          resolve({
+            response: {
+              status: res.status,
+              statusText: res.statusText,
+              headers: res.headers,
+              file: filePath,
+            },
           });
         });
-      } else {
-        return {
-          response: {
-            status: res.status,
-            statusText: res.statusText,
-            headers: res.headers,
-            data: !dataFromFile ? res.data : undefined,
-          },
-        };
-      }
-    })
-    .catch((err: AxiosError) => {
-      if (err.response) {
-        console.warn("err.response.data:", err.response.data);
-        console.warn("err.response.status:", err.response.status);
-        console.warn("err.response.headers:", err.response.headers);
-      }
-      console.log(err.message);
-      if (throwError) {
-        throw err;
-      }
-    });
-
-  return response;
+      });
+    } else {
+      return {
+        response: {
+          status: res.status,
+          statusText: res.statusText,
+          headers: res.headers,
+          data: !dataFromFile ? res.data : undefined,
+        },
+      };
+    }
+  } catch (err) {
+    const error = err as AxiosError;
+    if (error.response) {
+      console.warn("err.response.data:", error.response.data);
+      console.warn("err.response.status:", error.response.status);
+      console.warn("err.response.headers:", error.response.headers);
+    }
+    console.error(error.message);
+    if (throwError) {
+      throw error;
+    }
+    return null;
+  }
 }
 
-// test.
 const handler = async (inputs) => {
   const {
     method = "GET",
@@ -118,6 +118,7 @@ const handler = async (inputs) => {
     dataFromFile,
     throwError,
   } = inputs;
+
   const response = await axiosWrapper(
     method,
     url,
@@ -129,6 +130,7 @@ const handler = async (inputs) => {
     dataFromFile,
     throwError
   );
+
   console.log("response:", response);
   return response;
 };
