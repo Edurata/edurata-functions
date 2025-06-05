@@ -1,6 +1,6 @@
 name: download-and-save-gmail-attachment
 runtime: python3_10
-description: Downloads one or more attachments from a Gmail message and saves them as files.
+description: Downloads one or more attachments from a Gmail message and saves them as files..
 interface:
   inputs:
     properties:
