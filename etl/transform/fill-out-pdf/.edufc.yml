@@ -10,6 +10,7 @@ interface:
         description: The original PDF file with form fields to be filled.
       field_values:
         type: object
+        properties: {}
         additionalProperties:
           type: string
         description: Dictionary mapping form field names to their desired values.
@@ -17,6 +18,9 @@ interface:
         type: boolean
         default: false
         description: If true, only list the form field names without filling anything.
+      output_filename:
+        type: string
+        description: Optional name for the output PDF file. If not provided, a default name will be used.
     required: [pdf_template]
   outputs:
     type: object

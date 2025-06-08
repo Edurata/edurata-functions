@@ -1,9 +1,11 @@
 from PyPDF2 import PdfReader, PdfWriter
+import os
 
 def handler(inputs):
     pdf_path = inputs["pdf_template"]
     field_values = inputs.get("field_values", {})
     dry_run = inputs.get("dry_run", False)
+    output_filename = inputs.get("output_filename", "filled_output_named.pdf")
 
     reader = PdfReader(pdf_path)
     fields = reader.get_fields()
@@ -13,7 +15,7 @@ def handler(inputs):
         print("Dry run: Form fields found:", field_names)
         return {"form_fields": field_names}
 
-    output_path = "/tmp/filled_output_named.pdf"
+    output_path = os.path.join("/tmp", output_filename)
     writer = PdfWriter()
 
     for page in reader.pages:
@@ -40,5 +42,6 @@ def handler(inputs):
 #         "Datum": "01.01.2025",
 #         "Firma1": "Firma A",
 #         "Firma2": "Firma B"
-#     }
+#     },
+#     "output_filename": "custom_output.pdf"
 # }))
