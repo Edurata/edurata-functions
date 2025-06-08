@@ -8,6 +8,9 @@ interface:
       file:
         type: file
         description: Excel file (.xlsx or .xls) from which to extract data
+      limit:
+        type: integer
+        description: Optional maximum number of rows to extract
     required: [file]
   outputs:
     type: object

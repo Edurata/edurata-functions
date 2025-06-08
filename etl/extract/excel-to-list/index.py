@@ -2,9 +2,14 @@ import pandas as pd
 
 def handler(inputs):
     file_path = inputs["file"]
+    row_limit = inputs.get("limit")
     
     # Read Excel file
     df = pd.read_excel(file_path)
+    
+    # Apply row limit if specified
+    if row_limit is not None:
+        df = df.head(row_limit)
     
     # Print shape and info for debugging
     print(f"DataFrame shape: {df.shape}")
@@ -30,5 +35,5 @@ def handler(inputs):
         return {"rows": flattened}
 
 # Example usage
-# outputs = handler({"file": "Räderliste.xlsx"})
+# outputs = handler({"file": "Räderliste.xlsx", "limit": 10})
 # print(outputs)
