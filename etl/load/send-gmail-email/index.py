@@ -79,9 +79,16 @@ def handler(inputs):
     if response.status_code == 200:
         print("[INFO]: Email sent successfully.")
         response_data = response.json()
+        message_id = response_data.get("id")
+        thread_id = response_data.get("threadId")
+        
+        # Construct the message link
+        message_link = f"https://mail.google.com/mail/u/0/#inbox/{message_id}"
+        
         return {
-            "messageId": response_data.get("id"),
-            "threadId": response_data.get("threadId"),
+            "messageId": message_id,
+            "threadId": thread_id,
+            "messageLink": message_link
         }
     else:
         print(f"[ERROR]: Failed to send email: {response.status_code}, {response.text}")

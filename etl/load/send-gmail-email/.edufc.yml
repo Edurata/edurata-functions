@@ -43,6 +43,10 @@ interface:
       threadId:
         type: string
         description: The thread ID of the email conversation.
+      messageLink:
+        type: string
+        description: Direct link to view the message in Gmail's web interface.
     required:
       - messageId
       - threadId
+      - messageLink
