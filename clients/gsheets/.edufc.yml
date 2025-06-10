@@ -1,0 +1,87 @@
+name: GoogleSheetsAPIClient
+runtime: python3_10
+description: A function to make calls to Google Sheets API using an OAuth token.
+interface:
+  inputs:
+    properties:
+      spreadsheet_id:
+        type: string
+        description: The ID of the Google Sheets spreadsheet or path to Excel file.
+      range:
+        type: string
+        description: The range of cells to read or write (e.g., 'Sheet1!A1:C10').
+      oauth_token:
+        type: string
+        description: The OAuth token for authentication.
+      cell_updates:
+        type: array
+        items:
+          type: object
+          properties:
+            row:
+              type: integer
+              description: The row number to update.
+            column:
+              type: string
+              description: The column letter to update.
+            value:
+              type: string
+              description: The value to write to the cell.
+        description: List of cell updates to perform.
+      search_column:
+        type: string
+        description: The column to search in (can be column name or letter).
+      search_value:
+        type: string
+        description: The value to search for in the specified column.
+      updates:
+        type: object
+        description: Key-value pairs of columns and values to update.
+    required:
+      - spreadsheet_id
+      - oauth_token
+  outputs:
+    properties:
+      response:
+        type: object
+        description: The response containing the structured data.
+        properties:
+          values:
+            type: array
+            description: The raw values from the spreadsheet.
+          structured_values:
+            type: array
+            description: The values structured with headers and locations.
+          headers:
+            type: array
+            description: The column headers.
+          row_info:
+            type: object
+            description: Information about the rows.
+            properties:
+              start_row:
+                type: integer
+                description: The starting row number.
+              end_row:
+                type: integer
+                description: The ending row number.
+              total_rows:
+                type: integer
+                description: The total number of data rows (excluding header).
+      updates:
+        type: array
+        description: Information about the updates performed.
+        items:
+          type: object
+          properties:
+            row:
+              type: integer
+              description: The row number that was updated.
+            column:
+              type: string
+              description: The column letter that was updated.
+            value:
+              type: string
+              description: The value that was written.
+    required:
+      - response 
