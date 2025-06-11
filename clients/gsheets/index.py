@@ -1,15 +1,8 @@
 import os
-import json
 import requests
-import openpyxl
-from openpyxl import Workbook, load_workbook
-from pathlib import Path
-import io
+from openpyxl import load_workbook
 import tempfile
-import pandas as pd
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any, Optional
 import time
 import logging
 
