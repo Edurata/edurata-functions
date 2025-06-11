@@ -6,3 +6,5 @@ oauth-private.json
 .token
 .token.json
 Räderliste.xlsx
+__pycache__/
+tmp/
