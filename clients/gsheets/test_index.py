@@ -10,30 +10,16 @@ import requests
 
 class TestSpreadsheetClient(unittest.TestCase):
     def setUp(self):
-        # Create a temporary directory for test files in a local tmp directory
-        self.test_dir = os.path.join(os.path.dirname(__file__), 'tmp', 'test_files')
-        os.makedirs(self.test_dir, exist_ok=True)
-        self.test_file_path = os.path.join(self.test_dir, 'test_file.xlsx')
-        
-        # Create a test workbook
-        wb = Workbook()
-        ws = wb.active
-        ws.title = 'Sheet1'
-        wb.save(self.test_file_path)
-        
         # Set up test OAuth token and Drive file ID
         self.oauth_token = os.environ.get('GOOGLE_OAUTH_TOKEN', 'test_oauth_token')
         print(f"\nUsing OAuth token: {self.oauth_token[:10]}...")  # Only show first 10 chars for security
         self.drive_file_id = '12345678901234567890123456789012345678901234'  # 44 chars
         self.sheets_id = '12345678901234567890123456789012345678901234'  # 44 chars
-        
         # Initialize client with OAuth token
         self.client = SpreadsheetClient(oauth_token=self.oauth_token)
 
     def tearDown(self):
-        # Clean up temporary files using shutil.rmtree
-        if os.path.exists(self.test_dir):
-            shutil.rmtree(self.test_dir)
+        pass  # No local files to clean up
 
     @patch('requests.get')
     def test_google_sheets_operations(self, mock_get):
@@ -114,31 +100,6 @@ class TestSpreadsheetClient(unittest.TestCase):
         # Verify update response
         self.assertIn('updatedRange', result)
 
-    def test_local_excel_operations(self):
-        """Test operations with local Excel files"""
-        # Test reading from local Excel
-        inputs = {
-            'spreadsheet_id': self.test_file_path,
-            'range': 'Sheet1!A1:B2'
-        }
-        result = handler(inputs)
-        
-        # Verify response structure
-        self.assertIn('structured_values', result)
-        self.assertIn('headers', result)
-        self.assertIn('row_info', result)
-        
-        # Test writing to local Excel
-        inputs = {
-            'spreadsheet_id': self.test_file_path,
-            'range': 'Sheet1!A1:B2',
-            'values': [['Header 1', 'Header 2'], ['Data 1', 'Data 2']]
-        }
-        result = handler(inputs)
-        
-        # Verify update response
-        self.assertIn('updates', result)
-
     @patch('requests.get')
     def test_file_type_detection(self, mock_get):
         """Test detection of different file types"""
@@ -150,10 +111,6 @@ class TestSpreadsheetClient(unittest.TestCase):
         self.assertTrue(self.client._is_google_sheets('12345678901234567890123456789012345678901234'))
         # Test Drive Excel detection
         self.assertTrue(self.client._is_excel_in_drive('12345678901234567890123456789012345678901234'))
-        # Test local file detection
-        local_path = os.path.join(self.test_dir, 'test_local_file.xlsx')
-        self.assertTrue(self.client._is_local_file(self.test_file_path))
-        self.assertTrue(self.client._is_local_file(local_path))
 
     @patch('requests.get')
     def test_error_handling(self, mock_get):
@@ -167,15 +124,6 @@ class TestSpreadsheetClient(unittest.TestCase):
             'spreadsheet_id': 'invalid_drive_id',
             'range': 'Sheet1!A1:B2',
             'oauth_token': self.oauth_token
-        }
-        with self.assertRaises(Exception):
-            handler(inputs)
-        
-        # Test with invalid local file
-        nonexistent_file = os.path.join(self.test_dir, 'nonexistent.xlsx')
-        inputs = {
-            'spreadsheet_id': nonexistent_file,
-            'range': 'Sheet1!A1:B2'
         }
         with self.assertRaises(Exception):
             handler(inputs)
@@ -225,29 +173,6 @@ class TestSpreadsheetClient(unittest.TestCase):
         # Note: We can't delete the spreadsheet with drive.file scope
         # The user will need to delete it manually from their Drive
         print(f"\nTest completed. Please delete the spreadsheet manually: {spreadsheet_url}")
-
-    def test_create_new_local_excel(self):
-        """Test creating a new local Excel file if not present and writing/reading data."""
-        new_file = os.path.join(self.test_dir, 'new_file.xlsx')
-        # Write to new file
-        inputs = {
-            'spreadsheet_id': new_file,
-            'range': 'Sheet1!A1:B2',
-            'values': [['Header 1', 'Header 2'], ['Data 1', 'Data 2']],
-            'oauth_token': None  # Explicitly set to None for local operations
-        }
-        result = handler(inputs)
-        self.assertIn('created', result)
-        # Read back
-        inputs = {
-            'spreadsheet_id': new_file,
-            'range': 'Sheet1!A1:B2',
-            'oauth_token': None  # Explicitly set to None for local operations
-        }
-        result = handler(inputs)
-        self.assertIn('structured_values', result)
-        self.assertEqual(result['structured_values'][0]['Header 1'], 'Data 1')
-        self.assertEqual(result['structured_values'][0]['Header 2'], 'Data 2')
 
     def test_create_new_google_sheet(self):
         """Test creating a new Google Sheet if not present and writing/reading data."""

@@ -37,6 +37,9 @@ interface:
       updates:
         type: object
         description: Key-value pairs of columns and values to update.
+      create_if_not_found:
+        type: boolean
+        description: Set to true to create a new file in Drive if not found. If false or omitted, the function will fail if the file does not exist.
     required:
       - spreadsheet_id
       - oauth_token
