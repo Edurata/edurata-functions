@@ -294,9 +294,13 @@ class SpreadsheetClient:
             sheet = self._create_google_sheets('New Google Sheet', [['Header 1', 'Header 2'], ['Data 1', 'Data 2']])
             return {'spreadsheetId': sheet['spreadsheetId'], 'spreadsheetUrl': sheet['spreadsheetUrl']}
         elif self._is_google_sheets(file_id):
-            return self._read_google_sheets(file_id, range_name)
+            result = self._read_google_sheets(file_id, range_name)
+            result['spreadsheetId'] = file_id
+            return result
         elif self._is_excel_in_drive(file_id):
-            return self._read_drive_excel(file_id, range_name)
+            result = self._read_drive_excel(file_id, range_name)
+            result['spreadsheetId'] = file_id
+            return result
         else:
             found = self._search_drive_file_by_name(file_id)
             if found == 'forbidden':
@@ -307,9 +311,13 @@ class SpreadsheetClient:
                     raise Exception("Insufficient permissions to search Drive and file not found.")
             elif found:
                 if found['mimeType'] == 'application/vnd.google-apps.spreadsheet':
-                    return self._read_google_sheets(found['id'], range_name)
+                    result = self._read_google_sheets(found['id'], range_name)
+                    result['spreadsheetId'] = found['id']
+                    return result
                 elif found['mimeType'] == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-                    return self._read_drive_excel(found['id'], range_name)
+                    result = self._read_drive_excel(found['id'], range_name)
+                    result['spreadsheetId'] = found['id']
+                    return result
                 else:
                     raise Exception(f"Found file but unsupported type: {found['mimeType']}")
             elif create_if_not_found:
@@ -367,27 +375,77 @@ def handler(event: Dict[str, Any]) -> Dict[str, Any]:
         dict: The operation result
     """
     try:
-        # Extract parameters
         file_id = event.get('spreadsheet_id')
         range_name = event.get('range')
         values = event.get('values')
         oauth_token = event.get('oauth_token')
         create_if_not_found = event.get('create_if_not_found', False)
-        
+        cell_updates = event.get('cell_updates')
+        search_column = event.get('search_column')
+        search_value = event.get('search_value')
+        updates = event.get('updates')
+
         if not file_id:
             raise Exception("spreadsheet_id is required")
-        if not range_name:
+
+        # Only require range for read/write operations that need it
+        needs_range = (
+            (values is not None) or
+            (cell_updates is None and (search_column is None or search_value is None or updates is None))
+        )
+        if needs_range and not range_name:
             raise Exception("range is required")
-        
+
         # Initialize client
         client = SpreadsheetClient(oauth_token=oauth_token)
-        
-        # Perform operation
-        if values is not None:
+
+        # Handle cell_updates or search/update operations
+        if cell_updates is not None:
+            # Implement cell_updates logic here if needed
+            raise NotImplementedError("cell_updates logic not implemented in this handler.")
+        elif search_column and search_value and updates:
+            # --- Begin search/update logic ---
+            if not range_name:
+                range_name = 'Sheet1'
+            read_result = client.read(file_id, range_name, create_if_not_found=create_if_not_found)
+            headers = read_result.get('headers', [])
+            structured_values = read_result.get('structured_values', [])
+            # Use the actual spreadsheetId returned by the read operation
+            real_file_id = read_result.get('spreadsheetId', file_id)
+            # 2. Find the column index for search_column and update columns
+            if search_column in headers:
+                search_col_idx = headers.index(search_column)
+            else:
+                raise Exception(f"search_column '{search_column}' not found in headers: {headers}")
+            update_col_indices = {}
+            for col in updates:
+                if col in headers:
+                    update_col_indices[col] = headers.index(col)
+                else:
+                    raise Exception(f"update column '{col}' not found in headers: {headers}")
+            # 3. Update matching rows (only update the specific cells)
+            updated_cells = []
+            for i, row in enumerate(structured_values):
+                if str(row.get(search_column, '')) == str(search_value):
+                    for col, val in updates.items():
+                        col_idx = update_col_indices[col]
+                        col_letter = chr(ord('A') + col_idx)
+                        cell_row = i + 2
+                        cell_range = f"{range_name.split('!')[0]}!{col_letter}{cell_row}"
+                        client._write_google_sheets(real_file_id, cell_range, [[val]])
+                        updated_cells.append({'row': cell_row, 'column': col, 'value': val, 'cell_range': cell_range})
+            return {
+                'updated_cells': updated_cells,
+                'headers': headers,
+                'updates': updates,
+                'search_column': search_column,
+                'search_value': search_value
+            }
+            # --- End search/update logic ---
+        elif values is not None:
             return client.write(file_id, range_name, values, create_if_not_found=create_if_not_found)
         else:
             return client.read(file_id, range_name, create_if_not_found=create_if_not_found)
-            
     except Exception as e:
         raise Exception(f"Error in handler: {str(e)}")
 
@@ -460,4 +518,15 @@ def handler(event: Dict[str, Any]) -> Dict[str, Any]:
 #     'range': 'Sheet1',
 #     'oauth_token': os.environ.get('OAUTH_TOKEN'),
 #     'create_if_not_found': True
+# }))
+
+# update cell 
+# print(handler({
+#     'spreadsheet_id': '1BPwoX1EI74WgVs7XyISKVK8X6GMlzmvI89ulAjPGA70',
+#     'oauth_token': os.environ.get('OAUTH_TOKEN'),
+#     "search_column": "Vertragsnummer",
+#     "search_value": "88419198",
+#     "updates": {
+#         "Nachricht ID": "Test",
+#     },
 # }))
