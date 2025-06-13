@@ -82,9 +82,12 @@ def handler(inputs):
         message_id = response_data.get("id")
         thread_id = response_data.get("threadId")
         
-        # Construct the message link
-        message_link = f"https://mail.google.com/mail/u/0/#inbox/{message_id}"
-        
+        if create_draft:
+            draft_id = response_data.get("id")
+            message_link = f"https://mail.google.com/mail/u/0/#drafts?compose={draft_id}"
+        else:
+            message_link = f"https://mail.google.com/mail/u/0/#inbox/{thread_id}"
+
         return {
             "messageId": message_id,
             "threadId": thread_id,
