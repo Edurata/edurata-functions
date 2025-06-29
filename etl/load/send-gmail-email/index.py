@@ -82,11 +82,43 @@ def handler(inputs):
         message_id = response_data.get("id")
         thread_id = response_data.get("threadId")
         
+        print(f"[DEBUG]: Message ID: {message_id}")
+        print(f"[DEBUG]: Thread ID: {thread_id}")
+        
         if create_draft:
             draft_id = response_data.get("id")
             message_link = f"https://mail.google.com/mail/u/0/#drafts?compose={draft_id}"
         else:
-            message_link = f"https://mail.google.com/mail/u/0/#inbox/{thread_id}"
+            # Fetch the message metadata to get the proper Message-ID for the URL
+            metadata_url = f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{message_id}?format=metadata&metadataHeaders=Message-ID"
+            metadata_response = requests.get(metadata_url, headers=headers)
+            
+            if metadata_response.status_code == 200:
+                metadata_data = metadata_response.json()
+                payload = metadata_data.get("payload", {})
+                headers = payload.get("headers", [])
+                
+                # Find the Message-ID header
+                message_id_header = None
+                for header in headers:
+                    if header.get("name") == "Message-ID":
+                        message_id_header = header.get("value")
+                        break
+                
+                print(f"[DEBUG]: Message-ID header: {message_id_header}")
+                
+                if message_id_header:
+                    # Extract the ID from the Message-ID header (remove < > and domain part)
+                    # Message-ID format: <unique-id@example.com>
+                    clean_message_id = message_id_header.strip("<>").split("@")[0]
+                    message_link = f"https://mail.google.com/mail/u/0/#sent/{clean_message_id}"
+                else:
+                    # Fallback to using the Gmail message ID
+                    message_link = f"https://mail.google.com/mail/u/0/#sent/{message_id}"
+            else:
+                print(f"[WARNING]: Failed to fetch message metadata: {metadata_response.status_code}")
+                # Fallback to using the Gmail message ID
+                message_link = f"https://mail.google.com/mail/u/0/#sent/{message_id}"
 
         return {
             "messageId": message_id,
