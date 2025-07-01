@@ -19,7 +19,6 @@ class SpreadsheetClient:
         else:
             print("\nInitializing client without OAuth token")  # Debug log
             self.headers = {}
-        print(f"Headers set to: {self.headers}")  # Debug log
 
     def _is_google_sheets(self, file_id: str) -> bool:
         """Check if the file is a Google Sheets document."""
@@ -283,6 +282,9 @@ class SpreadsheetClient:
 
     def read(self, file_id: str, range_name: str, create_if_not_found: bool = False) -> dict:
         """Read data from a spreadsheet. Supports Google Sheets and Drive Excel. Searches by name if not found."""
+        # Strip any extra quotes from file_id
+        file_id = file_id.strip('"')
+        
         if file_id == 'new_google_sheet':
             sheet = self._create_google_sheets('New Google Sheet', [['Header 1', 'Header 2'], ['Data 1', 'Data 2']])
             return {'spreadsheetId': sheet['spreadsheetId'], 'spreadsheetUrl': sheet['spreadsheetUrl']}
@@ -321,6 +323,9 @@ class SpreadsheetClient:
 
     def write(self, file_id: str, range_name: str, values: list, create_if_not_found: bool = False) -> dict:
         """Write data to a spreadsheet. Supports Google Sheets and Drive Excel. Searches by name if not found."""
+        # Strip any extra quotes from file_id
+        file_id = file_id.strip('"')
+        
         if file_id == 'new_google_sheet':
             return self._create_google_sheets('New Google Sheet', values)
         elif self._is_google_sheets(file_id):

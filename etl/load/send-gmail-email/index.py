@@ -28,6 +28,10 @@ def handler(inputs):
     msg["Subject"] = subject
     msg.set_content(body, subtype="html")
 
+    # Convert to mixed type only once if we have attachments
+    if attachments:
+        msg.make_mixed()
+
     for attachment_path in attachments:
         attachment_name = os.path.basename(attachment_path)
         print(f"[INFO]: Attaching file: {attachment_name} from {attachment_path}")
@@ -50,7 +54,6 @@ def handler(inputs):
         encode_base64(part)
         part.add_header("Content-Disposition", content_disposition)
 
-        msg.make_mixed()
         msg.attach(part)
 
     print("[INFO]: Email composed, encoding to base64...")
