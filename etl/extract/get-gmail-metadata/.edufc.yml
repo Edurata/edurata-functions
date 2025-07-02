@@ -1,0 +1,39 @@
+name: get_gmail_message
+runtime: python3_10
+description: Get Gmail message details and generate Gmail links for the message and thread information.
+interface:
+  inputs:
+    properties:
+      messageInput:
+        type: string
+        description: Gmail message ID or full URL containing the message ID
+    required: [messageInput]
+  outputs:
+    properties:
+      GMAIL_API_KEY:
+        type: env
+        description: Gmail API key
+      messageId:
+        type: string
+        description: The parsed message ID
+      messageLink:
+        type: string
+        description: Direct Gmail link to view the message
+      messageCount:
+        type: integer
+        description: Number of messages in the thread
+      messageSnippets:
+        type: array
+        description: Array of message snippets with index, ID, and snippet text
+        items:
+          type: object
+          properties:
+            messageIndex:
+              type: integer
+              description: Position of the message in the thread
+            messageId:
+              type: string
+              description: Gmail message ID
+            snippet:
+              type: string
+              description: Snippet text of the message
