@@ -4,15 +4,15 @@ description: Get Gmail message details and generate Gmail links for the message 
 interface:
   inputs:
     properties:
-      messageInput:
-        type: string
-        description: Gmail message ID or full URL containing the message ID
-    required: [messageInput]
-  outputs:
-    properties:
       GMAIL_API_KEY:
         type: env
         description: Gmail API key
+      messageInput:
+        type: string
+        description: Gmail message ID or full URL containing the message ID
+    required: [messageInput, GMAIL_API_KEY]
+  outputs:
+    properties:
       messageId:
         type: string
         description: The parsed message ID
