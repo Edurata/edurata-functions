@@ -1,6 +1,6 @@
 name: get_gmail_thread_info
 runtime: python3_10
-description: Get Gmail message details and generate Gmail links for the message and thread information.
+description: Get Gmail message details and generate Gmail links for the message and thread information..
 interface:
   inputs:
     properties:
