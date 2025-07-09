@@ -1,5 +1,6 @@
 import { Handler } from "./types";
 import fs from "fs";
+import path from "path";
 
 const sleep = (ms) => {
   return new Promise((resolve) => {
@@ -15,8 +16,8 @@ export const handler: Handler = async (inputs) => {
       : inputs.sleepTime
     : 1000;
   const _message = inputs.message;
-  const _random_file_path = process.env.DEPLOYMENT_ID + ".txt";
-  const _filePath = inputs.infile || "testFile.txt";
+  const _random_file_path = path.join("/tmp", process.env.DEPLOYMENT_ID + ".txt");
+  const _filePath = path.join("/tmp", inputs.infile || "testFile.txt");
 
   console.log(_message);
 
@@ -27,8 +28,9 @@ export const handler: Handler = async (inputs) => {
   fs.writeFileSync(_random_file_path, "Dummy file");
 
   if (inputs.infile) {
-    const fileData = fs.readFileSync(inputs.infile);
-    fs.writeFileSync(inputs.infile, fileData + _message);
+    const inputFilePath = path.join("/tmp", inputs.infile);
+    const fileData = fs.readFileSync(inputFilePath);
+    fs.writeFileSync(inputFilePath, fileData + _message);
   } else {
     fs.writeFileSync(_filePath, _message);
   }
