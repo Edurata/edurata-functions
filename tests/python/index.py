@@ -8,8 +8,8 @@ def handler(inputs):
     print("Test inner logs")
     _sleep_time = inputs.get("sleepTime", 1000)
     _sleep_time = int(_sleep_time) if isinstance(_sleep_time, str) else _sleep_time
-    _file_path = inputs.get("infile", "testFile.txt")
-    _random_file_path = os.environ.get("DEPLOYMENT_ID") + ".txt"
+    _file_path = os.path.join("/tmp", inputs.get("infile", "testFile.txt"))
+    _random_file_path = os.path.join("/tmp", os.environ.get("DEPLOYMENT_ID") + ".txt")
     _message = inputs.get("message", "Hello there!")
     # message
     print(_message)
@@ -23,7 +23,8 @@ def handler(inputs):
         file.write("Just a dummy file to test multiple files.\n")
 
     if "infile" in inputs:
-        with open(inputs["infile"], "r+") as file:
+        input_file_path = os.path.join("/tmp", inputs["infile"])
+        with open(input_file_path, "r+") as file:
             file_data = file.read()
             file.write(file_data + _message)
     else:
