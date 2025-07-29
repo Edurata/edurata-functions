@@ -19,7 +19,7 @@ function getFileNameFromHeader(contentDisposition: string): string | null {
 async function axiosWrapper(
   method = "GET",
   url,
-  data,
+  body,
   headers = {},
   params = {},
   streamToFile = false,
@@ -27,7 +27,7 @@ async function axiosWrapper(
   dataFromFile = "",
   throwError = true
 ) {
-  let dataToSend = data;
+  let dataToSend = body;
   const defaultHeaders = { ...headers };
 
   if (dataFromFile) {
@@ -51,7 +51,7 @@ async function axiosWrapper(
     headers: defaultHeaders,
     params,
     responseType: options.responseType,
-    data: dataFromFile ? `[stream from ${dataFromFile}]` : data,
+    data: dataFromFile ? `[stream from ${dataFromFile}]` : dataToSend,
   });
 
   try {
@@ -112,7 +112,7 @@ const handler = async (inputs) => {
   const {
     method = "GET",
     url,
-    data,
+    body,
     headers,
     params,
     streamToFile,
@@ -124,7 +124,7 @@ const handler = async (inputs) => {
   const response = await axiosWrapper(
     method,
     url,
-    data,
+    body,
     headers,
     params,
     streamToFile,

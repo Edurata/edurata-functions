@@ -23,7 +23,7 @@ interface:
       headers:
         type: object
         description: The HTTP headers
-      data:
+      body:
         type: object
         description: The HTTP body
       params:
