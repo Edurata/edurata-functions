@@ -51,7 +51,7 @@ async function axiosWrapper(
     headers: defaultHeaders,
     params,
     responseType: options.responseType,
-    data: dataFromFile ? `[stream from ${dataFromFile}]` : dataToSend,
+    data: dataFromFile ? `[stream from ${dataFromFile}]` : body,
   });
 
   try {

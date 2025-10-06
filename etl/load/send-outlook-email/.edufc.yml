@@ -1,0 +1,49 @@
+name: email_send_with_thread_or_draft_outlook
+runtime: python3_10
+description: Sends an email via Microsoft Graph (Outlook). Supports HTML body, attachments, optional draft creation, and returns a direct Outlook web link.
+interface:
+  inputs:
+    properties:
+      OUTLOOK_API_KEY:
+        type: env
+        description: OAuth 2.0 Bearer token for Microsoft Graph.
+      userEmail:
+        type: string
+        description: Optional. Sender address; defaults to the authenticated user.
+      recipient:
+        type: string
+        description: Recipient email address.
+      subject:
+        type: string
+        description: Email subject.
+      body:
+        type: string
+        description: HTML body of the email.
+      attachments:
+        type: array
+        items:
+          type: file
+        description: File paths to attach.
+      createDraft:
+        type: boolean
+        description: If true, saves a draft instead of sending.
+        default: false
+    required:
+      - recipient
+      - subject
+      - body
+  outputs:
+    properties:
+      messageId:
+        type: string
+        description: Microsoft Graph message ID.
+      threadId:
+        type: string
+        description: Conversation ID (thread) for the message.
+      messageLink:
+        type: string
+        description: Direct Outlook web link for the message.
+    required:
+      - messageId
+      - threadId
+      - messageLink
