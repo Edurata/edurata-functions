@@ -25,7 +25,8 @@ async function axiosWrapper(
   streamToFile = false,
   streamToFileName = null,
   dataFromFile = "",
-  throwError = true
+  throwError = true,
+  decompress = false
 ) {
   let dataToSend = body;
   const defaultHeaders = { ...headers };
@@ -43,6 +44,7 @@ async function axiosWrapper(
     ...(method !== "GET" && { data: dataToSend }),
     params,
     responseType: streamToFile ? "stream" : "json",
+    decompress,
   };
 
   console.log("axios options:", {
@@ -96,7 +98,12 @@ async function axiosWrapper(
   } catch (err) {
     const error = err as AxiosError;
     if (error.response) {
-      console.warn("err.response.data:", error.response.data);
+      // Try to safely log response data, handling compressed responses
+      let responseData = error.response.data;
+      if (responseData && typeof responseData === 'object' && responseData.constructor.name === 'Unzip') {
+        responseData = '[Compressed response data]';
+      }
+      console.warn("err.response.data:", responseData);
       console.warn("err.response.status:", error.response.status);
       console.warn("err.response.headers:", error.response.headers);
     }
@@ -119,6 +126,7 @@ const handler = async (inputs) => {
     streamToFileName,
     dataFromFile,
     throwError,
+    decompress,
   } = inputs;
 
   const response = await axiosWrapper(
@@ -130,7 +138,8 @@ const handler = async (inputs) => {
     streamToFile,
     streamToFileName,
     dataFromFile,
-    throwError
+    throwError,
+    decompress
   );
 
   console.log("response:", response);

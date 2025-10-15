@@ -51,7 +51,7 @@ function getFileNameFromHeader(contentDisposition) {
     const match = contentDisposition?.match(/filename="?([^"]+)"?/);
     return match ? match[1] : null;
 }
-async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}, streamToFile = false, streamToFileName = null, dataFromFile = "", throwError = true) {
+async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}, streamToFile = false, streamToFileName = null, dataFromFile = "", throwError = true, decompress = false) {
     let dataToSend = body;
     const defaultHeaders = { ...headers };
     if (dataFromFile) {
@@ -66,6 +66,7 @@ async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}
         ...(method !== "GET" && { data: dataToSend }),
         params,
         responseType: streamToFile ? "stream" : "json",
+        decompress,
     };
     console.log("axios options:", {
         method,
@@ -73,7 +74,7 @@ async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}
         headers: defaultHeaders,
         params,
         responseType: options.responseType,
-        data: dataFromFile ? `[stream from ${dataFromFile}]` : dataToSend,
+        data: dataFromFile ? `[stream from ${dataFromFile}]` : body,
     });
     try {
         const res = await (0, axios_1.default)(options);
@@ -115,7 +116,12 @@ async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}
     catch (err) {
         const error = err;
         if (error.response) {
-            console.warn("err.response.data:", error.response.data);
+            // Try to safely log response data, handling compressed responses
+            let responseData = error.response.data;
+            if (responseData && typeof responseData === 'object' && responseData.constructor.name === 'Unzip') {
+                responseData = '[Compressed response data]';
+            }
+            console.warn("err.response.data:", responseData);
             console.warn("err.response.status:", error.response.status);
             console.warn("err.response.headers:", error.response.headers);
         }
@@ -127,8 +133,8 @@ async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}
     }
 }
 const handler = async (inputs) => {
-    const { method = "GET", url, body, headers, params, streamToFile, streamToFileName, dataFromFile, throwError, } = inputs;
-    const response = await axiosWrapper(method, url, body, headers, params, streamToFile, streamToFileName, dataFromFile, throwError);
+    const { method = "GET", url, body, headers, params, streamToFile, streamToFileName, dataFromFile, throwError, decompress, } = inputs;
+    const response = await axiosWrapper(method, url, body, headers, params, streamToFile, streamToFileName, dataFromFile, throwError, decompress);
     console.log("response:", response);
     return response;
 };
