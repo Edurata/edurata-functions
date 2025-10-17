@@ -51,7 +51,7 @@ function getFileNameFromHeader(contentDisposition) {
     const match = contentDisposition?.match(/filename="?([^"]+)"?/);
     return match ? match[1] : null;
 }
-async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}, streamToFile = false, streamToFileName = null, dataFromFile = "", throwError = true, decompress = false) {
+async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}, streamToFile = false, streamToFileName = null, dataFromFile = "", throwError = true) {
     let dataToSend = body;
     const defaultHeaders = { ...headers };
     if (dataFromFile) {
@@ -66,7 +66,6 @@ async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}
         ...(method !== "GET" && { data: dataToSend }),
         params,
         responseType: streamToFile ? "stream" : "json",
-        decompress,
     };
     console.log("axios options:", {
         method,
@@ -133,8 +132,8 @@ async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}
     }
 }
 const handler = async (inputs) => {
-    const { method = "GET", url, body, headers, params, streamToFile, streamToFileName, dataFromFile, throwError, decompress, } = inputs;
-    const response = await axiosWrapper(method, url, body, headers, params, streamToFile, streamToFileName, dataFromFile, throwError, decompress);
+    const { method = "GET", url, body, headers, params, streamToFile, streamToFileName, dataFromFile, throwError, } = inputs;
+    const response = await axiosWrapper(method, url, body, headers, params, streamToFile, streamToFileName, dataFromFile, throwError);
     console.log("response:", response);
     return response;
 };

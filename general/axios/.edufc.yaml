@@ -40,10 +40,6 @@ interface:
         type: file
         description: If the request body should be streamed from a file
         default: false
-      decompress:
-        type: boolean
-        description: If the response should be automatically decompressed (for gzipped responses)
-        default: true
     required: [url]
   outputs:
     properties:
