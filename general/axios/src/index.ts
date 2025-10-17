@@ -96,12 +96,7 @@ async function axiosWrapper(
   } catch (err) {
     const error = err as AxiosError;
     if (error.response) {
-      // Try to safely log response data, handling compressed responses
-      let responseData = error.response.data;
-      if (responseData && typeof responseData === 'object' && responseData.constructor.name === 'Unzip') {
-        responseData = '[Compressed response data]';
-      }
-      console.warn("err.response.data:", responseData);
+      console.warn("err.response.data:", error.response.data);
       console.warn("err.response.status:", error.response.status);
       console.warn("err.response.headers:", error.response.headers);
     }
