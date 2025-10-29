@@ -16,16 +16,27 @@ def handler(inputs):
     recipient = inputs["recipient"]
     subject = inputs["subject"]
     body = inputs["body"]
+    cc = inputs.get("cc")
+    bcc = inputs.get("bcc")
     attachments = inputs.get("attachments", [])
     thread_id = inputs.get("threadId")
     create_draft = inputs.get("createDraft", False)
 
-    print(f"[INFO]: Creating email from '{user_email}' to '{recipient}' with subject '{subject}'")
+    log_msg = f"[INFO]: Creating email from '{user_email}' to '{recipient}' with subject '{subject}'"
+    if cc:
+        log_msg += f" (CC: {cc})"
+    if bcc:
+        log_msg += f" (BCC: {bcc})"
+    print(log_msg)
 
     msg = EmailMessage()
     msg["From"] = user_email
     msg["To"] = recipient
     msg["Subject"] = subject
+    if cc:
+        msg["Cc"] = cc
+    if bcc:
+        msg["Bcc"] = bcc
     msg.set_content(body, subtype="html")
 
     # Convert to mixed type only once if we have attachments
@@ -138,6 +149,8 @@ def handler(inputs):
 #     "recipient": "recipient-email@gmail.com",
 #     "subject": "Your Subject Here",
 #     "body": "The body of your email goes here.",
+#     "cc": "cc-email@gmail.com",  # Optional
+#     "bcc": "bcc-email@gmail.com",  # Optional
 #     "attachments": ["/path/to/file1.pdf", "/path/to/file2.pdf"],
 #     "threadId": "12345abc",  # Optional
 #     "createDraft": True  # Set to True to save as a draft instead of sending

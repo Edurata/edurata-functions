@@ -19,6 +19,12 @@ interface:
       body:
         type: string
         description: The body in html format of the email.
+      cc:
+        type: string
+        description: The CC (carbon copy) recipient's email address. Multiple recipients can be specified as a comma-separated string.
+      bcc:
+        type: string
+        description: The BCC (blind carbon copy) recipient's email address. Multiple recipients can be specified as a comma-separated string.
       attachments:
         type: array
         items:
