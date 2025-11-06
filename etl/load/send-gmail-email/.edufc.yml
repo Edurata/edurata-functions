@@ -1,6 +1,6 @@
 name: email_send_with_thread_or_draft
 runtime: python3_10
-description: Sends an email via the Gmail API, optionally as part of an existing thread, with customizable subject, body, and attachments. Can also save as a draft if specified..
+description: Sends an email via the Gmail API, optionally as part of an existing thread, with customizable subject, body, and attachments. Can also save as a draft if specified.
 interface:
   inputs:
     properties:
