@@ -10,9 +10,21 @@ interface:
       userEmail:
         type: string
         description: Optional. Sender address; defaults to the authenticated user.
-      recipient:
-        type: string
-        description: Recipient email address.
+      recipients:
+        type: array
+        items:
+          type: string
+        description: List of recipient email addresses.
+      cc:
+        type: array
+        items:
+          type: string
+        description: List of CC recipient email addresses.
+      bcc:
+        type: array
+        items:
+          type: string
+        description: List of BCC recipient email addresses.
       subject:
         type: string
         description: Email subject.
@@ -29,7 +41,7 @@ interface:
         description: If true, saves a draft instead of sending.
         default: false
     required:
-      - recipient
+      - recipients
       - subject
       - body
   outputs:

@@ -30,13 +30,15 @@ def handler(inputs: Dict[str, Any]) -> Dict[str, Any]:
         raise Exception("OUTLOOK_API_KEY not set")
 
     sender = inputs.get("userEmail")
-    recipient = inputs["recipient"]
+    recipients = inputs["recipients"]
+    cc = inputs.get("cc", [])
+    bcc = inputs.get("bcc", [])
     subject = inputs["subject"]
     body_html = inputs["body"]
     attachments_paths = inputs.get("attachments", [])
     create_draft = bool(inputs.get("createDraft", False))
 
-    print(f"[INFO]: Preparing Outlook email to '{recipient}' with subject '{subject}'")
+    print(f"[INFO]: Preparing Outlook email to {recipients} (cc: {cc}, bcc: {bcc}) with subject '{subject}'")
 
     message: Dict[str, Any] = {
         "subject": subject,
@@ -45,9 +47,14 @@ def handler(inputs: Dict[str, Any]) -> Dict[str, Any]:
             "content": body_html,
         },
         "toRecipients": [
-            {"emailAddress": {"address": recipient}}
+            {"emailAddress": {"address": addr}} for addr in recipients
         ],
     }
+
+    if cc:
+        message["ccRecipients"] = [{"emailAddress": {"address": addr}} for addr in cc]
+    if bcc:
+        message["bccRecipients"] = [{"emailAddress": {"address": addr}} for addr in bcc]
 
     if sender:
         message["from"] = {"emailAddress": {"address": sender}}
