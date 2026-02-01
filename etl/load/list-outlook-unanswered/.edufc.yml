@@ -1,0 +1,32 @@
+name: list_outlook_unanswered
+runtime: nodejs20
+description: |
+  Lists Outlook inbox messages from a given sender domain that are unanswered:
+  no draft with singleValueExtendedProperty isReplyTo pointing to the message,
+  and no already-sent reply in the same conversation.
+interface:
+  inputs:
+    properties:
+      OUTLOOK_API_KEY:
+        type: env
+        description: OAuth 2.0 Bearer token for Microsoft Graph.
+      senderDomain:
+        type: string
+        description: Sender domain to filter by (e.g. "company.com"). Uses contains(from/emailAddress/address, senderDomain).
+      top:
+        type: number
+        description: Maximum number of inbox messages to consider from the domain (default 50).
+        default: 50
+    required:
+      - senderDomain
+  outputs:
+    properties:
+      messages:
+        type: array
+        description: List of unanswered messages (id, subject, from, receivedDateTime, conversationId, bodyPreview).
+      count:
+        type: number
+        description: Number of unanswered messages returned.
+    required:
+      - messages
+      - count

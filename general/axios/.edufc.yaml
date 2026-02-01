@@ -40,6 +40,25 @@ interface:
         type: file
         description: If the request body should be streamed from a file
         default: false
+      pagination:
+        type: boolean
+        description: Enable pagination to automatically fetch multiple pages
+        default: false
+      cursorKey:
+        type: string
+        description: Dot-notation path to the cursor value in the response (e.g., "nextCursor", "data.nextPageToken")
+      cursorAppendMethod:
+        type: string
+        description: How to append the cursor to the next request. Options: "query" (query parameter), "header" (HTTP header), "body" (request body)
+        default: query
+        enum: [query, header, body]
+      cursorParamName:
+        type: string
+        description: The parameter name to use when appending the cursor (e.g., "cursor", "pageToken", "nextPage")
+        default: cursor
+      maxPages:
+        type: number
+        description: Maximum number of pages to fetch. If not set, will fetch all pages until no cursor is found.
     required: [url]
   outputs:
     properties:
@@ -48,7 +67,7 @@ interface:
         properties:
           data:
             type: object
-            description: The HTTP response body
+            description: The HTTP response body (or array of response bodies when pagination is enabled)
           status:
             type: number
             description: The HTTP status code
@@ -61,6 +80,12 @@ interface:
           file:
             type: file
             description: If streamToFile is true, this will contain the file path.
+          pages:
+            type: array
+            description: Array of all page responses when pagination is enabled
+          pageCount:
+            type: number
+            description: Number of pages fetched when pagination is enabled
       error:
         type: object
         properties:

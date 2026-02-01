@@ -16,6 +16,22 @@ function getFileNameFromHeader(contentDisposition: string): string | null {
   return match ? match[1] : null;
 }
 
+// Helper function to get nested value from object using dot notation
+function getNestedValue(obj: any, path: string): any {
+  return path.split(".").reduce((current, key) => current?.[key], obj);
+}
+
+// Helper function to set nested value in object using dot notation
+function setNestedValue(obj: any, path: string, value: any): void {
+  const keys = path.split(".");
+  const lastKey = keys.pop();
+  const target = keys.reduce((current, key) => {
+    if (!current[key]) current[key] = {};
+    return current[key];
+  }, obj);
+  if (lastKey) target[lastKey] = value;
+}
+
 async function axiosWrapper(
   method = "GET",
   url,
@@ -25,7 +41,12 @@ async function axiosWrapper(
   streamToFile = false,
   streamToFileName = null,
   dataFromFile = "",
-  throwError = true
+  throwError = true,
+  pagination = false,
+  cursorKey = "",
+  cursorAppendMethod = "query",
+  cursorParamName = "cursor",
+  maxPages = null
 ) {
   let dataToSend = body;
   const defaultHeaders = { ...headers };
@@ -45,67 +66,176 @@ async function axiosWrapper(
     responseType: streamToFile ? "stream" : "json",
   };
 
-  console.log("axios options:", {
-    method,
-    url,
-    headers: defaultHeaders,
-    params,
-    responseType: options.responseType,
-    data: dataFromFile ? `[stream from ${dataFromFile}]` : body,
-  });
+  // If pagination is disabled, make a single request
+  if (!pagination || !cursorKey) {
+    console.log("axios options:", {
+      method,
+      url,
+      headers: defaultHeaders,
+      params,
+      responseType: options.responseType,
+      data: dataFromFile ? `[stream from ${dataFromFile}]` : body,
+    });
 
-  try {
-    const res = await axios(options);
+    try {
+      const res = await axios(options);
 
-    if (streamToFile) {
-      const contentDisposition = res.headers["content-disposition"];
-      const fileNameFromHeader = contentDisposition
-        ? getFileNameFromHeader(contentDisposition)
-        : null;
-      const fileName =
-        streamToFileName || fileNameFromHeader || generateFileName(url);
+      if (streamToFile) {
+        const contentDisposition = res.headers["content-disposition"];
+        const fileNameFromHeader = contentDisposition
+          ? getFileNameFromHeader(contentDisposition)
+          : null;
+        const fileName =
+          streamToFileName || fileNameFromHeader || generateFileName(url);
 
-      const filePath = path.join("/tmp", fileName);
-      const writer = fs.createWriteStream(filePath);
+        const filePath = path.join("/tmp", fileName);
+        const writer = fs.createWriteStream(filePath);
 
-      return await new Promise((resolve, reject) => {
-        writer.on("error", reject);
-        res.data.pipe(writer);
-        writer.on("finish", () => {
-          writer.close();
-          resolve({
-            response: {
-              status: res.status,
-              statusText: res.statusText,
-              headers: res.headers,
-              file: filePath,
-            },
+        return await new Promise((resolve, reject) => {
+          writer.on("error", reject);
+          res.data.pipe(writer);
+          writer.on("finish", () => {
+            writer.close();
+            resolve({
+              response: {
+                status: res.status,
+                statusText: res.statusText,
+                headers: res.headers,
+                file: filePath,
+              },
+            });
           });
         });
-      });
-    } else {
-      return {
-        response: {
-          status: res.status,
-          statusText: res.statusText,
-          headers: res.headers,
-          data: !dataFromFile ? res.data : undefined,
-        },
-      };
+      } else {
+        return {
+          response: {
+            status: res.status,
+            statusText: res.statusText,
+            headers: res.headers,
+            data: !dataFromFile ? res.data : undefined,
+          },
+        };
+      }
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response) {
+        console.warn("err.response.data:", error.response.data);
+        console.warn("err.response.status:", error.response.status);
+        console.warn("err.response.headers:", error.response.headers);
+      }
+      console.error(error.message);
+      if (throwError) {
+        throw error;
+      }
+      return null;
     }
-  } catch (err) {
-    const error = err as AxiosError;
-    if (error.response) {
-      console.warn("err.response.data:", error.response.data);
-      console.warn("err.response.status:", error.response.status);
-      console.warn("err.response.headers:", error.response.headers);
-    }
-    console.error(error.message);
-    if (throwError) {
-      throw error;
-    }
-    return null;
   }
+
+  // Pagination logic
+  const allPages: any[] = [];
+  let pageCount = 0;
+  let cursor: any = null;
+
+  // Note: Pagination doesn't work with streamToFile or dataFromFile
+  if (streamToFile || dataFromFile) {
+    throw new Error(
+      "Pagination is not supported with streamToFile or dataFromFile options"
+    );
+  }
+
+  do {
+    pageCount++;
+    if (maxPages && pageCount > maxPages) {
+      console.log(`Reached maxPages limit (${maxPages})`);
+      break;
+    }
+
+    // Reset to original values for each request
+    let currentParams = { ...params };
+    let currentHeaders = { ...defaultHeaders };
+    let currentBody = body
+      ? JSON.parse(JSON.stringify(body))
+      : {}; // Deep copy to avoid mutation
+
+    // Apply cursor to request based on append method
+    if (cursor !== null) {
+      if (cursorAppendMethod === "query") {
+        currentParams[cursorParamName] = cursor;
+      } else if (cursorAppendMethod === "header") {
+        currentHeaders[cursorParamName] = String(cursor);
+      } else if (cursorAppendMethod === "body") {
+        if (typeof currentBody === "object" && currentBody !== null) {
+          setNestedValue(currentBody, cursorParamName, cursor);
+        } else {
+          currentBody = { [cursorParamName]: cursor };
+        }
+      }
+    }
+
+    const paginationOptions: AxiosRequestConfig = {
+      method,
+      url,
+      headers: currentHeaders,
+      ...(method !== "GET" && { data: currentBody }),
+      params: currentParams,
+      responseType: "json",
+    };
+
+    console.log(`axios pagination options (page ${pageCount}):`, {
+      method,
+      url,
+      headers: currentHeaders,
+      params: currentParams,
+      body: currentBody,
+      cursor,
+    });
+
+    try {
+      const res = await axios(paginationOptions);
+
+      // Store this page's response
+      allPages.push({
+        status: res.status,
+        statusText: res.statusText,
+        headers: res.headers,
+        data: res.data,
+      });
+
+      // Extract cursor from response
+      cursor = getNestedValue(res.data, cursorKey);
+      console.log(`Page ${pageCount} cursor:`, cursor);
+
+      // If no cursor found, stop pagination
+      if (cursor === null || cursor === undefined || cursor === "") {
+        console.log("No cursor found, stopping pagination");
+        break;
+      }
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response) {
+        console.warn("err.response.data:", error.response.data);
+        console.warn("err.response.status:", error.response.status);
+        console.warn("err.response.headers:", error.response.headers);
+      }
+      console.error(error.message);
+      if (throwError) {
+        throw error;
+      }
+      return null;
+    }
+  } while (cursor !== null && cursor !== undefined && cursor !== "");
+
+  // Return aggregated response
+  return {
+    response: {
+      status: allPages[0]?.status || 200,
+      statusText: allPages[0]?.statusText || "OK",
+      headers: allPages[0]?.headers || {},
+      data: allPages.map((page) => page.data),
+      pages: allPages,
+      pageCount: allPages.length,
+    },
+  };
 }
 
 const handler = async (inputs) => {
@@ -119,6 +249,11 @@ const handler = async (inputs) => {
     streamToFileName,
     dataFromFile,
     throwError,
+    pagination = false,
+    cursorKey = "",
+    cursorAppendMethod = "query",
+    cursorParamName = "cursor",
+    maxPages = null,
   } = inputs;
 
   const response = await axiosWrapper(
@@ -130,7 +265,12 @@ const handler = async (inputs) => {
     streamToFile,
     streamToFileName,
     dataFromFile,
-    throwError
+    throwError,
+    pagination,
+    cursorKey,
+    cursorAppendMethod,
+    cursorParamName,
+    maxPages
   );
 
   console.log("response:", response);

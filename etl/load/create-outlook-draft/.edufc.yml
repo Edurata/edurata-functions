@@ -1,0 +1,48 @@
+name: create_outlook_draft
+runtime: nodejs20
+description: |
+  Creates an Outlook reply draft via Microsoft Graph with body, categories,
+  singleValueExtendedProperty isReplyTo (for querying drafts by original message),
+  and optional open extension metadata.
+interface:
+  inputs:
+    properties:
+      OUTLOOK_API_KEY:
+        type: env
+        description: OAuth 2.0 Bearer token for Microsoft Graph.
+      originalMessageId:
+        type: string
+        description: ID of the message being replied to (used for createReply and isReplyTo).
+      body:
+        type: string
+        description: HTML body of the draft.
+      categories:
+        type: array
+        items:
+          type: string
+        description: Categories to set on the draft (e.g. ["MyCategory"]).
+        default: []
+      threadId:
+        type: string
+        description: Conversation ID (thread) of the original message; used for context/consistency.
+      extensionMetadata:
+        type: object
+        description: Optional key-value metadata stored as an open extension on the draft (extensionName com.edurata.draftMetadata).
+    required:
+      - originalMessageId
+      - body
+  outputs:
+    properties:
+      draftId:
+        type: string
+        description: Microsoft Graph message ID of the created draft.
+      threadId:
+        type: string
+        description: Conversation ID of the draft.
+      webLink:
+        type: string
+        description: Direct Outlook web link for the draft.
+    required:
+      - draftId
+      - threadId
+      - webLink
