@@ -49,7 +49,7 @@ interface:
         description: Dot-notation path to the cursor value in the response (e.g., "nextCursor", "data.nextPageToken")
       cursorAppendMethod:
         type: string
-        description: How to append the cursor to the next request. Options: "query" (query parameter), "header" (HTTP header), "body" (request body)
+        description: 'How to append the cursor to the next request. Options: "query" (query parameter), "header" (HTTP header), "body" (request body)'
         default: query
         enum: [query, header, body]
       cursorParamName:
