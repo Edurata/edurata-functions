@@ -19,6 +19,7 @@ async function handler(inputs) {
       },
       { role: "user", content: message },
     ],
+    ...(parseResponseToJson ? { response_format: { type: "json_object" } } : {}),
   });
 
   const rawContent = completion.choices?.[0]?.message?.content;
