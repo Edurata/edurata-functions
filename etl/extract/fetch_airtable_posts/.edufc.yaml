@@ -1,0 +1,2 @@
+name: fetch_airtable_posts
+runtime: python3_10
