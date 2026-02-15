@@ -44,6 +44,6 @@ access_token_response=$(curl -s -d "grant_type=authorization_code&code=${authori
 
 # Extracting access token from the response
 access_token="$(echo "$access_token_response" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)"
-export LINKEDIN_API_SECRET=$access_token
+export LINKEDIN_API_TOKEN=$access_token
 echo $access_token > .token
 echo "Access Token: $access_token"

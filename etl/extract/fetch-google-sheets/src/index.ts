@@ -27,8 +27,10 @@ const handler: Handler = async (inputs) => {
   console.log(sheet.title);
   console.log(sheet.rowCount);
 
+  const rows = await sheet.getRows();
+
   return {
-    rows: sheet.getRows(),
+    rows,
   };
 };
 

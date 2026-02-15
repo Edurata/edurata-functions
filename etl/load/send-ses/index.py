@@ -12,6 +12,9 @@ def handler(inputs):
     html_body = inputs['html_body'].replace('\\n', '<br>').replace('\n', '<br>')
     attachments = inputs.get('attachments', [])
 
+    if not sender or not recipient or not subject:
+        return {'status': False, 'error': 'sender, to, and subject are required'}
+
     aws_region = os.getenv('AWS_REGION', 'eu-central-1')
     aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
     aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
@@ -73,7 +76,7 @@ def handler(inputs):
         )
     except ClientError as e:
         print(e.response['Error']['Message'])
-        return {'status': False}
+        return {'status': False, 'error': e.response['Error']['Message']}
     else:
         return {'status': True}
 

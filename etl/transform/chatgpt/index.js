@@ -8,9 +8,15 @@ async function handler(inputs) {
     message,
     model = "gpt-3.5-turbo",
     parseResponseToJson = false,
+    apiKey,
   } = inputs;
 
-  const completion = await openai.chat.completions.create({
+  const client = apiKey ? new OpenAI({ apiKey }) : openai;
+  if (!message) {
+    throw new Error("message is required");
+  }
+
+  const completion = await client.chat.completions.create({
     model,
     messages: [
       {

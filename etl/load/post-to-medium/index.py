@@ -3,8 +3,11 @@ import os
 
 def handler(inputs):
     url = "https://api.medium.com/v1/users/me/posts"
+    token = inputs.get("accessToken") or os.environ.get("ACCESS_TOKEN")
+    if not token:
+        return {"postId": "", "message": "Missing access token"}
     headers = {
-        "Authorization": f"Bearer {os.environ['ACCESS_TOKEN']}",
+        "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
         "Accept": "application/json"
     }

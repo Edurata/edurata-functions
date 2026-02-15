@@ -3,11 +3,12 @@ const OpenAI = require("openai");
 const openai = new OpenAI({ apiKey: process.env.API_KEY });
 
 async function handler(inputs) {
-  const { systemMessage, message } = inputs;
+  const { systemMessage, message, model = "gpt-3.5-turbo", apiKey } = inputs;
+  const client = apiKey ? new OpenAI({ apiKey }) : openai;
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+    const completion = await client.chat.completions.create({
+      model,
       messages: [
         {
           role: "system",
@@ -23,7 +24,7 @@ async function handler(inputs) {
   } catch (error) {
     console.error("Error calling OpenAI: ", error);
     return {
-      response: "Failed to get response from GPT-3",
+      response: "Failed to get response from model",
     };
   }
 }

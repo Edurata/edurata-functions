@@ -1,12 +1,7 @@
 import requests
 import os
 
-bearer_token = os.environ.get("BEARER_TOKEN")
-if not bearer_token:
-    raise Exception("Please set the environment variable: BEARER_TOKEN")
-
-
-def create_headers():
+def create_headers(bearer_token):
     return {
         "Authorization": f"Bearer {bearer_token}",
         "Content-Type": "application/json"
@@ -15,9 +10,10 @@ def create_headers():
 
 def upload_media(media_path):
     url = "https://upload.twitter.com/1.1/media/upload.json"
-    headers = create_headers()
-    files = {"media": open(media_path, "rb")}
-    response = requests.post(url, headers=headers, files=files)
+    headers = create_headers(bearer_token)
+    with open(media_path, "rb") as media_file:
+        files = {"media": media_file}
+        response = requests.post(url, headers=headers, files=files)
     if response.status_code != 200:
         raise Exception(f"Media upload failed: {response.text}")
     return response.json()["media_id_string"]
@@ -25,7 +21,7 @@ def upload_media(media_path):
 
 def create_tweet(text, media_id=None):
     url = "https://api.twitter.com/2/tweets"
-    headers = create_headers()
+    headers = create_headers(bearer_token)
     payload = {"text": text}
 
     if media_id:
@@ -52,6 +48,10 @@ def tweet(text: str, media: str = None):
 
 
 def handler(inputs):
+    global bearer_token
+    bearer_token = inputs.get("bearerToken") or os.environ.get("BEARER_TOKEN")
+    if not bearer_token:
+        raise Exception("Please set the environment variable: BEARER_TOKEN")
     tweet(inputs["message"], inputs.get("mediaPath"))
     return {
         "success": True

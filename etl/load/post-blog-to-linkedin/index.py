@@ -44,7 +44,8 @@ def handler(inputs):
     else:
         return {
             "shareId": "",
-            "message": response_data.get('message', 'Failed to post article to LinkedIn.')
+            "message": response_data.get('message', 'Failed to post article to LinkedIn.'),
+            "status": response.status_code
         }
 
 # Sample call (commented out)

@@ -3,8 +3,11 @@ import os
 
 def handler(inputs):
     url = "https://dev.to/api/articles"
+    api_key = inputs.get("apiKey") or os.environ.get("API_KEY")
+    if not api_key:
+        return {"articleId": "", "message": "Missing API key"}
     headers = {
-        "api-key": os.environ['API_KEY'],
+        "api-key": api_key,
         "Content-Type": "application/json"
     }
     data = {

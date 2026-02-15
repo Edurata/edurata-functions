@@ -9,6 +9,9 @@ def handler(inputs):
     sponsored = inputs.get("sponsored", False)  # New input to indicate if the post is sponsored
     author = inputs.get("author", None)  # Replace 'YOUR_ORG_ID' with your actual LinkedIn organization ID
 
+    if not author:
+        return {"status": 400, "response": "author is required"}
+
     access_token = get_access_token()
     print(access_token)
     media_ids = upload_media(media_paths, media_type, access_token, author) if media_paths else []
