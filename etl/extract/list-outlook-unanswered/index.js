@@ -18,20 +18,25 @@ async function handler(inputs) {
   }
   console.log("[list-outlook-unanswered] token present, length:", token.length);
 
-  const { senderDomain, top = 50 } = inputs;
-  console.log("[list-outlook-unanswered] senderDomain:", senderDomain, "top:", top);
+  const DEFAULT_SINCE = "1900-01-01T00:00:00Z";
+  const { senderDomain, top = 50, since } = inputs;
+  const sinceDateTime = since != null && String(since).trim() !== "" ? String(since).trim() : DEFAULT_SINCE;
+  console.log("[list-outlook-unanswered] senderDomain:", senderDomain, "top:", top, "since:", sinceDateTime);
 
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
 
-  // 1) Get inbox messages from senders whose address contains senderDomain
-  const domainFilter = `contains(from/emailAddress/address,${encodeODataString(senderDomain)})`;
+  // 1) Get inbox messages from senders whose address contains senderDomain.
+  // Graph API requires: fields in $orderby must appear in $filter, in the same order;
+  // other filter fields must come after. So we filter on receivedDateTime first, then domain.
   const inboxUrl = `${GRAPH_BASE}/me/mailFolders/inbox/messages`;
-  console.log("[list-outlook-unanswered] inbox domain filter:", domainFilter);
+  const inboxFilter =
+    `receivedDateTime ge ${sinceDateTime} and contains(from/emailAddress/address,${encodeODataString(senderDomain)})`;
+  console.log("[list-outlook-unanswered] inbox filter:", inboxFilter);
   const inboxParams = {
-    $filter: domainFilter,
+    $filter: inboxFilter,
     $top: Math.min(Math.max(1, top), 100),
     $select:
       "id,subject,from,receivedDateTime,conversationId,bodyPreview,isRead",

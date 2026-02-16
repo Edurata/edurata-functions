@@ -17,6 +17,9 @@ interface:
         type: number
         description: Maximum number of inbox messages to consider from the domain (default 50).
         default: 50
+      since:
+        type: string
+        description: Optional ISO 8601 datetime; only messages received on or after this time are considered. Defaults to 1900-01-01T00:00:00Z if omitted.
     required:
       - senderDomain
   outputs:
