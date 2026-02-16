@@ -1,6 +1,7 @@
 const axios = require("axios");
 
 const GRAPH_BASE = "https://graph.microsoft.com/v1.0";
+// default for draft messages
 const IS_REPLY_TO_PROPERTY_ID =
   "String {66f5a359-4659-4830-9070-00047ec6ac6e} Name isReplyTo";
 
