@@ -101,7 +101,8 @@ async function handler(inputs) {
     }
 
     // 3) Check if there is a sent reply in the same conversation after this message
-    const sentFilter = `conversationId eq ${encodeODataString(conversationId)} and sentDateTime gt ${encodeODataString(receivedDateTime)}`;
+    // sentDateTime is Edm.DateTimeOffset: use raw value (no quotes), not encodeODataString
+    const sentFilter = `conversationId eq ${encodeODataString(conversationId)} and sentDateTime gt ${receivedDateTime}`;
     console.log("[list-outlook-unanswered] sent filter for", messageId, ":", sentFilter);
     let sentRes;
     try {
