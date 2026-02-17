@@ -1,0 +1,36 @@
+name: list_outlook_conversation
+runtime: nodejs20
+description: |
+  Fetches the last n messages in an Outlook conversation by conversationId.
+  Uses Microsoft Graph to get messages across all folders in the mailbox that
+  belong to the given conversation, ordered by sentDateTime descending.
+interface:
+  inputs:
+    properties:
+      OUTLOOK_API_KEY:
+        type: env
+        description: OAuth 2.0 Bearer token for Microsoft Graph.
+      conversationId:
+        type: string
+        description: Outlook conversation ID (thread id) to fetch messages for.
+      top:
+        type: number
+        description: Number of most recent messages to return (default 20, max 100).
+        default: 20
+    required:
+      - conversationId
+  outputs:
+    properties:
+      conversationId:
+        type: string
+        description: The conversation ID that was queried.
+      messages:
+        type: array
+        description: List of messages (id, subject, from, toRecipients, receivedDateTime, sentDateTime, bodyPreview, body, isRead, etc.), newest first.
+      count:
+        type: number
+        description: Number of messages returned.
+    required:
+      - conversationId
+      - messages
+      - count
