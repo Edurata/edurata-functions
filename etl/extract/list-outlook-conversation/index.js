@@ -88,7 +88,7 @@ async function handler(inputs) {
   // WICHTIG: kein $orderby -> Graph soll nicht “kompliziert” werden
   const filter = `conversationId eq ${encodeODataString(conv)}`;
   const select =
-    "id,subject,from,toRecipients,receivedDateTime,sentDateTime,conversationId,bodyPreview,body,isRead,parentFolderId";
+    "id,subject,from,toRecipients,receivedDateTime,sentDateTime,conversationId,body,isRead,parentFolderId";
 
   const params = {
     $filter: filter,
@@ -150,9 +150,8 @@ async function handler(inputs) {
       receivedDateTime: msg.receivedDateTime || null,
       sentDateTime: msg.sentDateTime || null,
       conversationId: msg.conversationId || null,
-      bodyPreview: msg.bodyPreview || null,
       body, // original body (HTML/Text)
-      bodyText, // plain text extraction (optional)
+      // bodyText, // plain text extraction (optional)
       isRead: msg.isRead,
       parentFolderId: msg.parentFolderId,
     };
