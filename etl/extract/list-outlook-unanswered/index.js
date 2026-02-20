@@ -20,9 +20,10 @@ async function handler(inputs) {
   console.log("[list-outlook-unanswered] token present, length:", token.length);
 
   const DEFAULT_SINCE = "1900-01-01T00:00:00Z";
-  const { senderDomain, top = 50, since } = inputs;
+  const { senderDomain, top = 50, since, processedLabel } = inputs;
   const sinceDateTime = since != null && String(since).trim() !== "" ? String(since).trim() : DEFAULT_SINCE;
-  console.log("[list-outlook-unanswered] senderDomain:", senderDomain, "top:", top, "since:", sinceDateTime);
+  const excludeCategory = processedLabel != null && String(processedLabel).trim() !== "" ? String(processedLabel).trim() : null;
+  console.log("[list-outlook-unanswered] senderDomain:", senderDomain, "top:", top, "since:", sinceDateTime, "processedLabel (exclude):", excludeCategory || "(none)");
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -30,11 +31,15 @@ async function handler(inputs) {
   };
 
   // 1) Get inbox messages from senders whose address contains senderDomain.
+  // Optionally exclude messages that have this Outlook category (e.g. "Processed") so we only get unprocessed ones.
   // Graph API requires: fields in $orderby must appear in $filter, in the same order;
   // other filter fields must come after. So we filter on receivedDateTime first, then domain.
   const inboxUrl = `${GRAPH_BASE}/me/mailFolders/inbox/messages`;
-  const inboxFilter =
+  let inboxFilter =
     `receivedDateTime ge ${sinceDateTime} and contains(from/emailAddress/address,${encodeODataString(senderDomain)})`;
+  if (excludeCategory) {
+    inboxFilter += ` and not categories/any(c: c eq ${encodeODataString(excludeCategory)})`;
+  }
   console.log("[list-outlook-unanswered] inbox filter:", inboxFilter);
   const inboxParams = {
     $filter: inboxFilter,
@@ -65,6 +70,8 @@ async function handler(inputs) {
   console.log("[list-outlook-unanswered] candidates count:", candidates.length);
 
   const unanswered = [];
+  /** When processedLabel is set, collect message IDs to tag so next query excludes them (skipped + dropped). */
+  const idsToMarkProcessed = [];
 
   for (let i = 0; i < candidates.length; i++) {
     const msg = candidates[i];
@@ -97,7 +104,7 @@ async function handler(inputs) {
     const draftsWithReply = (draftsRes.data.value || []).length > 0;
     if (draftsWithReply) {
       console.log("[list-outlook-unanswered] skipping", messageId, "- has draft reply");
-      continue; // has draft reply -> not unanswered
+      continue; // has draft reply -> not unanswered (do not mark processed; draft might be deleted)
     }
 
     // 3) Check if there is a sent reply in the same conversation after this message
@@ -125,6 +132,7 @@ async function handler(inputs) {
     const hasSentReply = (sentRes.data.value || []).length > 0;
     if (hasSentReply) {
       console.log("[list-outlook-unanswered] skipping", messageId, "- has sent reply");
+      if (excludeCategory) idsToMarkProcessed.push(messageId);
       continue; // already replied -> not unanswered
     }
 
@@ -141,10 +149,49 @@ async function handler(inputs) {
     });
   }
 
-  console.log("[list-outlook-unanswered] done, unanswered count:", unanswered.length);
+  // Keep only the latest message per conversation (by receivedDateTime), so we create at most one draft per conversation.
+  const byConversation = new Map();
+  for (const m of unanswered) {
+    const cid = m.conversationId;
+    const existing = byConversation.get(cid);
+    if (!existing || (m.receivedDateTime && m.receivedDateTime > existing.receivedDateTime)) {
+      byConversation.set(cid, m);
+    }
+  }
+  const onePerConversation = Array.from(byConversation.values()).sort(
+    (a, b) => (b.receivedDateTime || "").localeCompare(a.receivedDateTime || "")
+  );
+  console.log("[list-outlook-unanswered] after one-per-conversation:", unanswered.length, "->", onePerConversation.length, "messages");
+
+  // Only mark as processed messages that have a sent reply (or an earlier message in a thread where a later one was replied to — we already added those when we skipped due to hasSentReply). Do not mark: draft-only skips, or unanswered-but-not-latest.
+
+  const uniqueToMark = [...new Set(idsToMarkProcessed)];
+  if (excludeCategory && uniqueToMark.length > 0) {
+    console.log("[list-outlook-unanswered] applying category", excludeCategory, "to", uniqueToMark.length, "messages");
+    for (const messageId of uniqueToMark) {
+      try {
+        const getRes = await axios.get(`${GRAPH_BASE}/me/messages/${messageId}`, {
+          headers,
+          params: { $select: "categories" },
+        });
+        if (getRes.status !== 200) continue;
+        const existing = getRes.data.categories || [];
+        if (existing.includes(excludeCategory)) continue;
+        await axios.patch(
+          `${GRAPH_BASE}/me/messages/${messageId}`,
+          { categories: [...existing, excludeCategory] },
+          { headers }
+        );
+        console.log("[list-outlook-unanswered] marked processed:", messageId);
+      } catch (err) {
+        console.warn("[list-outlook-unanswered] failed to mark processed", messageId, err.message);
+      }
+    }
+  }
+
   const result = {
-    messages: unanswered,
-    count: unanswered.length,
+    messages: onePerConversation,
+    count: onePerConversation.length,
   };
   console.log("[list-outlook-unanswered] returning result");
   return result;
