@@ -7,7 +7,6 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "archiver": "^5.3.0",
-    "express": "^4.17.1"
+    "archiver": "^5.3.0"
   }
 }
