@@ -1,0 +1,26 @@
+name: ensure_outlook_categories
+runtime: python3_10
+description: Ensures Outlook master categories exist for custom categories (name:value).
+interface:
+  inputs:
+    properties:
+      OUTLOOK_API_KEY:
+        type: env
+        description: OAuth token for Microsoft Graph.
+      customCategories:
+        type: array
+      lang:
+        type: string
+        default: en
+    required:
+      - customCategories
+  outputs:
+    properties:
+      created:
+        type: array
+        items:
+          type: string
+      existing:
+        type: array
+        items:
+          type: string

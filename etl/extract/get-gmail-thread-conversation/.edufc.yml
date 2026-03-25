@@ -1,0 +1,31 @@
+name: get_gmail_thread_conversation
+runtime: python3_10
+description: |
+  Fetches all messages in a Gmail thread and returns them ordered oldest to newest.
+  Extracts message body content (plain text preferred), sender header, and metadata
+  in a structure compatible with copilot-listener conversation parsing.
+interface:
+  inputs:
+    properties:
+      GMAIL_API_KEY:
+        type: env
+        description: OAuth 2.0 Bearer token for Gmail API.
+      threadId:
+        type: string
+        description: Gmail thread ID to fetch.
+    required:
+      - threadId
+  outputs:
+    properties:
+      threadId:
+        type: string
+      count:
+        type: number
+      messages:
+        type: array
+        items:
+          type: object
+    required:
+      - threadId
+      - count
+      - messages

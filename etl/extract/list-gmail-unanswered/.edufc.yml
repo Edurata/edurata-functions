@@ -1,0 +1,66 @@
+name: list_gmail_unanswered
+runtime: python3_10
+description: |
+  Bulk Gmail thread classifier for a sender domain, using a rolling time window.
+
+  The function searches inbound Inbox messages from senderDomain in the window and
+  keeps the latest inbound message per thread. It also searches Sent messages in the
+  same window and marks a thread as answered when a listener-sent message is newer
+  than the latest inbound one. It then checks existing drafts and marks a thread as
+  unanswered if it is not answered and has no draft (or only an outdated draft).
+interface:
+  inputs:
+    properties:
+      GMAIL_API_KEY:
+        type: env
+        description: OAuth 2.0 Bearer token for Gmail API.
+      senderDomain:
+        type: string
+        description: Sender domain to filter inbound messages by.
+      listenerEmail:
+        type: string
+        description: Optional listener mailbox to identify own sent messages.
+      windowHours:
+        type: number
+        description: Rolling time window in hours (default 72).
+        default: 72
+      pageSize:
+        type: number
+        description: Page size for Gmail list APIs (default 100, max 500).
+        default: 100
+      maxInboxPages:
+        type: number
+        description: Maximum number of inbox search pages to read (default 3).
+        default: 3
+      maxSentPages:
+        type: number
+        description: Maximum number of sent search pages to read (default 3).
+        default: 3
+      maxUnanswered:
+        type: number
+        description: Max unanswered thread IDs to return. Use 0 for no cap.
+        default: 10
+    required:
+      - senderDomain
+  outputs:
+    properties:
+      unansweredThreadIds:
+        type: array
+        items:
+          type: string
+      answeredThreadIds:
+        type: array
+        items:
+          type: string
+      countUnanswered:
+        type: number
+      countAnswered:
+        type: number
+      sinceUsed:
+        type: string
+    required:
+      - unansweredThreadIds
+      - answeredThreadIds
+      - countUnanswered
+      - countAnswered
+      - sinceUsed
