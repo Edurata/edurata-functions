@@ -148,7 +148,7 @@ async function axiosWrapper(method = "GET", url, body, headers = {}, params = {}
     const allPages = [];
     let pageCount = 0;
     let cursor = null;
-    // Note: Pagination doesn't work with streamToFile or dataFromFile
+    // Note: Pagination doesn't work with streamToFile or dataFromFile.
     if (streamToFile || dataFromFile) {
         throw new Error("Pagination is not supported with streamToFile or dataFromFile options");
     }
