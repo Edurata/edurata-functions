@@ -19,7 +19,14 @@ interface:
         description: OAuth 2.0 Bearer token for Microsoft Graph.
       senderDomain:
         type: string
-        description: Sender domain to filter inbound messages by (e.g. "company.com"). Uses contains(from/emailAddress/address, senderDomain).
+        description: Sender substring to filter inbound messages; must appear in SMTP from/emailAddress/address (e.g. mail.kleinanzeigen.de).
+      inboundMailFolderId:
+        type: string
+        description: >
+          Optional. Folder to scan instead of default Inbox: Graph folder GUID, well-known shortcut (inbox, junk,
+          junkemail, drafts, sentitems, …), or exact Outlook displayName. For displayName, the function resolves
+          a single match at mailbox root or a direct child of Inbox; deeper nesting or duplicate names need a GUID.
+          Top-level Inbox only includes that container’s messages, not subfolders—use this when rules move mail.
       windowHours:
         type: number
         description: Rolling time window in hours to consider inbound and sent messages (default 72).

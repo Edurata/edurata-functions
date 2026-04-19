@@ -1,9 +1,106 @@
 const axios = require("axios");
 
 const GRAPH_BASE = "https://graph.microsoft.com/v1.0";
+const LOG_PREFIX = "[list-outlook-unanswered]";
+
+function normalizeGraphAccessToken(raw) {
+  if (raw == null || typeof raw !== "string") return raw;
+  let t = raw.trim();
+  if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
+    t = t.slice(1, -1).trim();
+  }
+  if (/^bearer\s+/i.test(t)) {
+    t = t.replace(/^bearer\s+/i, "").trim();
+  }
+  return t;
+}
 
 function encodeODataString(s) {
   return "'" + String(s).replace(/'/g, "''") + "'";
+}
+
+/** OData filter for inbound rows in the time window from addresses matching senderDomain (substring on SMTP address). */
+function buildInboundSenderFilter(sinceIso, senderDomain) {
+  return (
+    `receivedDateTime ge ${sinceIso} and contains(from/emailAddress/address,${encodeODataString(senderDomain)})`
+  );
+}
+
+const MAIL_FOLDER_ID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/** Lowercase well-known folder segment accepted by /me/mailFolders/{name}/messages */
+const WELL_KNOWN_MAIL_FOLDER = new Map(
+  [
+    ["inbox", "inbox"],
+    ["sentitems", "sentitems"],
+    ["sent items", "sentitems"],
+    ["drafts", "drafts"],
+    ["junk email", "junkemail"],
+    ["junkemail", "junkemail"],
+    ["junk", "junkemail"],
+    ["deleted items", "deleteditems"],
+    ["deleteditems", "deleteditems"],
+    ["archive", "archive"],
+  ].map(([k, v]) => [k.toLowerCase(), v])
+);
+
+/**
+ * Resolves optional inbound folder to Graph URL segment `mailFolders/{id|wellKnown}`.
+ * Accepts: omit → Inbox; GUID → that folder; well-known shortcut (inbox, junk, …);
+ * otherwise treats value as display name and looks up via Graph (mailbox root, then Inbox children).
+ */
+async function resolveInboundMailFolderSegment(headers, inboundMailFolderSpec) {
+  if (inboundMailFolderSpec == null || !String(inboundMailFolderSpec).trim()) {
+    return "mailFolders/inbox";
+  }
+  const raw = String(inboundMailFolderSpec).trim();
+
+  if (MAIL_FOLDER_ID_RE.test(raw)) {
+    return `mailFolders/${encodeURIComponent(raw)}`;
+  }
+
+  const wellKnown = WELL_KNOWN_MAIL_FOLDER.get(raw.toLowerCase());
+  if (wellKnown) {
+    return `mailFolders/${wellKnown}`;
+  }
+
+  // Allow passing Graph well-known literal directly (e.g. junkemail)
+  if (/^(inbox|sentitems|drafts|junkemail|deleteditems|archive)$/i.test(raw)) {
+    return `mailFolders/${raw.toLowerCase()}`;
+  }
+
+  const nameEq = `displayName eq ${encodeODataString(raw)}`;
+  const listParams = {
+    $filter: nameEq,
+    $select: "id,displayName",
+    $top: 10,
+  };
+
+  const lookups = [
+    { label: "mailbox root", url: `${GRAPH_BASE}/me/mailFolders` },
+    { label: "Inbox children", url: `${GRAPH_BASE}/me/mailFolders/inbox/childFolders` },
+  ];
+
+  for (const { label, url } of lookups) {
+    const res = await axios.get(url, { headers, params: listParams });
+    const folders = res.data?.value || [];
+    if (folders.length === 1) {
+      console.log(
+        `${LOG_PREFIX} resolved inbound folder by displayName='${raw}' (${label}) → id=${folders[0].id}`
+      );
+      return `mailFolders/${encodeURIComponent(folders[0].id)}`;
+    }
+    if (folders.length > 1) {
+      throw new Error(
+        `inboundMailFolderId: displayName '${raw}' matched ${folders.length} folders under ${label}; use folder GUID`
+      );
+    }
+  }
+
+  throw new Error(
+    `inboundMailFolderId: no folder with displayName '${raw}' at mailbox root or as direct child of Inbox; pass a folder GUID or move the folder`
+  );
 }
 function chunkArray(arr, size) {
   const out = [];
@@ -40,14 +137,13 @@ async function pagedGet({ url, headers, params, maxPages }) {
   return pages;
 }
 
-const LOG_PREFIX = "[list-outlook-unanswered]";
-
 async function handler(inputs) {
-  const token = process.env.OUTLOOK_API_KEY;
+  const token = normalizeGraphAccessToken(process.env.OUTLOOK_API_KEY);
   if (!token) throw new Error("OUTLOOK_API_KEY not set");
 
   const {
     senderDomain,
+    inboundMailFolderId,
     windowHours = 72,
     pageSize = 100,
     maxInboxPages = 3,
@@ -62,24 +158,26 @@ async function handler(inputs) {
   }
 
   const sinceDateTime = subtractHoursIso(Number(windowHours) || 72);
-  console.log(
-    `${LOG_PREFIX} start senderDomain=${senderDomain} windowHours=${windowHours} sinceUsed=${sinceDateTime} maxUnanswered=${maxUnanswered}`
-  );
 
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
 
+  const inboundFolderSeg = await resolveInboundMailFolderSegment(headers, inboundMailFolderId);
+  console.log(
+    `${LOG_PREFIX} start senderDomain=${senderDomain} inboundFolder=${inboundFolderSeg} windowHours=${windowHours} sinceUsed=${sinceDateTime} maxUnanswered=${maxUnanswered}`
+  );
+
   /* ===============================
      1) INBOX BULK PULL
   =============================== */
 
   const inboxPages = await pagedGet({
-    url: `${GRAPH_BASE}/me/mailFolders/inbox/messages`,
+    url: `${GRAPH_BASE}/me/${inboundFolderSeg}/messages`,
     headers,
     params: {
-      $filter: `receivedDateTime ge ${sinceDateTime} and contains(from/emailAddress/address,${encodeODataString(senderDomain)})`,
+      $filter: buildInboundSenderFilter(sinceDateTime, senderDomain),
       $top: Math.min(pageSize, 100),
       $select: "id,receivedDateTime,conversationId",
       $orderby: "receivedDateTime desc",
