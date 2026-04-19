@@ -1,9 +1,9 @@
 name: list_outlook_conversation
 runtime: nodejs20
 description: |
-  Fetches the last n messages in an Outlook conversation by conversationId.
-  Uses Microsoft Graph to get messages across all folders in the mailbox that
-  belong to the given conversation, ordered by sentDateTime descending.
+  Fetches the last n messages in an Outlook conversation by conversationId via GET /me/messages
+  (mailbox-wide), so messages in custom folders are included—not only Inbox and Sent Items.
+  Returned messages are chronological oldest-first; inputs.top limits how many of the newest are kept.
 interface:
   inputs:
     properties:
@@ -26,7 +26,7 @@ interface:
         description: The conversation ID that was queried.
       messages:
         type: array
-        description: List of messages (id, subject, from, toRecipients, receivedDateTime, sentDateTime, bodyPreview, body, isRead, etc.), newest first.
+        description: Messages in the conversation, oldest first (after applying top as the last n chronologically).
       count:
         type: number
         description: Number of messages returned.

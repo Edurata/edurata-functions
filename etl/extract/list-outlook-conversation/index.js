@@ -63,8 +63,8 @@ async function fetchAllPages(initialUrl, { headers, params }) {
 }
 
 /**
- * Holt alle Messages einer Konversation aus Inbox + SentItems
- * und gibt sie chronologisch (alt -> neu) zurück.
+ * Holt Messages einer Konversation mailbox-weit (/me/messages), nicht nur Inbox+Sent Items,
+ * damit Unterordner / benutzerdefinierte Ordner nicht fehlen. Ausgabe chronologisch alt -> neu.
  */
 async function handler(inputs) {
   console.log("[list-outlook-conversation] inputs:", JSON.stringify(inputs));
@@ -85,7 +85,8 @@ async function handler(inputs) {
     "Content-Type": "application/json",
   };
 
-  // WICHTIG: kein $orderby -> Graph soll nicht “kompliziert” werden
+  // Single mailbox-wide query: Inbox + SentItems alone misses custom subfolders / “Kleinanzeigen konvo”
+  // and any other folder where thread messages may live.
   const filter = `conversationId eq ${encodeODataString(conv)}`;
   const select =
     "id,subject,from,toRecipients,receivedDateTime,sentDateTime,conversationId,body,isRead,parentFolderId";
@@ -93,26 +94,21 @@ async function handler(inputs) {
   const params = {
     $filter: filter,
     $select: select,
-    $top: 50, // page size (Graph cap variiert; 25/50/100 – 50 ist oft safe)
+    $top: 50,
   };
 
-  const inboxUrl = `${GRAPH_BASE}/me/mailFolders/Inbox/messages`;
-  const sentUrl = `${GRAPH_BASE}/me/mailFolders/SentItems/messages`;
+  const messagesUrl = `${GRAPH_BASE}/me/messages`;
 
-  console.log("[list-outlook-conversation] fetching Inbox pages…");
-  const inboxMsgs = await fetchAllPages(inboxUrl, { headers, params });
+  console.log("[list-outlook-conversation] fetching /me/messages (all folders, by conversationId)…");
+  const fetched = await fetchAllPages(messagesUrl, { headers, params });
 
-  console.log("[list-outlook-conversation] fetching SentItems pages…");
-  const sentMsgs = await fetchAllPages(sentUrl, { headers, params });
-
-  // merge + dedupe by id
   const byId = new Map();
-  for (const m of [...inboxMsgs, ...sentMsgs]) {
+  for (const m of fetched) {
     if (m?.id && !byId.has(m.id)) byId.set(m.id, m);
   }
 
   let all = Array.from(byId.values());
-  console.log("[list-outlook-conversation] merged unique messages:", all.length);
+  console.log("[list-outlook-conversation] unique messages:", all.length);
 
   // sort oldest -> newest
   all.sort((a, b) => {
