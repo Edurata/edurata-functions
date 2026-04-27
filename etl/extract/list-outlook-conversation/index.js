@@ -72,7 +72,12 @@ async function handler(inputs) {
   const token = process.env.OUTLOOK_API_KEY;
   if (!token) throw new Error("OUTLOOK_API_KEY not set");
 
-  const { conversationId, top = 200, includePlainText = true } = inputs || {};
+  const {
+    conversationId,
+    top = 200,
+    includePlainText = true,
+    excludeDeleted = false,
+  } = inputs || {};
   if (!conversationId || String(conversationId).trim() === "") {
     throw new Error("conversationId is required");
   }
@@ -99,6 +104,32 @@ async function handler(inputs) {
 
   const messagesUrl = `${GRAPH_BASE}/me/messages`;
 
+  let deletedItemsFolderId = null;
+  if (excludeDeleted) {
+    let delRes;
+    try {
+      delRes = await axios.get(`${GRAPH_BASE}/me/mailFolders/deleteditems`, {
+        headers,
+        params: { $select: "id" },
+      });
+    } catch (err) {
+      console.error(
+        "[list-outlook-conversation] deleted items folder:",
+        err.message,
+        err.response?.status,
+        err.response?.data
+      );
+      throw new Error(
+        `excludeDeleted: could not resolve Deleted Items folder (${err.response?.status || err.message})`
+      );
+    }
+    if (delRes.status !== 200 || !delRes.data?.id) {
+      throw new Error("excludeDeleted: Deleted Items folder response missing id");
+    }
+    deletedItemsFolderId = delRes.data.id;
+    console.log("[list-outlook-conversation] excludeDeleted: filtering out parentFolderId =", deletedItemsFolderId);
+  }
+
   console.log("[list-outlook-conversation] fetching /me/messages (all folders, by conversationId)…");
   const fetched = await fetchAllPages(messagesUrl, { headers, params });
 
@@ -108,6 +139,11 @@ async function handler(inputs) {
   }
 
   let all = Array.from(byId.values());
+  if (excludeDeleted && deletedItemsFolderId) {
+    const before = all.length;
+    all = all.filter((m) => m.parentFolderId !== deletedItemsFolderId);
+    console.log("[list-outlook-conversation] excluded deleted:", before - all.length, "messages");
+  }
   console.log("[list-outlook-conversation] unique messages:", all.length);
 
   // sort oldest -> newest
