@@ -31,9 +31,7 @@ interface:
           type: string
         description: >
           Folders/labels to scan for inbound mail (OR). System folders: inbox, spam, trash, drafts, sent,
-          important, starred. Custom Gmail labels are resolved by name. Defaults to inbox when empty.
-        default:
-          - inbox
+          important, starred. Custom Gmail labels are resolved by name. When omitted or empty, defaults to inbox only.
       listenerEmail:
         type: string
         description: Optional listener mailbox to identify own sent messages.

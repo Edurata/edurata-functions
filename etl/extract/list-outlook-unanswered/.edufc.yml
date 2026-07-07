@@ -38,9 +38,7 @@ interface:
         description: >
           Folders to scan for inbound mail (OR). Each entry is a Graph folder GUID, well-known shortcut
           (inbox, junkemail, drafts, sentitems, …), or exact Outlook displayName (resolved at mailbox root
-          or as a direct child of Inbox). Defaults to inbox when empty.
-        default:
-          - inbox
+          or as a direct child of Inbox). When omitted or empty, defaults to inbox only.
       windowHours:
         type: number
         description: >
