@@ -19,11 +19,48 @@ function encodeODataString(s) {
   return "'" + String(s).replace(/'/g, "''") + "'";
 }
 
-/** OData filter for inbound rows in the time window from addresses matching senderDomain (substring on SMTP address). */
-function buildInboundSenderFilter(sinceIso, senderDomain) {
-  return (
-    `receivedDateTime ge ${sinceIso} and contains(from/emailAddress/address,${encodeODataString(senderDomain)})`
-  );
+function normalizeDomainList(value) {
+  if (value == null) return [];
+  const raw = Array.isArray(value) ? value : [value];
+  return raw
+    .map((item) => String(item || "").trim())
+    .filter(Boolean);
+}
+
+function resolveSenderDomains(inputs) {
+  const includeDomains = normalizeDomainList(inputs?.senderDomains);
+  const excludeDomains = normalizeDomainList(inputs?.excludeDomains);
+  return { includeDomains, excludeDomains };
+}
+
+function normalizeFolderList(value) {
+  return normalizeDomainList(value);
+}
+
+/** OData filter for inbound rows, optionally scoped by time window and sender domain. */
+function buildInboundSenderFilter(sinceIso, includeDomains, excludeDomains = []) {
+  const clauses = [];
+  if (sinceIso) {
+    clauses.push(`receivedDateTime ge ${sinceIso}`);
+  }
+
+  if (includeDomains.length) {
+    const includeClause =
+      includeDomains.length === 1
+        ? `contains(from/emailAddress/address,${encodeODataString(includeDomains[0])})`
+        : "(" +
+          includeDomains
+            .map((domain) => `contains(from/emailAddress/address,${encodeODataString(domain)})`)
+            .join(" or ") +
+          ")";
+    clauses.push(includeClause);
+  }
+
+  for (const domain of excludeDomains) {
+    clauses.push(`not contains(from/emailAddress/address,${encodeODataString(domain)})`);
+  }
+
+  return clauses.join(" and ");
 }
 
 const MAIL_FOLDER_ID_RE =
@@ -46,15 +83,12 @@ const WELL_KNOWN_MAIL_FOLDER = new Map(
 );
 
 /**
- * Resolves optional inbound folder to Graph URL segment `mailFolders/{id|wellKnown}`.
- * Accepts: omit → Inbox; GUID → that folder; well-known shortcut (inbox, junk, …);
+ * Resolves inbound folder specs to Graph URL segments `mailFolders/{id|wellKnown}`.
+ * Accepts: inbox (default); GUID; well-known shortcut (inbox, junk, …);
  * otherwise treats value as display name and looks up via Graph (mailbox root, then Inbox children).
  */
 async function resolveInboundMailFolderSegment(headers, inboundMailFolderSpec) {
-  if (inboundMailFolderSpec == null || !String(inboundMailFolderSpec).trim()) {
-    return "mailFolders/inbox";
-  }
-  const raw = String(inboundMailFolderSpec).trim();
+  const raw = String(inboundMailFolderSpec || "inbox").trim() || "inbox";
 
   if (MAIL_FOLDER_ID_RE.test(raw)) {
     return `mailFolders/${encodeURIComponent(raw)}`;
@@ -93,14 +127,29 @@ async function resolveInboundMailFolderSegment(headers, inboundMailFolderSpec) {
     }
     if (folders.length > 1) {
       throw new Error(
-        `inboundMailFolderId: displayName '${raw}' matched ${folders.length} folders under ${label}; use folder GUID`
+        `mailFolderNames: displayName '${raw}' matched ${folders.length} folders under ${label}; use folder GUID`
       );
     }
   }
 
   throw new Error(
-    `inboundMailFolderId: no folder with displayName '${raw}' at mailbox root or as direct child of Inbox; pass a folder GUID or move the folder`
+    `mailFolderNames: no folder with displayName '${raw}' at mailbox root or as direct child of Inbox; pass a folder GUID or move the folder`
   );
+}
+
+async function resolveInboundMailFolderSegments(headers, mailFolderNames) {
+  const specs = normalizeFolderList(mailFolderNames);
+  const folderSpecs = specs.length ? specs : ["inbox"];
+  const segments = [];
+  const seen = new Set();
+  for (const spec of folderSpecs) {
+    const seg = await resolveInboundMailFolderSegment(headers, spec);
+    if (!seen.has(seg)) {
+      seen.add(seg);
+      segments.push(seg);
+    }
+  }
+  return segments;
 }
 function chunkArray(arr, size) {
   const out = [];
@@ -117,6 +166,13 @@ function toMs(dt) {
 function subtractHoursIso(hours) {
   const d = new Date(Date.now() - hours * 60 * 60 * 1000);
   return d.toISOString();
+}
+
+function resolveWindowHours(inputs) {
+  const raw = inputs?.windowHours;
+  if (raw == null || raw === "") return 0;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : 0;
 }
 
 async function pagedGet({ url, headers, params, maxPages }) {
@@ -141,10 +197,10 @@ async function handler(inputs) {
   const token = normalizeGraphAccessToken(process.env.OUTLOOK_API_KEY);
   if (!token) throw new Error("OUTLOOK_API_KEY not set");
 
+  const { includeDomains, excludeDomains } = resolveSenderDomains(inputs);
+
   const {
-    senderDomain,
-    inboundMailFolderId,
-    windowHours = 72,
+    mailFolderNames,
     pageSize = 100,
     maxInboxPages = 3,
     maxSentPages = 3,
@@ -153,41 +209,42 @@ async function handler(inputs) {
     maxUnanswered = 10,
   } = inputs || {};
 
-  if (!senderDomain) {
-    throw new Error("senderDomain is required");
-  }
-
-  const sinceDateTime = subtractHoursIso(Number(windowHours) || 72);
+  const windowHours = resolveWindowHours(inputs);
+  const sinceDateTime = windowHours > 0 ? subtractHoursIso(windowHours) : null;
 
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
 
-  const inboundFolderSeg = await resolveInboundMailFolderSegment(headers, inboundMailFolderId);
+  const inboundFolderSegs = await resolveInboundMailFolderSegments(headers, mailFolderNames);
   console.log(
-    `${LOG_PREFIX} start senderDomain=${senderDomain} inboundFolder=${inboundFolderSeg} windowHours=${windowHours} sinceUsed=${sinceDateTime} maxUnanswered=${maxUnanswered}`
+    `${LOG_PREFIX} start senderDomains=${includeDomains.join(",") || "(all)"} excludeDomains=${excludeDomains.join(",") || "(none)"} inboundFolders=${inboundFolderSegs.join(",")} windowHours=${windowHours || "unlimited"} sinceUsed=${sinceDateTime || "(unlimited)"} maxUnanswered=${maxUnanswered}`
   );
 
   /* ===============================
      1) INBOX BULK PULL
   =============================== */
 
-  const inboxPages = await pagedGet({
-    url: `${GRAPH_BASE}/me/${inboundFolderSeg}/messages`,
-    headers,
-    params: {
-      $filter: buildInboundSenderFilter(sinceDateTime, senderDomain),
-      $top: Math.min(pageSize, 100),
-      $select: "id,receivedDateTime,conversationId",
-      $orderby: "receivedDateTime desc",
-    },
-    maxPages: maxInboxPages,
-  });
+  const inboxMsgs = [];
+  for (const inboundFolderSeg of inboundFolderSegs) {
+    const inboundFilter = buildInboundSenderFilter(sinceDateTime, includeDomains, excludeDomains);
+    const inboxPages = await pagedGet({
+      url: `${GRAPH_BASE}/me/${inboundFolderSeg}/messages`,
+      headers,
+      params: {
+        ...(inboundFilter ? { $filter: inboundFilter } : {}),
+        $top: Math.min(pageSize, 100),
+        $select: "id,receivedDateTime,conversationId",
+        $orderby: "receivedDateTime desc",
+      },
+      maxPages: maxInboxPages,
+    });
+    inboxMsgs.push(...inboxPages.flatMap((p) => p.data?.value || []));
+  }
 
-  const inboxMsgs = inboxPages.flatMap((p) => p.data?.value || []);
   console.log(
-    `${LOG_PREFIX} inbox: ${inboxPages.length} page(s), ${inboxMsgs.length} message(s) from domain`
+    `${LOG_PREFIX} inbox: ${inboxMsgs.length} message(s) from domain across ${inboundFolderSegs.length} folder(s)`
   );
 
   // Latest inbound per conversation
@@ -214,7 +271,7 @@ async function handler(inputs) {
       answeredConversationIds: [],
       countUnanswered: 0,
       countAnswered: 0,
-      sinceUsed: sinceDateTime,
+      sinceUsed: sinceDateTime || "",
     };
   }
 
@@ -226,7 +283,7 @@ async function handler(inputs) {
     url: `${GRAPH_BASE}/me/mailFolders/sentitems/messages`,
     headers,
     params: {
-      $filter: `sentDateTime ge ${sinceDateTime}`,
+      ...(sinceDateTime ? { $filter: `sentDateTime ge ${sinceDateTime}` } : {}),
       $top: Math.min(pageSize, 100),
       $select: "conversationId,sentDateTime",
       $orderby: "sentDateTime desc",
@@ -344,7 +401,7 @@ async function handler(inputs) {
     answeredConversationIds,
     countUnanswered: unansweredConversationIds.length,
     countAnswered: answeredConversationIds.length,
-    sinceUsed: sinceDateTime,
+    sinceUsed: sinceDateTime || "",
   };
 }
 

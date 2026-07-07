@@ -15,10 +15,10 @@ function log(line) {
   const { handler } = require("./index.js");
 
   const payload = {
-    senderDomain: "mail.kleinanzeigen.de",
-    inboundMailFolderId: "Kleinanzeigen konvo",
+    senderDomains: ["mail.kleinanzeigen.de"],
+    mailFolderNames: ["Kleinanzeigen konvo"],
     maxUnanswered: 10,
-    windowHours: 1000000,
+    windowHours: 0,
   };
 
   log("OUTLOOK_API_KEY set: " + Boolean(process.env.OUTLOOK_API_KEY));

@@ -54,6 +54,114 @@ def _list_messages_by_query(token, query, max_pages, page_size):
     return out
 
 
+def _normalize_domain_list(value):
+    if value is None:
+        return []
+    raw = value if isinstance(value, list) else [value]
+    return [str(item or "").strip() for item in raw if str(item or "").strip()]
+
+
+def _resolve_sender_domains(inputs):
+    include_domains = _normalize_domain_list(inputs.get("senderDomains"))
+    exclude_domains = _normalize_domain_list(inputs.get("excludeDomains"))
+    return include_domains, exclude_domains
+
+
+GMAIL_WELL_KNOWN_FOLDERS = {
+    "inbox": "in:inbox",
+    "spam": "in:spam",
+    "junk": "in:spam",
+    "trash": "in:trash",
+    "drafts": "in:drafts",
+    "sent": "in:sent",
+    "important": "is:important",
+    "starred": "is:starred",
+    "all": "in:anywhere",
+}
+
+
+def _gmail_labels_by_name(token):
+    data = _gmail_get("https://gmail.googleapis.com/gmail/v1/users/me/labels", token)
+    out = {}
+    for label in data.get("labels", []) or []:
+        name = (label.get("name") or "").strip()
+        if name:
+            out[name.lower()] = name
+    return out
+
+
+def _resolve_gmail_folder_clause(token, folder_name, labels_by_name):
+    raw = str(folder_name or "").strip()
+    if not raw:
+        raw = "inbox"
+    well_known = GMAIL_WELL_KNOWN_FOLDERS.get(raw.lower())
+    if well_known:
+        return well_known
+    exact = labels_by_name.get(raw.lower())
+    if not exact:
+        raise Exception(
+            f"mailFolderNames: no Gmail system folder or label matching '{raw}'"
+        )
+    if " " in exact or '"' in exact:
+        escaped = exact.replace('"', '\\"')
+        return f'label:"{escaped}"'
+    return f"label:{exact}"
+
+
+def _resolve_gmail_folder_clauses(token, mail_folder_names):
+    names = _normalize_domain_list(mail_folder_names)
+    folder_names = names or ["inbox"]
+    labels_by_name = None
+    clauses = []
+    for name in folder_names:
+        if labels_by_name is None and name.lower() not in GMAIL_WELL_KNOWN_FOLDERS:
+            labels_by_name = _gmail_labels_by_name(token)
+        clause = _resolve_gmail_folder_clause(token, name, labels_by_name or {})
+        if clause not in clauses:
+            clauses.append(clause)
+    if len(clauses) == 1:
+        return clauses[0]
+    return "(" + " OR ".join(clauses) + ")"
+
+
+def _address_matches_include_domains(from_header, include_domains):
+    if not include_domains:
+        return True
+    lowered = (from_header or "").lower()
+    return any(f"@{domain.lower()}" in lowered for domain in include_domains)
+
+
+def _address_matches_exclude_domains(from_header, exclude_domains):
+    lowered = (from_header or "").lower()
+    return any(f"@{domain.lower()}" in lowered for domain in exclude_domains)
+
+
+def _resolve_window_hours(inputs):
+    raw = inputs.get("windowHours")
+    if raw is None or raw == "":
+        return 0
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _build_inbound_query(since_ts, include_domains, exclude_domains, folder_clause):
+    parts = []
+    if since_ts is not None:
+        parts.append(f"after:{since_ts}")
+    parts.append(folder_clause)
+    if include_domains:
+        include_clause = " OR ".join(f"from:*@{domain}" for domain in include_domains)
+        if len(include_domains) > 1:
+            include_clause = f"({include_clause})"
+        parts.append(include_clause)
+    exclude_clause = " ".join(f"-from:*@{domain}" for domain in exclude_domains)
+    if exclude_clause:
+        parts.append(exclude_clause)
+    return " ".join(parts)
+
+
 def _find_header(msg, name):
     payload = msg.get("payload") or {}
     headers = payload.get("headers") or []
@@ -97,26 +205,32 @@ def handler(inputs):
     if not token:
         raise Exception("GMAIL_API_KEY not set")
 
-    sender_domain = (inputs.get("senderDomain") or "").strip()
-    if not sender_domain:
-        raise Exception("senderDomain is required")
+    include_domains, exclude_domains = _resolve_sender_domains(inputs)
+    mail_folder_names = inputs.get("mailFolderNames")
 
     listener_email = (inputs.get("listenerEmail") or "").strip().lower()
-    window_hours = int(inputs.get("windowHours") or 72)
+    window_hours = _resolve_window_hours(inputs)
     max_unanswered = int(inputs.get("maxUnanswered") or 10)
     max_inbox_pages = int(inputs.get("maxInboxPages") or 3)
     max_sent_pages = int(inputs.get("maxSentPages") or 3)
     page_size = min(max(1, int(inputs.get("pageSize") or 100)), 500)
 
-    since_dt = datetime.now(timezone.utc) - timedelta(hours=window_hours)
-    since_ts = int(since_dt.timestamp())
+    since_dt = None
+    since_ts = None
+    if window_hours > 0:
+        since_dt = datetime.now(timezone.utc) - timedelta(hours=window_hours)
+        since_ts = int(since_dt.timestamp())
+
+    folder_clause = _resolve_gmail_folder_clauses(token, mail_folder_names)
 
     print(
-        f"{LOG_PREFIX} start senderDomain={sender_domain} windowHours={window_hours} "
-        f"since={since_dt.isoformat()} maxUnanswered={max_unanswered}"
+        f"{LOG_PREFIX} start senderDomains={','.join(include_domains) or '(all)'} "
+        f"excludeDomains={','.join(exclude_domains) or '(none)'} "
+        f"mailFolders={folder_clause} windowHours={window_hours or 'unlimited'} "
+        f"since={since_dt.isoformat() if since_dt else '(unlimited)'} maxUnanswered={max_unanswered}"
     )
 
-    inbox_query = f"in:inbox after:{since_ts} from:*@{sender_domain}"
+    inbox_query = _build_inbound_query(since_ts, include_domains, exclude_domains, folder_clause)
     inbox_hits = _list_messages_by_query(token, inbox_query, max_inbox_pages, page_size)
     print(f"{LOG_PREFIX} inbox hits={len(inbox_hits)}")
 
@@ -134,8 +248,10 @@ def handler(inputs):
         if not thread_id:
             continue
         internal_epoch = _to_epoch(msg.get("internalDate"))
-        from_header = (_find_header(msg, "From") or "").lower()
-        if f"@{sender_domain.lower()}" not in from_header:
+        from_header = _find_header(msg, "From") or ""
+        if not _address_matches_include_domains(from_header, include_domains):
+            continue
+        if _address_matches_exclude_domains(from_header, exclude_domains):
             continue
         cur = latest_inbound_by_thread.get(thread_id)
         if cur is None or (internal_epoch or 0) > (cur.get("epoch") or 0):
@@ -152,10 +268,10 @@ def handler(inputs):
             "answeredThreadIds": [],
             "countUnanswered": 0,
             "countAnswered": 0,
-            "sinceUsed": since_dt.isoformat(),
+            "sinceUsed": since_dt.isoformat() if since_dt else "",
         }
 
-    sent_query = f"in:sent after:{since_ts}"
+    sent_query = f"in:sent after:{since_ts}" if since_ts is not None else "in:sent"
     sent_hits = _list_messages_by_query(token, sent_query, max_sent_pages, page_size)
     print(f"{LOG_PREFIX} sent hits={len(sent_hits)}")
     latest_sent_by_thread = {}
@@ -208,5 +324,5 @@ def handler(inputs):
         "answeredThreadIds": answered,
         "countUnanswered": len(unanswered),
         "countAnswered": len(answered),
-        "sinceUsed": since_dt.isoformat(),
+        "sinceUsed": since_dt.isoformat() if since_dt else "",
     }

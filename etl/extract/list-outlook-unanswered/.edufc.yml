@@ -17,20 +17,35 @@ interface:
       OUTLOOK_API_KEY:
         type: env
         description: OAuth 2.0 Bearer token for Microsoft Graph.
-      senderDomain:
-        type: string
-        description: Sender substring to filter inbound messages; must appear in SMTP from/emailAddress/address (e.g. mail.kleinanzeigen.de).
-      inboundMailFolderId:
-        type: string
+      senderDomains:
+        type: array
+        items:
+          type: string
         description: >
-          Optional. Folder to scan instead of default Inbox: Graph folder GUID, well-known shortcut (inbox, junk,
-          junkemail, drafts, sentitems, …), or exact Outlook displayName. For displayName, the function resolves
-          a single match at mailbox root or a direct child of Inbox; deeper nesting or duplicate names need a GUID.
-          Top-level Inbox only includes that container’s messages, not subfolders—use this when rules move mail.
+          Optional sender substrings to include (OR). Each must appear in SMTP from/emailAddress/address.
+          When empty, all senders in mailFolderNames are considered.
+      excludeDomains:
+        type: array
+        items:
+          type: string
+        description: >
+          Sender substrings to exclude even when they match senderDomains (e.g. noreply@mail.example.com
+          via exclude domain mail.example.com).
+      mailFolderNames:
+        type: array
+        items:
+          type: string
+        description: >
+          Folders to scan for inbound mail (OR). Each entry is a Graph folder GUID, well-known shortcut
+          (inbox, junkemail, drafts, sentitems, …), or exact Outlook displayName (resolved at mailbox root
+          or as a direct child of Inbox). Defaults to inbox when empty.
+        default:
+          - inbox
       windowHours:
         type: number
-        description: Rolling time window in hours to consider inbound and sent messages (default 72).
-        default: 72
+        description: >
+          Rolling lookback window in hours for inbound and sent mail. Use 0 for no time limit.
+        default: 0
       pageSize:
         type: number
         description: Page size for Graph list calls ($top). Graph typically maxes at 100. Default 100.
@@ -55,8 +70,7 @@ interface:
         type: number
         description: Max number of unanswered conversations to return. Default 10; use 0 for no limit.
         default: 10
-    required:
-      - senderDomain
+    required: []
   outputs:
     properties:
       unansweredConversationIds:
@@ -80,7 +94,8 @@ interface:
         description: Number of answeredConversationIds returned.
       sinceUsed:
         type: string
-        description: ISO 8601 datetime used as the lower bound (now - windowHours).
+        description: >
+          ISO 8601 lower bound (now - windowHours), or empty string when windowHours is 0 (unlimited).
     required:
       - unansweredConversationIds
       - answeredConversationIds
